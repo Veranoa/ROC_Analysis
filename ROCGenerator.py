@@ -11,10 +11,10 @@ class LaTeXROCGenerator:
     def __init__(self):
         self.avef_groups = []
         self.avef_index_map = {}
-        self.default_colors = ['black', 'red', 'blue', 'green', 'orange']
+        self.default_colors = ['blue', 'red', 'black', 'green', 'orange']
         self.ave_colors = self.default_colors
         self.header_info = {
-            "file_name": "QT BR15 Analysis (CONFIDENTIAL)",
+            "file_name": "ROC Analysis",
             "author": "Author",
             "date": datetime.now().strftime("%Y/%m/%d")
         }
@@ -35,7 +35,8 @@ class LaTeXROCGenerator:
             "vertical_sep": "0pt",
             "width": "2.8in",
             "height": "2.8in",
-            "label_font_size": "12pt",
+            "label_font_size_1": "12pt",
+            "label_font_size_2": "14",
             "domain": "0:1",
             "restrict_y_domain": "0:1",
             "samples": "100",
@@ -44,7 +45,10 @@ class LaTeXROCGenerator:
             "xmax": "1",
             "ymin": "0",
             "ymax": "1",
-            "tick_label_font_size": "10pt",
+            "x_ticklabels" : "{, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0}",
+            "y_ticklabels" : "{, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0}",
+            "tick_label_font_size_1": "10pt",
+            "tick_label_font_size_2": "12pt",
             "tick_style": {
                 "line width": "0.25pt",
                 "color": "black",
@@ -61,29 +65,21 @@ class LaTeXROCGenerator:
         self.ave_color_definitions = ""
         self.ave_plot_commands = ""
         self.ave_plot_frame_commands = ""
-        self.make_ave_figure_command = ""
+        self.make_figure_command = ""
         self.plot_fig_command = ""
         self.plot_avef_group_commands = ""
         self.header_footer = ""
 
     def clean_name(self, name):
         return re.sub(r'[^a-zA-Z0-9]', '', name)
-    
-    def generate_names(self, n):
-        """Generate names like A, B, ..., Z, AA, AB, ..., AZ, BA, ..., ZZ, etc."""
-        for size in itertools.count(1):
-            for s in itertools.product(string.ascii_uppercase, repeat=size):
-                yield "".join(s)
-                if len(list(itertools.islice(itertools.product(string.ascii_uppercase, repeat=size), 0, None))) >= n:
-                    return
                 
-    def parse_ave_group_files(self, group_files, group_names=None):
+    def parse_ave_files(self, group_files, avef_names=None, engine='openpyxl'):
         groups = []
-        group_names = group_names or list(self.generate_names(len(group_files)))
-        for group_file, group_name in zip(group_files, group_names):
+        avef_names = avef_names or list(string.ascii_uppercase[:len(group_files)])
+        for group_file, group_name in zip(group_files, avef_names):
             if not os.path.exists(group_file) or not group_file.endswith('.xlsx'):
                 raise ValueError(f"Error: File '{group_file}' does not exist or is not an XLSX file.")
-            sheets = pd.ExcelFile(group_file).sheet_names
+            sheets = pd.ExcelFile(group_file, engine=engine).sheet_names
             group_name = self.clean_name(group_name)
             group_data = [(group_file, self.clean_name(sheet)) for sheet in sheets]
             groups.append((group_name, group_data))
@@ -91,12 +87,13 @@ class LaTeXROCGenerator:
         self.avef_groups = groups
         self.avef_index_map = self.generate_ave_index_map()
         self.num_ave_colors = max(len(group_data) for _, group_data in self.avef_groups)
+        self.ave_colors = self.default_colors[:self.num_ave_colors]
         
         self.ave_data_commands = self.generate_ave_data_commands()
         self.ave_color_definitions = self.generate_ave_color_definitions()
         self.ave_plot_commands = self.generate_ave_plot_commands()
         self.ave_plot_frame_commands = self.generate_ave_plot_frame_commands()
-        self.make_ave_figure_command = self.generate_make_ave_figure_command()
+        self.make_figure_command = self.generate_make_figure_command()
         self.plot_fig_command = self.generate_plot_fig_command()
         self.plot_avef_group_commands = self.generate_avef_group_commands()
         self.header_footer = self.generate_header_footer()
@@ -125,6 +122,7 @@ bottom={bottom_margin}, footskip={footskip}]{{geometry}}
 \\usepackage{{comment}}
 \\usepackage{{fancyhdr}}
 \\usepackage{{textcomp}}
+\\usepackage{{pgfplotstable}}
 
 """.format(**self.page_format)
 
@@ -137,14 +135,15 @@ bottom={bottom_margin}, footskip={footskip}]{{geometry}}
 \\usepackage{{comment}}
 \\usepackage{{fancyhdr}}
 \\usepackage{{textcomp}}
+\\usepackage{{pgfplotstable}}
 
 """.format(**self.page_format)
 
-    def generate_ave_data_commands(self):
+    def generate_ave_data_commands(self, engine='openpyxl'):
         data_commands = "% ROC curve and AUC data:\n"
         for group_name, group_data in self.avef_groups:
             for _, (xlsx_file, sheet_name) in enumerate(group_data):
-                df = pd.read_excel(xlsx_file, sheet_name=sheet_name)
+                df = pd.read_excel(xlsx_file, sheet_name=sheet_name, engine=engine)
                 auc_name = df.columns[0]
                 auc_value = df.columns[1]
                 roc_data = df.iloc[1:].values
@@ -183,7 +182,7 @@ bottom={bottom_margin}, footskip={footskip}]{{geometry}}
             plot_frame_commands += "}\n\n"
         return plot_frame_commands
 
-    def generate_make_ave_figure_command(self):
+    def generate_make_figure_command(self):
         tick_style = ", ".join([f"{k}={v}" for k, v in self.plot_format["tick_style"].items()])
         legend_style = ", ".join([f"{k}={v}" for k, v in self.plot_format["legend_style"].items()])
         plot_format_combined = self.plot_format.copy()
@@ -198,16 +197,16 @@ bottom={bottom_margin}, footskip={footskip}]{{geometry}}
   horizontal sep={horizontal_sep}, vertical sep={vertical_sep}}},
   width={width},
   height={height},
-  label style={{font={{\\fontsize{{{label_font_size}}}{{{label_font_size}}}\\selectfont}}}},
+  label style={{font={{\\fontsize{{{label_font_size_1}}}{{{label_font_size_2}}}\\selectfont}}}},
   domain={domain},
   restrict y to domain={restrict_y_domain},
   samples={samples},
   minor tick num={minor_tick_num},
   xmin={xmin}, xmax={xmax},
   ymin={ymin}, ymax={ymax},
-  xticklabels={{, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0}},
-  yticklabels={{, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0}},
-  tick label style={{font={{\\fontsize{{{tick_label_font_size}}}{{{tick_label_font_size}}}\\selectfont}}}},
+  xticklabels={x_ticklabels},
+  yticklabels={y_ticklabels},
+  tick label style={{font={{\\fontsize{{{tick_label_font_size_1}}}{{{tick_label_font_size_2}}}\\selectfont}}}},
   tick style={{{tick_style}}},
   legend style={{{legend_style}}},
   set layers=standard,
@@ -298,7 +297,7 @@ bottom={bottom_margin}, footskip={footskip}]{{geometry}}
                     self.plot_format[key].update(value)
                 else:
                     self.plot_format[key] = value
-        self.make_ave_figure_command = self.generate_make_ave_figure_command()             
+        self.make_figure_command = self.generate_make_figure_command()             
 
     def generate_latex_document(self):
         latex_document = (
@@ -307,7 +306,7 @@ bottom={bottom_margin}, footskip={footskip}]{{geometry}}
             self.ave_color_definitions +
             self.ave_plot_commands +
             self.ave_plot_frame_commands +
-            self.make_ave_figure_command +
+            self.make_figure_command +
             self.plot_fig_command +
             self.plot_avef_group_commands +
             self.header_footer +
@@ -323,7 +322,7 @@ bottom={bottom_margin}, footskip={footskip}]{{geometry}}
             self.ave_color_definitions +
             self.ave_plot_commands +
             self.ave_plot_frame_commands +
-            self.make_ave_figure_command +
+            self.make_figure_command +
             self.plot_fig_command +
             self.plot_avef_group_commands +
             self.generate_document_body()
@@ -347,7 +346,7 @@ bottom={bottom_margin}, footskip={footskip}]{{geometry}}
         self.ave_color_definitions = self.generate_ave_color_definitions()
         self.ave_plot_commands = self.generate_ave_plot_commands()
         self.ave_plot_frame_commands = self.generate_ave_plot_frame_commands()
-        self.make_ave_figure_command = self.generate_make_ave_figure_command()
+        self.make_figure_command = self.generate_make_figure_command()
         self.plot_fig_command = self.generate_plot_fig_command()
         self.plot_avef_group_commands = self.generate_avef_group_commands()
         self.header_footer = self.generate_header_footer()
@@ -355,43 +354,28 @@ bottom={bottom_margin}, footskip={footskip}]{{geometry}}
 
 if __name__ == "__main__":
     try:
-        group_files = ["Data/NP.xlsx", "Data/PBN.xlsx"]
+        group_files = ["Data/NP_average.xlsx", "Data/PBN_average.xlsx"]
+        group_names = ['NP', 'PBN']
         generator = LaTeXROCGenerator()
         
-        generator.parse_ave_group_files(group_files)
+        generator.parse_ave_files(group_files, group_names)
 
         # Modify colors or header information as needed
-        generator.set_header_info(author="New Author")
-
-        # Modify colors or header information as needed
-        generator.set_ave_colors("red", "blue")  # Red and blue
-        generator.set_header_info(author="New Author")
-
-        # Modify page format or plot format as needed
-        generator.set_page_format(margin=".75in", top_margin=".8in")
-        generator.set_plot_format(width="3in", height="3in", tick_style={"draw": "red"}, legend_style={"anchor": "west"})
+        generator.set_header_info(author="Author", name="ROC Average Analysis")
 
         # Generate full document
         latex_document = generator.generate_latex_document()
         output_dir = 'Output'
         os.makedirs(output_dir, exist_ok=True)
         
-        doc_file_path = os.path.join(output_dir, 'output.tex')
+        doc_file_path = os.path.join(output_dir, 'ROC_average_analysis.tex')
         with open(doc_file_path, 'w') as f:
             f.write(latex_document)
         
         image = generator.generate_latex_image()
-        image_file_path = os.path.join(output_dir, 'image.tex')
+        image_file_path = os.path.join(output_dir, 'ROC_average_image.tex')
         with open(image_file_path, 'w') as f:
             f.write(image)
-
-        # Update group names if needed
-        new_group_names = ["NewNP", "NewPBN"]
-        generator.update_group_names(new_group_names)
-        latex_document = generator.generate_latex_document()
-        doc_file_path = os.path.join(output_dir, 'updated_output.tex')
-        with open(doc_file_path, 'w') as f:
-            f.write(latex_document)
                         
     except ValueError as e:
         print(e)

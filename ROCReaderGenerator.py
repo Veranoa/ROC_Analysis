@@ -24,7 +24,7 @@ class LaTeXROCReaderGenerator(LaTeXROCGenerator):
         self.reader_plot_frame_commands = ""
         self.plot_reader_group_commands = ""
         self.plot_reader_fig_command = ""
-        self.make_reader_figure_command = ""
+        self.make_figure_command = ""
 
     def clean_name(self, name):
         return re.sub(r'[^a-zA-Z0-9]', '', name)
@@ -39,7 +39,7 @@ class LaTeXROCReaderGenerator(LaTeXROCGenerator):
                     index_map[cmd_index] = letter_index
         return index_map
 
-    def parse_reader_files(self, reader_files, type_names=None, group_names=None):
+    def parse_reader_files(self, reader_files, type_names=None, group_names=None, engine='openpyxl'):
         groups = []
         type_names = type_names or list(self.generate_names(len(reader_files)))
         
@@ -53,7 +53,7 @@ class LaTeXROCReaderGenerator(LaTeXROCGenerator):
             
             method_sheets = []
             for file, method_name in zip(type_files, methods):
-                sheets = pd.ExcelFile(file).sheet_names
+                sheets = pd.ExcelFile(file, engine=engine).sheet_names
                 self.sheet_names.update(sheets)
                 method_sheets.append((method_name, file, sheets))
             groups.append((type_name, method_sheets))
@@ -70,7 +70,7 @@ class LaTeXROCReaderGenerator(LaTeXROCGenerator):
         self.reader_color_definitions = self.generate_reader_color_definitions()
         self.reader_plot_commands = self.generate_reader_plot_commands()
         self.reader_plot_frame_commands = self.generate_reader_plot_frame_commands()
-        self.make_reader_figure_command = self.generate_make_reader_figure_command()
+        self.make_figure_command = self.generate_make_figure_command()
         self.plot_fig_command = self.generate_plot_fig_command()
         self.plot_reader_group_commands = self.generate_reader_group_commands()
         self.header_footer = self.generate_header_footer()
@@ -155,41 +155,41 @@ class LaTeXROCReaderGenerator(LaTeXROCGenerator):
         return plot_frame_commands
 
 
-    def generate_make_reader_figure_command(self):
-        tick_style = ", ".join([f"{k}={v}" for k, v in self.plot_format["tick_style"].items()])
-        legend_style = ", ".join([f"{k}={v}" for k, v in self.plot_format["legend_style"].items()])
-        plot_format_combined = self.plot_format.copy()
-        plot_format_combined.update({"tick_style": tick_style, "legend_style": legend_style})
-        return """
-% Command for plotting a figure of a group of ROC curves:
-\\newcommand{{\\ROCPlotsOnePage}}[1]{{
-\\begin{{center}}
-\\begin{{tikzpicture}}
-\\begin{{groupplot}}[
-  group style={{group size={horizontal_size} by {vertical_size},
-  horizontal sep={horizontal_sep}, vertical sep={vertical_sep}}},
-  width={width},
-  height={height},
-  label style={{font={{\\fontsize{{{label_font_size}}}{{{label_font_size}}}\\selectfont}}}},
-  domain={domain},
-  restrict y to domain={restrict_y_domain},
-  samples={samples},
-  minor tick num={minor_tick_num},
-  xmin={xmin}, xmax={xmax},
-  ymin={ymin}, ymax={ymax},
-  xticklabels={{,,}},
-  yticklabels={{,,}},
-  tick label style={{font={{\\fontsize{{{tick_label_font_size}}}{{{tick_label_font_size}}}\\selectfont}}}},
-  tick style={{{tick_style}}},
-  legend style={{{legend_style}}},
-  set layers=standard,
-] #1
-\\end{{groupplot}}
-\\end{{tikzpicture}}
-\\end{{center}}
-}}
+#     def generate_make_reader_figure_command(self):
+#         tick_style = ", ".join([f"{k}={v}" for k, v in self.plot_format["tick_style"].items()])
+#         legend_style = ", ".join([f"{k}={v}" for k, v in self.plot_format["legend_style"].items()])
+#         plot_format_combined = self.plot_format.copy()
+#         plot_format_combined.update({"tick_style": tick_style, "legend_style": legend_style})
+#         return """
+# % Command for plotting a figure of a group of ROC curves:
+# \\newcommand{{\\ROCPlotsOnePage}}[1]{{
+# \\begin{{center}}
+# \\begin{{tikzpicture}}
+# \\begin{{groupplot}}[
+#   group style={{group size={horizontal_size} by {vertical_size},
+#   horizontal sep={horizontal_sep}, vertical sep={vertical_sep}}},
+#   width={width},
+#   height={height},
+#   label style={{font={{\\fontsize{{{label_font_size_1}}}{{{label_font_size_2}}}\\selectfont}}}},
+#   domain={domain},
+#   restrict y to domain={restrict_y_domain},
+#   samples={samples},
+#   minor tick num={minor_tick_num},
+#   xmin={xmin}, xmax={xmax},
+#   ymin={ymin}, ymax={ymax},
+#   xticklabels={{,,}},
+#   yticklabels={{,,}},
+#   tick label style={{font={{\\fontsize{{{tick_label_font_size_1}}}{{{tick_label_font_size_2}}}\\selectfont}}}},
+#   tick style={{{tick_style}}},
+#   legend style={{{legend_style}}},
+#   set layers=standard,
+# ] #1
+# \\end{{groupplot}}
+# \\end{{tikzpicture}}
+# \\end{{center}}
+# }}
 
-""".format(**plot_format_combined)
+# """.format(**plot_format_combined)
 
     def generate_plot_fig_command(self):
         return r"""
@@ -275,7 +275,7 @@ class LaTeXROCReaderGenerator(LaTeXROCGenerator):
         num_sheets = len(sheet_names)
         num_pages = (num_sheets + 11) // 12  # Calculate number of pages needed
         for page in range(num_pages):
-            body += f"\\ROCPlotsOnePage{{\\ROCplotPage{chr(65 + page)}}}\n"
+            body += f"\\MakeAfigure{{\\ROCplotPage{chr(65 + page)}}}\n"
         body += "\\end{document}"
         return body
 
@@ -287,7 +287,7 @@ class LaTeXROCReaderGenerator(LaTeXROCGenerator):
             self.reader_color_definitions +
             self.reader_plot_commands +
             self.reader_plot_frame_commands +
-            self.make_reader_figure_command +
+            self.make_figure_command +
             self.plot_fig_command +
             self.plot_reader_group_commands +
             self.header_footer +
@@ -302,7 +302,7 @@ class LaTeXROCReaderGenerator(LaTeXROCGenerator):
             self.reader_color_definitions +
             self.reader_plot_commands +
             self.reader_plot_frame_commands +
-            self.make_reader_figure_command +
+            self.make_figure_command +
             self.plot_fig_command +
             self.plot_reader_group_commands +
             self.generate_document_body()
@@ -321,21 +321,25 @@ if __name__ == "__main__":
         generator = LaTeXROCReaderGenerator()
 
         generator.parse_reader_files(reader_files, type_names, group_names)
-        generator.set_header_info(author="New Author")
-        generator.set_page_format(margin=".75in", top_margin=".8in")
-        generator.set_plot_format(width="3in", height="3in", tick_style={"draw": "red"}, legend_style={"anchor": "west"})
+        # generator.set_header_info(author="New Author")
+        # generator.set_page_format(margin=".75in", top_margin=".8in")
+        # generator.set_plot_format(width="3in", height="3in", tick_style={"draw": "red"}, legend_style={"anchor": "west"})
+
+        generator.set_plot_format(legend_style={"at": "{(0.4,0.3)}"})
+        generator.set_plot_format(x_ticklabels= "{,,}", y_ticklabels= "{,,}")
+        generator.set_header_info(name="ROC Reader Analysis")
 
         # Generate full document
         latex_document = generator.generate_latex_document()
         output_dir = 'Output'
         os.makedirs(output_dir, exist_ok=True)
 
-        doc_file_path = os.path.join(output_dir, 'reader_output.tex')
+        doc_file_path = os.path.join(output_dir, 'ROC_reader_analysis.tex')
         with open(doc_file_path, 'w') as f:
             f.write(latex_document)
 
         image = generator.generate_image_document()
-        image_file_path = os.path.join(output_dir, 'reader_image.tex')
+        image_file_path = os.path.join(output_dir, 'ROC_reader_image.tex')
         with open(image_file_path, 'w') as f:
             f.write(image)
 

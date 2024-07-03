@@ -1,106 +1,168 @@
 import sys
 import os
 import string
+import pandas as pd
 from openpyxl import load_workbook
-from ROCGenerator import LaTeXROCGenerator 
+from ROCReaderGenerator import LaTeXROCReaderGenerator 
 
-class LaTeXROCReaderAveGenerator(LaTeXROCGenerator):
+class LaTeXROCReaderAveGenerator(LaTeXROCReaderGenerator):
     def __init__(self):
         super().__init__()
         self.reader_files = []
-        self.reader_data_commands = ""
-        self.reader_plot_commands = ""
+        self.readerave_colors = []
+        
+        self.readerave_color_definitions = ""
         self.readerave_plot_frame_commands = ""
+        self.plot_readerave_fig_commands = ""
         self.plot_readerave_group_commands = ""
-        self.plot_reader_fig_command = ""
+        self.plot_readerave_fig_commands = ""
 
-    def generate_ave_index_map(self):
-        index_map = {}
-        counter = 0
-        for group_index, group in enumerate(self.avef_groups):
-            for file_index, _ in enumerate(group):
-                cmd_index = f"{group_index}_{file_index}"
-                letter_index = string.ascii_uppercase[counter % len(string.ascii_lowercase)]
-                index_map[cmd_index] = letter_index
-                counter += 1
-        return index_map
-    
-    def parse_reader_files(self, reader_files):
-        files = []
-        for file in reader_files:
-            if not os.path.exists(file) or not file.endswith('.xlsx'):
-                raise ValueError(f"Error: File '{file}' does not exist或 is not an Excel file.")
-            files.append(file)
-        self.reader_files = files
-        self.reader_data_commands = self.generate_reader_data_commands()
+    def parse_readerave_files(self, ave_files, reader_files, ave_names=None, type_names=None, group_names=None):
+        self.parse_ave_files(ave_files, avef_names=ave_names)
+        self.parse_reader_files(reader_files, type_names=type_names, group_names=group_names)
+        
+        self.readerave_color_definitions = self.generate_readerave_color_definitions()
+        self.ave_plot_commands = self.generate_ave_plot_commands()
         self.reader_plot_commands = self.generate_reader_plot_commands()
+        self.make_figure_command = self.generate_make_figure_command()
         self.readerave_plot_frame_commands = self.generate_readerave_plot_frame_commands()
         self.plot_readerave_group_commands = self.generate_readerave_group_commands()
+        self.plot_readerave_fig_commands = self.generate_plot_readerave_fig_commands()
+        self.header_footer = self.generate_header_footer()
+               
+    def parse_ave_files(self, group_files, avef_names=None, engine='openpyxl'):
+        groups = []
+        avef_names = avef_names or list(string.ascii_uppercase[:len(group_files)])
+        for group_file, group_name in zip(group_files, avef_names):
+            if not os.path.exists(group_file) or not group_file.endswith('.xlsx'):
+                raise ValueError(f"Error: File '{group_file}' does not exist or is not an XLSX file.")
+            sheets = pd.ExcelFile(group_file, engine=engine).sheet_names
+            group_name = self.clean_name(group_name)
+            group_data = [(group_file, self.clean_name(sheet)) for sheet in sheets]
+            groups.append((group_name, group_data))
+            
+        self.avef_groups = groups
+        self.avef_index_map = self.generate_ave_index_map()
+        self.num_ave_colors = max(len(group_data) for _, group_data in self.avef_groups)
+        self.ave_colors = self.default_colors[:self.num_ave_colors]
+        
+        self.ave_data_commands = self.generate_ave_data_commands()
+        
+    def parse_reader_files(self, reader_files, type_names=None, group_names=None, engine='openpyxl'):
+        groups = []
+        type_names = type_names or list(self.generate_names(len(reader_files)))
+        
+        # Setting default group names if not provided
+        if group_names is None:
+            group_names = [list(self.generate_names(len(type_files))) for type_files in reader_files]
+   
+        for type_files, type_name, methods in zip(reader_files, type_names, group_names):
+            if not all(os.path.exists(file) and file.endswith('.xlsx') for file in type_files):
+                raise ValueError("One or more files do not exist or are not XLSX files.")
+            
+            method_sheets = []
+            for file, method_name in zip(type_files, methods):
+                sheets = pd.ExcelFile(file, engine=engine).sheet_names
+                self.sheet_names.update(sheets)
+                method_sheets.append((method_name, file, sheets))
+            groups.append((type_name, method_sheets))
+        
+        self.reader_files = reader_files
+        self.reader_groups = groups
+        self.reader_index_map = self.generate_reader_index_map()
 
-    def generate_reader_data_commands(self):
-        data_commands = "% Reader ROC curve and AUC data:\n"
-        for group_index, excel_file in enumerate(self.reader_files):
-            wb = load_workbook(excel_file)
-            for sheet_name in wb.sheetnames:
-                ws = wb[sheet_name]
-                auc_value = ws['B1'].value
-                roc_data = [(row[0], row[1]) for row in ws.iter_rows(min_row=3, values_only=True)]
-                letter_index = f"{string.ascii_uppercase[group_index]}{sheet_name[0]}"
-                data_commands += f"\\newcommand{{\\{letter_index}AUC}}[0]{{{auc_value}}}\n"
-                data_commands += f"\\newcommand{{\\{letter_index}Data}}[0]{{\n  " + "\n  ".join([f"({x[0]},{x[1]})" for x in roc_data]) + "\n}\n\n"
-        return data_commands
+        max_files_per_type = max(len(methods) for _, methods in self.reader_groups)
+        self.reader_colors = [self.default_colors[:max_files_per_type]] * len(type_names)
+        self.reader_marks = [self.default_styles[:max_files_per_type]] * len(type_names)
 
+        self.reader_data_commands = self.generate_reader_data_commands()
+
+    def generate_readerave_color_definitions(self):
+        color_definitions = "% Define ROC curve colors:\n"
+        color_definitions += r"""
+\definecolor{COLORo0}{named}{blue}
+\definecolor{COLORo1}{named}{red}
+
+"""
+        return color_definitions
+        
     def generate_ave_plot_commands(self):
-        plot_commands = "% Command for plotting ROC curves in one plot:\n"
-        for group_index, group in enumerate(self.avef_groups):
-            for file_index, _ in enumerate(group):
-                cmd_index = f"{group_index}_{file_index}"
+        plot_commands = "% Command for plotting average ROC curves:\n"
+        for group_name, group_data in self.avef_groups:
+            for file_index, (_, sheet_name) in enumerate(group_data):
+                cmd_index = f"{group_name}_{sheet_name}"
                 letter_index = self.avef_index_map[cmd_index]
-                plot_commands += f"\\newcommand{{\\DrawLINE{letter_index}Ave}}[2]{{\n"
-                plot_commands += f"\\addplot[\n  color=COLORo{file_index},\n  mark=dot,\n  line width=2pt,\n  on layer={{axis foreground}},\n] coordinates {{#1}};\n"
-                plot_commands += f"\\addlegendentry{{#2}}\n}}\n\n"
+                plot_commands += f"\\newcommand{{\\DrawLINEo{letter_index}oAve}}[1]{{\n"
+                plot_commands += f"\\addplot[\n  color=COLORo{file_index % 2},\n  mark=dot,\n  line width=2pt,\n  on layer={{axis foreground}},\n] coordinates {{#1}};\n"
+                plot_commands += f"}}\n\n"
         return plot_commands
-
+       
     def generate_reader_plot_commands(self):
-        reader_plot_commands = "% Command for plotting a reader ROC curve:\n"
-        for group_index, excel_file in enumerate(self.reader_files):
-            letter_index = f"{string.ascii_uppercase[group_index]}"
-            reader_plot_commands += f"\\newcommand{{\\DrawLINE{letter_index}Reader}}[1]{{\n"
-            reader_plot_commands += f"\\addplot[\n  color=COLORo{(group_index + 1) % self.num_ave_colors},\n  mark=dot,\n  line width=.5pt,\n  on layer={{axis foreground}},\n] coordinates {{#1}};\n}}\n\n"
-        return reader_plot_commands
-    
+        plot_style = "% Command for plotting reader ROC curves:\n"
+        for type_index, (type_name, methods) in enumerate(self.reader_groups):
+            for method_index, (method_name, file, sheets) in enumerate(methods):
+                plot_style += f"\\newcommand{{\\DrawLINEo{type_name}{method_name}oReader}}[1]{{\n"                     
+                plot_style += f"\\addplot[\n  color=COLORo{(method_index+1) % 2},\n  mark=dot,\n  line width=0.5pt,\n  on layer={{axis foreground}},\n] coordinates {{#1}};\n"
+                plot_style += f"}}\n\n"
+        return plot_style
+       
     def generate_readerave_plot_frame_commands(self):
         plot_frame_commands = "% Command for plotting ROC curves in one plot:\n"
-        for group_index, excel_file in enumerate(self.reader_files):
-            group_letter = string.ascii_uppercase[group_index]
-            plot_frame_commands += f"\\newcommand{{\\PlotFRAMEoReadernAve{group_letter}}}{{\n"
-            
-            wb = load_workbook(excel_file)
-            for sheet_name in wb.sheetnames:
-                letter_index = f"{string.ascii_uppercase[group_index]}{sheet_name[0]}"
-                plot_frame_commands += f"  \\DrawLINE{group_letter}Reader{{\\{letter_index}Data}}\n"
-            plot_frame_commands += f"  \\DrawLINE{group_letter}Ave{{\\DATAoROC{group_letter}}} {{Average {group_letter}}}\n"
-            plot_frame_commands += "}\n\n"
+        for ave_group_index, (ave_group_name, ave_group_data) in enumerate(self.avef_groups):
+            for ave_file_index, (ave_file, ave_sheet_name) in enumerate(ave_group_data):
+                ave_cmd_index = f"{ave_group_name}_{ave_sheet_name}"
+                ave_letter_index = self.avef_index_map[ave_cmd_index]
+                plot_frame_commands += f"\\newcommand{{\\PlotFRAMEoReadernAve{ave_letter_index}}}{{\n"
+
+                for type_index, (type_name, methods) in enumerate(self.reader_groups):
+                    for method_index, (method_name, file, sheets) in enumerate(methods):       
+                        if (ave_group_index == type_index and ave_file_index == method_index):                                        
+                            for sheet_index, sheet_name in enumerate(sheets):
+                                reader_cmd_index = f"{type_name}_{method_name}_{sheet_name}"
+                                reader_letter_index = self.reader_index_map[reader_cmd_index]
+                                plot_frame_commands += f"  \\DrawLINEo{type_name}{method_name}oReader{{\\{reader_letter_index}Data}}\n"
+                            
+                plot_frame_commands += f"  \\DrawLINEo{ave_letter_index}oAve{{\\DATAoROCo{ave_letter_index}}}\n"
+                plot_frame_commands += "}\n\n"
         return plot_frame_commands
 
     def generate_readerave_group_commands(self):
-        group_commands = "%Command for plotting group figures"
-        for group_index, _ in enumerate(self.reader_files):
-            group_letter = string.ascii_uppercase[group_index]
-            group_commands += f"""
-\\newcommand{{\\PlotFIGoReadernAve{group_letter}}}[0]{{
-  \\PlotFIG{{\\PlotFRAMEoReadernAve{group_letter}}}
-}}
+        group_commands = r"""
+% Command for making one plot:
+\newcommand{\PlotFIG}[1]{
+\nextgroupplot[
+xlabel = {\textbf{{FPF}}},
+ylabel = {{\textbf{{TPF}}}},
+xticklabels={{, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0}},
+yticklabels={{, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0}},
+] #1
+}	
+
 """
         return group_commands
+
+    def generate_plot_readerave_fig_commands(self):
+        plot_fig_commands = "%Command for plotting group figures"
+        for ave_group_index, (ave_group_name, ave_group_data) in enumerate(self.avef_groups):
+            for ave_file_index, (ave_file, ave_sheet_name) in enumerate(ave_group_data):
+                ave_cmd_index = f"{ave_group_name}_{ave_sheet_name}"
+                ave_letter_index = self.avef_index_map[ave_cmd_index]
+                plot_fig_commands += f"""
+\\newcommand{{\\PlotFIGoReadernAve{ave_letter_index}}}[0]{{
+  \\PlotFIG{{\\PlotFRAMEoReadernAve{ave_letter_index}}}
+}}
+"""
+        return plot_fig_commands
 
 
     def generate_document_body(self):
         body = "% Document body:\n"
         body += "\\begin{document}\n"
-        for group_index, _ in enumerate(self.reader_files):
-            group_letter = string.ascii_uppercase[group_index]
-            body += f"\\MakeAfigure{{\\PlotFIGoReadernAve{group_letter}}}\n"
+        for ave_group_index, (ave_group_name, ave_group_data) in enumerate(self.avef_groups):
+            for ave_file_index, (ave_file, ave_sheet_name) in enumerate(ave_group_data):
+                ave_cmd_index = f"{ave_group_name}_{ave_sheet_name}"
+                ave_letter_index = self.avef_index_map[ave_cmd_index]
+                body += f"\\MakeAfigure{{\\PlotFIGoReadernAve{ave_letter_index}}}\n"
         body += "\\end{document}"
         return body
 
@@ -109,42 +171,73 @@ class LaTeXROCReaderAveGenerator(LaTeXROCGenerator):
             self.generate_document_header() +
             self.ave_data_commands +
             self.reader_data_commands +
-            self.header_footer +
-            self.ave_color_definitions +
+
+            self.readerave_color_definitions +
             self.ave_plot_commands +
             self.reader_plot_commands +
+            
             self.readerave_plot_frame_commands +
+            self.plot_readerave_fig_commands +
             self.plot_readerave_group_commands +
-            self.plot_fig_command +
-            self.make_ave_figure_command +
-
+            self.make_figure_command +
+            
+            self.header_footer +
             self.generate_document_body()
         )
         return latex_document
 
+    def generate_latex_image(self):
+        latex_document = (
+            self.generate_image_header() +
+            self.ave_data_commands +
+            self.reader_data_commands +
+
+            self.readerave_color_definitions +
+            self.ave_plot_commands +
+            self.reader_plot_commands +
+            
+            self.readerave_plot_frame_commands +
+            self.plot_readerave_fig_commands +
+            self.plot_readerave_group_commands +
+
+            self.make_figure_command +
+            
+            self.header_footer +
+            self.generate_document_body()
+        )
+        return latex_document
+    
 if __name__ == "__main__":
     try:
-        group_files = ["Data/NP.xlsx", "Data/PBN.xlsx"]
+        avef_files = ["Data/NP_average.xlsx", "Data/PBN_average.xlsx"]
+        avef_names = ['NP', 'PBN']
+        
         reader_files = [
             ["Data/QR_t_Data.xlsx", "Data/MR_t_Data.xlsx"],
             ["Data/QR_p_Data.xlsx", "Data/MR_p_Data.xlsx"]
-        ]        
+        ]
+        type_names = ["t", "p"]
+        group_names = [["QR", "MR"], ["QR", "MR"]]    
         
         generator = LaTeXROCReaderAveGenerator()
         
-        generator.parse_ave_group_files(group_files)
-        generator.parse_reader_files(reader_files)
+        generator.parse_readerave_files(avef_files, reader_files, ave_names=avef_names, type_names=type_names, group_names=group_names)
 
-        generator.set_ave_colors((1.0, 0.0, 0.0), (0.0, 0.0, 1.0)) 
-        generator.set_header_info(author="New Author")
+        generator.set_header_info(name="ROC Reader and Average Analysis")
 
-        generator.set_page_format(margin=".75in", top_margin=".8in")
-        generator.set_plot_format(width="3in", height="3in", tick_style={"draw": "red"}, legend_style={"anchor": "west"})
+        # generator.set_ave_colors((1.0, 0.0, 0.0), (0.0, 0.0, 1.0)) 
+        # generator.set_header_info(author="New Author")
+
+        # generator.set_page_format(margin=".75in", top_margin=".8in")
 
         latex_document = generator.generate_latex_document()
-        with open('Output/reader_ave_output.tex', 'w') as f:
+        with open('Output/ROC_reader_ave_analysis.tex', 'w') as f:
             f.write(latex_document)
-
+            
+        image = generator.generate_image_document()
+        with open('Output/ROC_reader_ave_image.tex', 'w') as f:
+            f.write(image)
+            
     except ValueError as e:
         print(e)
         sys.exit(1)
