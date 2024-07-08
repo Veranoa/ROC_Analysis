@@ -1,0 +1,214 @@
+<!-- templates/upload.html -->
+{% extends "base.html" %}
+
+{% block title %}Upload Files{% endblock %}
+
+{% block content %}
+<h3>File Upload and Annotation</h3>
+
+<!-- Form for uploading files -->
+<form id="uploadForm" action="{{ url_for('submit') }}" method="post" enctype="multipart/form-data">
+    
+    <!-- User details -->
+    <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name">
+    </div>
+    <div class="form-group">
+        <label for="analysisName">Analysis Name:</label>
+        <input type="text" id="analysisName" name="analysisName">
+    </div>
+
+    <!-- Analysis type selection -->
+    <div class="form-group">
+        <label for="analysisType">Choose Analysis Type:</label>
+        <select id="analysisType" name="analysisType" required>
+            <option value="" disabled selected>Select analysis type</option>
+            <option value="average">Average Analysis</option>
+            <option value="reader">Reader Analysis</option>
+            <option value="both">Average and Reader Analysis</option>
+        </select>
+    </div>
+
+    <!-- Average files section -->
+    <div id="averageSection" style="display: none;">
+        <h4>Average Files</h4>
+        <table id="averageTable">
+            <thead>
+                <tr>
+                    <th>File</th>
+                    <th>Type</th>
+                    <th>Annotation</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button type="button" class="btn-default" id="addAverageRowButton">Add Row</button>
+    </div>
+
+    <!-- Readers files section -->
+    <div id="readersSection" style="display: none;">
+        <h4>Readers Files</h4>
+        <table id="readersTable">
+            <thead>
+                <tr>
+                    <th>File</th>
+                    <th>Type</th>
+                    <th>Annotation</th>
+                    <th>Group</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button type="button" class="btn-default" id="addReadersRowButton">Add Row</button>
+    </div>
+
+    <!-- Box plot file section (optional) -->
+    <div id="boxplotSection" style="display: none;">
+        <h4>Box Plot File (Optional)</h4>
+        <div class="form-group">
+            <label for="boxplotFile">Upload Box Plot File:</label>
+            <input type="file" id="boxplotFile" name="boxplotFile">
+        </div>
+    </div>
+
+    <!-- Submit button -->
+    <button type="submit" class="btn-blue" id="submitButton">Submit</button>
+</form>
+
+<!-- Including external JavaScript file -->
+<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+<script>
+    // JavaScript to handle dynamic display based on analysis type selection
+    document.getElementById('analysisType').addEventListener('change', function() {
+        const averageSection = document.getElementById('averageSection');
+        const readersSection = document.getElementById('readersSection');
+        const boxplotSection = document.getElementById('boxplotSection');
+        
+        switch (this.value) {
+            case 'average':
+                averageSection.style.display = 'block';
+                readersSection.style.display = 'none';
+                boxplotSection.style.display = 'none';
+                setRequiredAttributes(readersSection, false);
+                setRequiredAttributes(averageSection, true);
+                break;
+            case 'reader':
+                averageSection.style.display = 'none';
+                readersSection.style.display = 'block';
+                boxplotSection.style.display = 'none';
+                setRequiredAttributes(readersSection, true);
+                setRequiredAttributes(averageSection, false);
+                break;
+            case 'both':
+                averageSection.style.display = 'block';
+                readersSection.style.display = 'block';
+                boxplotSection.style.display = 'block';
+                setRequiredAttributes(readersSection, true);
+                setRequiredAttributes(averageSection, true);
+                break;
+            default:
+                averageSection.style.display = 'none';
+                readersSection.style.display = 'none';
+                boxplotSection.style.display = 'none';
+                setRequiredAttributes(readersSection, false);
+                setRequiredAttributes(averageSection, false);
+                break;
+        }
+    });
+
+    function setRequiredAttributes(section, isRequired) {
+        const inputs = section.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            if (isRequired) {
+                input.setAttribute('required', 'required');
+            } else {
+                input.removeAttribute('required');
+            }
+        });
+    }
+
+    // JavaScript to disable the submit button after form submission
+    document.getElementById('uploadForm').addEventListener('submit', function() {
+        const submitButton = document.getElementById('submitButton');
+        submitButton.disabled = true;
+        submitButton.textContent = 'Submitting...'; // Optional: change button text to indicate submission
+    });
+
+    let averageFileCount = 0;
+
+    function addAverageRow() {
+        const table = document.getElementById('averageTable').getElementsByTagName('tbody')[0];
+        const newRow = table.insertRow();
+        newRow.innerHTML = `
+            <td><input type="file" name="averageFile[]" accept=".xlsx" required></td>
+            <td>
+                <select name="averageFileType[]">
+                    <option value="xlsx">XLSX</option>
+                    <option value="txt">TXT</option>
+                    <option value="csv">CSV</option>                
+                </select>
+            </td>
+            <td><input type="text" name="averageFileAnnotation[]" oninput="updateReadersGroups()" required></td>
+            <td><button type="button" class="btn-default" onclick="deleteRow(this)">Delete</button></td>
+        `;
+        averageFileCount++;
+        updateReadersGroups();
+    }
+
+    function addReadersRow() {
+        const table = document.getElementById('readersTable').getElementsByTagName('tbody')[0];
+        const newRow = table.insertRow();
+        newRow.innerHTML = `
+            <td><input type="file" name="readersFile[]" accept=".txt,.csv,.xlsx" required></td>
+            <td>
+                <select name="readersFileType[]">
+                    <option value="txt">TXT</option>
+                    <option value="csv">CSV</option>
+                    <option value="xlsx">XLSX</option>
+                </select>
+            </td>
+            <td><input type="text" name="readersFileAnnotation[]" required></td>
+            <td>
+                <select name="readersGroup[]">${getReadersGroupOptions()}</select>
+            </td>
+            <td><button type="button" class="btn-default" onclick="deleteRow(this)">Delete</button></td>
+        `;
+    }
+
+    function deleteRow(button) {
+        const row = button.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+        if (row.parentNode.parentNode.id === 'averageTable') {
+            averageFileCount--;
+            updateReadersGroups();
+        }
+    }
+
+    function updateReadersGroups() {
+        const readersGroupSelects = document.querySelectorAll('select[name="readersGroup[]"]');
+        readersGroupSelects.forEach(select => {
+            select.innerHTML = getReadersGroupOptions();
+        });
+    }
+
+    function getReadersGroupOptions() {
+        const averageAnnotations = document.querySelectorAll('input[name="averageFileAnnotation[]"]');
+        let options = '';
+        averageAnnotations.forEach((input, index) => {
+            const annotation = input.value || `Group ${index + 1}`;
+            options += `<option value="${annotation}">${annotation}</option>`;
+        });
+        return options;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('addAverageRowButton').addEventListener('click', addAverageRow);
+        document.getElementById('addReadersRowButton').addEventListener('click', addReadersRow);
+        addAverageRow();
+        addReadersRow();
+    });
+</script>
+{% endblock %}

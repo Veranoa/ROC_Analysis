@@ -1,0 +1,104 @@
+<!-- templates/preview.html -->
+{% extends "base.html" %}
+
+{% block title %}Preview TeX Files{% endblock %}
+
+{% block content %}
+<h3>Preview TeX Files</h3>
+<div id="texPreview" class="form-inline">
+    <select id="texFileSelect" class="form-control">
+        <option value="">Select a TeX file to preview</option>
+        {% for tex_file in tex_files %}
+            <option value="{{ tex_file }}">{{ tex_file }}</option>
+        {% endfor %}
+    </select>
+    <button id="compileButton" class="btn btn-primary" style="display: none;">Compile</button>
+</div>
+<div id="progress" class="progress" style="display: none; margin-top: 10px;">
+    <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0;"></div>
+</div>
+<div id="previewContainer" style="margin-top: 20px;">
+    <iframe id="previewFrame" src="about:blank" style="width: 100%; height: 600px; border: 1px solid #ddd;"></iframe>
+</div>
+
+{% if not tex_files %}
+    <p>No TeX files to preview.</p>
+{% endif %}
+
+<script>
+    document.getElementById('texFileSelect').addEventListener('change', function() {
+        const selectedFile = this.value;
+        const compileButton = document.getElementById('compileButton');
+        const previewFrame = document.getElementById('previewFrame');
+        const progress = document.getElementById('progress');
+        const progressBar = document.getElementById('progressBar');
+
+        if (selectedFile) {
+            // Check if the PDF already exists
+            const pdfUrl = `{{ url_for('serve_tex_file', filename='') }}${selectedFile.replace('.tex', '.pdf')}`;
+            fetch(pdfUrl, { method: 'HEAD' }).then(response => {
+                if (response.ok) {
+                    previewFrame.src = pdfUrl;
+                    compileButton.textContent = 'ReCompile';
+                } else {
+                    previewFrame.src = 'about:blank';
+                    compileButton.textContent = 'Compile';
+                }
+                compileButton.style.display = 'inline-block';
+            });
+        } else {
+            previewFrame.src = 'about:blank';
+            compileButton.style.display = 'none';
+            progress.style.display = 'none';
+            progressBar.style.width = '0';
+        }
+    });
+
+    document.getElementById('compileButton').addEventListener('click', function() {
+        const selectedFile = document.getElementById('texFileSelect').value;
+        const compileButton = document.getElementById('compileButton');
+        const progress = document.getElementById('progress');
+        const progressBar = document.getElementById('progressBar');
+
+        compileButton.disabled = true;
+        progress.style.display = 'block';
+        progressBar.style.width = '0';
+
+        const formData = new FormData();
+        formData.append('filename', selectedFile);
+
+        fetch('{{ url_for("compile_tex") }}', {
+            method: 'POST',
+            body: formData
+        }).then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(`Error: ${data.error}\nDetails: ${data.details}`);
+            } else {
+                const pdfUrl = data.pdf_url;
+                const previewFrame = document.getElementById('previewFrame');
+                previewFrame.src = pdfUrl;
+            }
+            compileButton.disabled = false;
+            progress.style.display = 'none';
+        })
+        .catch(error => {
+            alert('Failed to compile TeX file\nDetails: ' + error.message);
+            console.error(error);
+            compileButton.disabled = false;
+            progress.style.display = 'none';
+        });
+
+        // Simulate progress
+        let progressValue = 0;
+        const interval = setInterval(() => {
+            if (progressValue >= 100) {
+                clearInterval(interval);
+            } else {
+                progressValue += 10;
+                progressBar.style.width = `${progressValue}%`;
+            }
+        }, 300);
+    });
+</script>
+{% endblock %}

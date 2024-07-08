@@ -1,0 +1,101 @@
+
+\documentclass[class=article, crop=false]{standalone}
+\usepackage[letterpaper, portrait, margin=.5in, 
+top=.7in, headsep=.1in, headheight=.1in, 
+bottom=.7in, footskip=.2in]{geometry}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+\usepgfplotslibrary{groupplots}
+\usepackage{comment}
+\usepackage{fancyhdr}
+\usepackage{textcomp}
+\usepackage{pgfplotstable}
+\usepackage{tagging}
+
+\begin{document}
+
+\pgfplotsset{compat=1.16}
+\usepgfplotslibrary{statistics}
+\pgfplotstableread{
+Reader max avg median min n qfirst qthird deviation
+P 3.0 -66.2 -77.5 -100.0 22.0 -97.0 -37.5 34.5
+X 100.0 -63.2 -95.0 -100.0 22.0 -100.0 -76.2 61.8
+K 5.0 -62.1 -87.5 -100.0 22.0 -97.0 -10.5 41.3
+G 1.0 -59.9 -85.0 -100.0 22.0 -100.0 -11.2 42.6
+E 20.0 -57.5 -90.0 -100.0 22.0 -100.0 -10.0 46.8
+A 15.0 -50.5 -55.0 -100.0 22.0 -100.0 0.0 48.1
+S 0.0 -50.5 -35.0 -100.0 22.0 -100.0 -10.0 43.9
+M 3.0 -49.7 -50.0 -100.0 22.0 -99.8 0.0 48.7
+D 20.0 -47.0 -35.0 -100.0 22.0 -97.5 0.0 46.5
+C 20.0 -46.8 -50.0 -100.0 22.0 -90.0 0.0 45.4
+I 99.0 -46.5 -90.0 -100.0 22.0 -99.0 -1.0 60.4
+V 0.0 -42.8 -12.0 -99.0 22.0 -95.5 -4.2 43.8
+Y 100.0 -41.4 -40.0 -100.0 22.0 -100.0 0.0 55.4
+H 100.0 -40.9 -50.0 -100.0 22.0 -100.0 0.0 65.1
+L 60.0 -36.1 -45.0 -80.0 22.0 -67.5 -20.0 35.5
+J 100.0 -35.5 -40.0 -100.0 22.0 -97.5 0.0 63.7
+U 100.0 -35.2 -30.0 -100.0 22.0 -100.0 0.0 58.4
+R 78.0 -34.7 -34.0 -99.0 22.0 -91.5 0.8 55.0
+T 69.0 -31.0 -25.0 -90.0 22.0 -77.5 -1.2 44.5
+B 90.0 -27.7 -15.0 -100.0 22.0 -75.0 0.0 47.3
+N 95.0 -26.4 -32.5 -90.0 22.0 -69.8 10.0 51.2
+Q 85.0 -24.2 -25.0 -100.0 22.0 -78.2 18.8 55.5
+W 100.0 -23.4 -12.5 -100.0 22.0 -71.2 0.0 49.6
+F 95.0 2.3 0.0 -88.0 22.0 -13.0 37.5 50.6
+All 100.0 -41.5 -40.0 -100.0 528.0 -95.0 0.0 52.7
+}
+\datatable
+
+\begin{tikzpicture}
+\pgfplotstablegetrowsof{\datatable}
+\pgfmathtruncatemacro{\rownumber}{\pgfplotsretval-1}
+\begin{axis}[boxplot/draw direction=y,
+    xticklabels={P, X, K, G, E, A, S, M, D, C, I, V, Y, H, L, J, U, R, T, B, N, Q, W, F, All},
+    xtick={1,...,\the\numexpr\rownumber+1},
+    xlabel=\textbf{Reader(s)},
+    ylabel=\textbf{QT POM--FFDM POM},
+    height=12cm]
+    
+\pgfplotsinvokeforeach{0,...,\rownumber}{
+    \pgfplotstablegetelem{#1}{min}\of\datatable
+    \edef\mymin{\pgfplotsretval}
+    \pgfplotstablegetelem{#1}{avg}\of\datatable
+    \edef\myavg{\pgfplotsretval}
+    \pgfplotstablegetelem{#1}{max}\of\datatable
+    \edef\mymax{\pgfplotsretval}
+    \pgfplotstablegetelem{#1}{median}\of\datatable
+    \edef\mymedian{\pgfplotsretval}
+    \pgfplotstablegetelem{#1}{deviation}\of\datatable
+    \edef\mydeviation{\pgfplotsretval}
+    \pgfplotstablegetelem{#1}{qfirst}\of\datatable
+    \edef\myqfirst{\pgfplotsretval}
+    \pgfplotstablegetelem{#1}{qthird}\of\datatable
+    \edef\myqthird{\pgfplotsretval}
+    \typeout{\mymin,\mymax,\myavg,\mymedian,\mydeviation,\myqfirst,\myqthird}
+    \edef\temp{\noexpand\addplot[
+        boxplot prepared={
+         lower whisker=\mymin,
+         upper whisker=\mymax,
+         lower quartile=\myqfirst,
+         upper quartile=\myqthird,
+         median=\mymedian,
+         average=\myavg,
+         every  box/.style={draw=black,fill=yellow},
+      }
+      ]coordinates {};}
+    \temp
+}
+\end{axis}
+\end{tikzpicture}
+
+% Document header and footer:
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,LO]{ROC Analysis}
+\fancyhead[RE,RO]{Author, 2024/07/08}
+\fancyfoot[RE,RO]{\thepage}
+\renewcommand{\headrulewidth}{.2pt}
+\renewcommand{\footrulewidth}{.2pt}
+
+
+\end{document}

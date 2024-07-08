@@ -1,0 +1,30 @@
+<!-- templates/job_status.html -->
+{% extends "base.html" %}
+
+{% block title %}Job Status{% endblock %}
+
+{% block content %}
+<h3>Job Status</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Job ID</th>
+            <th>Analysis Name</th>
+            <th>Analysis Type</th>
+            <th>Created At</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for job in log_data %}
+        <tr>
+            <td><a href="{{ url_for('job_details', job_id=job['job_id']) }}">{{ job['job_id'] }}</a></td>
+            <td>{{ job['analysis_name'] }}</td>
+            <td>{{ job['analysis_type'] }}</td>
+            <td>{{ job['created_at'] }}</td>
+            <td>{{ job['status'] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

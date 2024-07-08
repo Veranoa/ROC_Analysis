@@ -4,9 +4,9 @@ import re
 import pandas as pd
 import string
 from openpyxl import load_workbook
-from ROCGenerator import LaTeXROCGenerator
+from ROCAveGenerator import LaTeXROCAveGenerator
 
-class LaTeXROCReaderGenerator(LaTeXROCGenerator):
+class LaTeXROCReaderGenerator(LaTeXROCAveGenerator):
     def __init__(self):
         super().__init__()
         self.reader_files = []
@@ -266,19 +266,22 @@ class LaTeXROCReaderGenerator(LaTeXROCGenerator):
                 group_commands += "}\n"
             group_commands += "}\n\n"
         return group_commands
-
-
-    def generate_document_body(self):
-        body = "% Document body:\n"
-        body += "\\begin{document}\n"
+    
+    def generate_document_body_commands(self):
+        body_commands = r""
         sheet_names = sorted(self.sheet_names)
         num_sheets = len(sheet_names)
         num_pages = (num_sheets + 11) // 12  # Calculate number of pages needed
         for page in range(num_pages):
-            body += f"\\MakeAfigure{{\\ROCplotPage{chr(65 + page)}}}\n"
-        body += "\\end{document}"
-        return body
+            body_commands += f"\\MakeAfigure{{\\ROCplotPage{chr(65 + page)}}}\n"
+        return body_commands
 
+    def generate_document_body(self):
+        body = r"\begin{document}"
+        body += self.generate_document_body_commands()
+        body += "\n"
+        body += r"\end{document}"
+        return body
 
     def generate_latex_document(self):
         latex_document = (
@@ -318,6 +321,16 @@ if __name__ == "__main__":
 
         type_names = ["t", "p"]
         group_names = [["QR", "MR"], ["QR", "MR"]]
+        
+        # reader_files = [
+        #     ["Data/QR_t_Data.xlsx", "Data/MR_t_Data.xlsx"],
+        #     ["Data/QR_p_Data.xlsx", "Data/MR_p_Data.xlsx"],
+        #     ["Data/QR_p_Data.xlsx", "Data/MR_p_Data.xlsx"]
+        # ]
+
+        # type_names = ["t", "p", "x"]
+        # group_names = [["QR", "MR"], ["QR", "MR"], ["QR", "MR"]]
+        
         generator = LaTeXROCReaderGenerator()
 
         generator.parse_reader_files(reader_files, type_names, group_names)
