@@ -1,6 +1,7 @@
 import sys
 import os
 import re
+import json
 import pandas as pd
 import string
 import subprocess
@@ -13,7 +14,7 @@ class LaTeXROCAveGenerator(LaTeXROCGenerator):
         super().__init__()
         self.ave_groups = []
         self.ave_index_map = {}
-        self.ave_colors = self.default_colors
+        self.ave_colors = []
         
         self.ave_data_commands = ""
         self.ave_color_definitions = ""
@@ -39,7 +40,8 @@ class LaTeXROCAveGenerator(LaTeXROCGenerator):
         self.ave_groups = groups
         self.ave_index_map = self.generate_ave_index_map()
         self.num_ave_colors = max(len(group_data) for _, group_data in self.ave_groups)
-        self.ave_colors = self.default_colors[:self.num_ave_colors]
+        if not self.ave_colors:
+            self.ave_colors = self.default_colors[:self.num_ave_colors]
         
         self.ave_data_commands = self.generate_ave_data_commands()
         self.ave_color_definitions = self.generate_ave_color_definitions()
@@ -205,7 +207,26 @@ class LaTeXROCAveGenerator(LaTeXROCGenerator):
         self.plot_fig_command = self.generate_plot_fig_command()
         self.plot_ave_group_commands = self.generate_ave_group_commands()
         self.header_footer = self.generate_header_footer()
-        
+    
+    def export_ave_settings(self):
+        settings = {
+            'page_format': self.page_format,
+            'plot_format': self.plot_format,
+            'ave_colors': self.ave_colors
+        }
+        return settings
+
+    def import_ave_settings(self, file_path):
+        with open(file_path, 'r') as file:
+            settings = json.load(file)
+            self.page_format = settings['page_format']
+            self.plot_format = settings['plot_format']
+            self.ave_colors = settings['ave_colors']
+            
+            # Update the dependent variables
+            self.document_header = self.generate_document_header()
+            self.make_figure_command = self.generate_make_figure_command()    
+            self.ave_color_definitions = self.generate_ave_color_definitions()
 
 if __name__ == "__main__":
     try:
@@ -221,11 +242,21 @@ if __name__ == "__main__":
         # Modify colors or header information as needed
         generator.set_header_info(author="Author", name="ROC Average Analysis")
 
-        # Generate full document
-        latex_document = generator.generate_latex_document()
         output_dir = 'Output'
         os.makedirs(output_dir, exist_ok=True)
         
+        # Generate full document
+        export_file_path = os.path.join(output_dir, 'average_settings.json')
+        # generator.export_ave_settings(export_file_path)
+        # with open(export_file_path, 'w') as file:
+        #     json.dump(generator.export_ave_settings(), file, indent=4)
+
+        generator.import_ave_settings(export_file_path)
+        new_export_file_path = os.path.join(output_dir, 'new_average_settings.json')
+        with open(new_export_file_path, 'w') as file:
+            json.dump(generator.export_ave_settings(), file, indent=4)
+        
+        latex_document = generator.generate_latex_document()
         doc_file_path = os.path.join(output_dir, 'ROC_average_analysis.tex')
         with open(doc_file_path, 'w') as f:
             f.write(latex_document)

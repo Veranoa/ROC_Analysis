@@ -2,6 +2,7 @@ import sys
 import os
 import string
 import pandas as pd
+import json
 from openpyxl import load_workbook
 from ROCReaderGenerator import LaTeXROCReaderGenerator 
 
@@ -9,7 +10,7 @@ class LaTeXROCReaderAveGenerator(LaTeXROCReaderGenerator):
     def __init__(self):
         super().__init__()
         self.reader_files = []
-        self.readerave_colors = []
+        self.readerave_colors = ['blue', 'red']
         
         self.readerave_color_definitions = ""
         self.readerave_plot_frame_commands = ""
@@ -79,9 +80,9 @@ class LaTeXROCReaderAveGenerator(LaTeXROCReaderGenerator):
 
     def generate_readerave_color_definitions(self):
         color_definitions = "% Define ROC curve colors:\n"
-        color_definitions += r"""
-\definecolor{COLORo0}{named}{blue}
-\definecolor{COLORo1}{named}{red}
+        color_definitions += f"""
+\\definecolor{{COLORo0}}{{named}}{{{self.readerave_colors[0]}}}
+\\definecolor{{COLORo1}}{{named}}{{{self.readerave_colors[1]}}}
 
 """
         return color_definitions
@@ -211,6 +212,26 @@ yticklabels={{, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0}},
         )
         return latex_document
     
+    def export_readerave_settings(self):
+        settings = {
+            'page_format': self.page_format,
+            'plot_format': self.plot_format,
+            'readerave_colors': self.readerave_colors
+        }
+        return settings
+
+    def import_readerave_settings(self, file_path):
+        with open(file_path, 'r') as file:
+            settings = json.load(file)
+            self.page_format = settings['page_format']
+            self.plot_format = settings['plot_format']
+            self.readerave_colors = settings['readerave_colors']
+            
+            # Update the dependent variables
+            self.document_header = self.generate_document_header()
+            self.make_figure_command = self.generate_make_figure_command()    
+            self.reader_color_definitions = self.generate_reader_color_definitions()
+    
 if __name__ == "__main__":
     try:
         ave_files = ["Data/NP_average.xlsx", "Data/PBN_average.xlsx"]
@@ -245,12 +266,22 @@ if __name__ == "__main__":
         # generator.set_header_info(author="New Author")
 
         # generator.set_page_format(margin=".75in", top_margin=".8in")
-
+        output_dir = 'Output'
+        os.makedirs(output_dir, exist_ok=True)
+        
+        export_file_path = os.path.join(output_dir, 'readerave_settings.json')
+        with open(export_file_path, 'w') as file:
+            json.dump(generator.export_readerave_settings(), file, indent=4)
+        # generator.import_readerave_settings(export_file_path)
+        
+        # new_export_file_path = os.path.join(output_dir, 'new_readerave_settings.json')
+        # generator.export_readerave_settings(new_export_file_path)
+        
         latex_document = generator.generate_latex_document()
         with open('Output/ROC_reader_ave_analysis.tex', 'w') as f:
             f.write(latex_document)
             
-        image = generator.generate_image_document()
+        image = generator.generate_latex_image()
         with open('Output/ROC_reader_ave_image.tex', 'w') as f:
             f.write(image)
             

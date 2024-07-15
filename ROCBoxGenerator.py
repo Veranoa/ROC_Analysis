@@ -2,6 +2,7 @@ import sys
 import os
 import re
 import pandas as pd
+import json
 import string
 import subprocess
 from datetime import datetime
@@ -145,6 +146,16 @@ if __name__ == "__main__":
     latex_document = box_generator.generate_latex_document()
     image_document = box_generator.generate_latex_image()
 
+    output_dir = 'Output'
+    os.makedirs(output_dir, exist_ok=True)
+        
+    export_file_path = os.path.join(output_dir, 'box_settings.json')
+    box_generator.export_settings(export_file_path)
+    # box_generator.import_settings(export_file_path)
+        
+    # new_export_file_path = os.path.join(output_dir, 'new_settings.json')
+    # box_generator.export_settings(new_export_file_path)
+        
     # Optionally, save the output to a .tex file
     with open('Output/ROC_Box_analysis.tex', 'w') as file:
         file.write(latex_document)

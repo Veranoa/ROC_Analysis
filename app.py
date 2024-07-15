@@ -179,7 +179,15 @@ def compile_tex():
     tex_file_path = os.path.join(DATA_DIR, job_id, 'output', filename)
     if not os.path.exists(tex_file_path):
         return jsonify({'error': 'File not found'}), 404
-
+    
+    if filename in ['ROC_reader_image.tex', 'ROC_average_image.tex']:
+        return jsonify({f'error': 'Form is not supportted, please use other methods to generate {filename} file.'}), 400
+    
+    # Check the file size (number of lines)
+    with open(tex_file_path, 'r') as file:
+        lines = file.readlines()
+        if len(lines) > 8000:
+            return jsonify({'error': 'File too large, Please use other methods to generate PDF file.'}), 400
     pdf_file_path = tex_file_path.replace('.tex', '.pdf')
 
     # Copy the static/laton file to the job_id/output directory
@@ -480,7 +488,7 @@ def process_average_and_reader_analysis(job_id, author_name, analysis_name, aver
     with open(doc_file_path, 'w') as f:
         f.write(latex_document)
 
-    latex_image = generator.generate_image_document()
+    latex_image = generator.generate_latex_image()
     image_file_path = os.path.join(output_folder, 'ROC_reader_ave_image.tex')
     with open(image_file_path, 'w') as f:
         f.write(latex_image)

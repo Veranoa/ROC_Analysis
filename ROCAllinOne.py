@@ -1,6 +1,7 @@
 import sys
 import os
 import re
+import json
 import pandas as pd
 import string
 from openpyxl import load_workbook
@@ -159,6 +160,25 @@ class LaTeXROCReport(LaTeXROCGenerator):
             "\\end{document}"
         )
         return latex_document
+    
+    def export_all_settings(self):
+        all_settings = {
+            'ave': self.roc_ave_generator.export_ave_settings(),
+            'reader': self.roc_reader_generator.export_reader_settings(),
+            'readerave': self.roc_reader_ave_generator.export_readerave_settings(),
+            'box': self.roc_box_generator.export_settings()
+        }
+        return all_settings
+
+    def import_all_settings(self, file_path):
+        with open(file_path, 'r') as file:
+            settings = json.load(file)
+            self.roc_ave_generator.import_settings(settings['ave'])
+            self.roc_reader_generator.import_settings(settings['reader'])
+            self.roc_reader_ave_generator.import_settings(settings['readerave'])
+            self.roc_box_generator.import_settings(settings['box'])
+
+        
 
 
 if __name__ == "__main__":
@@ -177,6 +197,16 @@ if __name__ == "__main__":
         
         generator = LaTeXROCReport()
         generator.setup(box_file=box_file, ave_files=ave_files, reader_files=reader_files, ave_names=ave_names, type_names=type_names, group_names=group_names)
+        
+        settings = generator.export_all_settings()
+        
+        output_dir = 'Output'
+        os.makedirs(output_dir, exist_ok=True)
+        
+        # Generate full document
+        export_file_path = os.path.join(output_dir, 'all_settings.json')
+        with open(export_file_path, 'w') as file:
+            json.dump(settings, file, indent=4)
         
         latex_document = generator.generate_latex_document()
         with open('Output/ROC_analysis.tex', 'w') as f:

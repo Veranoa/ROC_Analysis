@@ -3,6 +3,7 @@ import os
 import re
 import pandas as pd
 import string
+import json
 from openpyxl import load_workbook
 from ROCAveGenerator import LaTeXROCAveGenerator
 
@@ -63,7 +64,8 @@ class LaTeXROCReaderGenerator(LaTeXROCAveGenerator):
         self.reader_index_map = self.generate_reader_index_map()
 
         max_files_per_type = max(len(methods) for _, methods in self.reader_groups)
-        self.reader_colors = [self.default_colors[:max_files_per_type]] * len(type_names)
+        if not self.reader_colors:
+            self.reader_colors = [self.default_colors[:max_files_per_type]] * len(type_names)
         self.reader_marks = [self.default_styles[:max_files_per_type]] * len(type_names)
 
         self.reader_data_commands = self.generate_reader_data_commands()
@@ -298,7 +300,7 @@ class LaTeXROCReaderGenerator(LaTeXROCAveGenerator):
         )
         return latex_document
 
-    def generate_image_document(self):
+    def generate_latex_image(self):
         latex_document = (
             self.generate_image_header() +
             self.reader_data_commands +
@@ -311,6 +313,26 @@ class LaTeXROCReaderGenerator(LaTeXROCAveGenerator):
             self.generate_document_body()
         )
         return latex_document
+
+    def export_reader_settings(self):
+        settings = {
+            'page_format': self.page_format,
+            'plot_format': self.plot_format,
+            'reader_colors': self.reader_colors
+        }
+        return settings
+
+    def import_reader_settings(self, file_path):
+        with open(file_path, 'r') as file:
+            settings = json.load(file)
+            self.page_format = settings['page_format']
+            self.plot_format = settings['plot_format']
+            self.reader_colors = settings['reader_colors']
+            
+            # Update the dependent variables
+            self.document_header = self.generate_document_header()
+            self.make_figure_command = self.generate_make_figure_command()    
+            self.reader_color_definitions = self.generate_reader_color_definitions()
 
 if __name__ == "__main__":
     try:
@@ -351,7 +373,7 @@ if __name__ == "__main__":
         with open(doc_file_path, 'w') as f:
             f.write(latex_document)
 
-        image = generator.generate_image_document()
+        image = generator.generate_latex_image()
         image_file_path = os.path.join(output_dir, 'ROC_reader_image.tex')
         with open(image_file_path, 'w') as f:
             f.write(image)

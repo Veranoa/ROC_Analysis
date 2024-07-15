@@ -6,6 +6,7 @@ import string
 import subprocess
 import itertools
 from datetime import datetime
+import json
 
 class LaTeXROCGenerator:
     def __init__(self):
@@ -82,7 +83,7 @@ bottom={bottom_margin}, footskip={footskip}]{{geometry}}
 
     def generate_image_header(self):
         return """
-\documentclass{{standalone}}
+\\documentclass{{standalone}}
 \\usepackage{{pgfplots}}
 \\pgfplotsset{{compat=1.17}}
 \\usepgfplotslibrary{{groupplots}}
@@ -177,8 +178,30 @@ bottom={bottom_margin}, footskip={footskip}]{{geometry}}
                     self.plot_format[key].update(value)
                 else:
                     self.plot_format[key] = value
-        self.make_figure_command = self.generate_make_figure_command()             
+        self.make_figure_command = self.generate_make_figure_command() 
+        
+    def export_settings(self):
+        """
+        Exports the current settings of page_format, and plot_format to settings.
+        """
+        settings = {
+            'page_format': self.page_format,
+            'plot_format': self.plot_format
+        }
+        return settings
 
+    def import_settings(self, file_path):
+        """
+        Imports settings from a JSON file to page_format, and plot_format.
+        """
+        with open(file_path, 'r') as file:
+            settings = json.load(file)
+            self.page_format = settings['page_format']
+            self.plot_format = settings['plot_format']
+            # Update the dependent variables
+            self.document_header = self.generate_document_header()
+            self.make_figure_command = self.generate_make_figure_command()
+            
     def generate_latex_document(self):
         pass
     
