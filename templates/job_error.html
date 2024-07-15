@@ -1,0 +1,12 @@
+<!-- templates/job_error.html -->
+{% extends "base.html" %}
+
+{% block title %}Job Error Details{% endblock %}
+
+{% block content %}
+<h3>Job {{ job_id }} has failed.</h3>
+<h4>Error Details for Job {{ job_id }}</h4>
+
+<p>{{ error_message }}</p>
+<a href="{{ url_for('job_status') }}">Back to Job Status</a>
+{% endblock %}

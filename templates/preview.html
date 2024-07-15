@@ -4,9 +4,11 @@
 {% block title %}Preview TeX Files{% endblock %}
 
 {% block content %}
-<h3>Preview TeX Files</h3>
-<div id="texPreview" class="form-inline">
-    <select id="texFileSelect" class="form-control">
+<h3 style="margin-top: 200px;">Job Preview for {{ job_id }}</h3>
+<h4>Generated TeX Files</h4>
+<a>We only provide limited preview access for small files. If the webpage preview failed, please try again or use other Tex to PDF tools. </a>
+<div id="texPreview" class="form-inline" >
+    <select id="texFileSelect" class="form-control" style="margin-top: 15px;">
         <option value="">Select a TeX file to preview</option>
         {% for tex_file in tex_files %}
             <option value="{{ tex_file }}">{{ tex_file }}</option>
@@ -18,7 +20,7 @@
     <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0;"></div>
 </div>
 <div id="previewContainer" style="margin-top: 20px;">
-    <iframe id="previewFrame" src="about:blank" style="width: 100%; height: 600px; border: 1px solid #ddd;"></iframe>
+    <iframe id="previewFrame" src="about:blank" style="width: 100%; height: 500px; border: 1px solid #ddd;"></iframe>
 </div>
 
 {% if not tex_files %}
@@ -35,7 +37,7 @@
 
         if (selectedFile) {
             // Check if the PDF already exists
-            const pdfUrl = `{{ url_for('serve_tex_file', filename='') }}${selectedFile.replace('.tex', '.pdf')}`;
+            const pdfUrl = `{{ url_for('serve_tex_file', job_id=job_id, filename='') }}${selectedFile.replace('.tex', '.pdf')}`;
             fetch(pdfUrl, { method: 'HEAD' }).then(response => {
                 if (response.ok) {
                     previewFrame.src = pdfUrl;
@@ -65,6 +67,7 @@
         progressBar.style.width = '0';
 
         const formData = new FormData();
+        formData.append('job_id', '{{ job_id }}');
         formData.append('filename', selectedFile);
 
         fetch('{{ url_for("compile_tex") }}', {

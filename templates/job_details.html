@@ -1,15 +1,29 @@
-<!-- templates/job_details.html -->
 {% extends "base.html" %}
 
 {% block title %}Job Details{% endblock %}
 
 {% block content %}
-
-<h3>Job Details for {{ job_id }}</h3>
-<h4>Generated TeX Files</h4>
-<ul>
-    {% for file in tex_files %}
-    <li><a href="{{ url_for('serve_tex_file', job_id=job_id, filename=file) }}">{{ file }}</a></li>
-    {% endfor %}
-</ul>
+<div class="container">
+    <h3>Job Details for {{ job_id }}</h3>
+    <h4>Generated TeX Files</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">File Name</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for file in tex_files %}
+            <tr>
+                <td>{{ file }}</td>
+                <td>
+                    <a class="btn btn-primary btn-sm" href="{{ url_for('preview', job_id=job_id) }}" role="button">Preview</a>
+                    <a class="btn btn-secondary btn-sm" href="{{ url_for('serve_tex_file', job_id=job_id, filename=file) }}" role="button" download>Download</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

@@ -1,0 +1,16 @@
+<!-- templates/job_started.html -->
+{% extends "base.html" %}
+
+{% block title %}Job Started{% endblock %}
+
+{% block content %}
+<h3>Your job has been started!</h3>
+<p>You will be redirected to the job status page shortly.</p>
+<a href="{{ url_for('job_status') }}">Go to Job Status</a>
+
+<script>
+    setTimeout(function(){
+        window.location.href = "{{ url_for('job_status') }}";
+    }, 3000); // Redirect after 3 seconds
+</script>
+{% endblock %}

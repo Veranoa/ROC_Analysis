@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block body %}
+<!-- Page Header -->
+<header class="intro-header">
+  <div class="header-image"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-10 col-md-offset-1" margin-top="10px">
+        <div class="site-heading">
+          <h1>ROC Analysis Service</h1>
+          <hr class="small">
+          <h2>Accurate, Efficient, Reliable</h2>
+          <br />
+          <a class="btn btn-primary btn-lg" href="{{ url_for('analysis') }}">Use Data Analysis</a>
+          <a class="btn btn-secondary btn-lg" href="{{ url_for('plotting') }}">Generate Image</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+{% endblock %}

@@ -1,4 +1,5 @@
 <!-- templates/job_status.html -->
+
 {% extends "base.html" %}
 
 {% block title %}Job Status{% endblock %}
@@ -18,7 +19,13 @@
     <tbody>
         {% for job in log_data %}
         <tr>
-            <td><a href="{{ url_for('job_details', job_id=job['job_id']) }}">{{ job['job_id'] }}</a></td>
+            <td>
+                {% if job['status'] == 'FAILED' %}
+                    <a href="{{ url_for('job_error', job_id=job['job_id']) }}">{{ job['job_id'] }}</a>
+                {% else %}
+                    <a href="{{ url_for('job_details', job_id=job['job_id']) }}">{{ job['job_id'] }}</a>
+                {% endif %}
+            </td>
             <td>{{ job['analysis_name'] }}</td>
             <td>{{ job['analysis_type'] }}</td>
             <td>{{ job['created_at'] }}</td>

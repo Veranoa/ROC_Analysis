@@ -1,13 +1,13 @@
-<!-- templates/upload.html -->
+<!-- templates/plotting.html -->
 {% extends "base.html" %}
 
-{% block title %}Upload Files{% endblock %}
+{% block title %}Plotting{% endblock %}
 
 {% block content %}
-<h3>File Upload and Annotation</h3>
+<h3>Plotting File Upload and Annotation</h3>
 
 <!-- Form for uploading files -->
-<form id="uploadForm" action="{{ url_for('submit') }}" method="post" enctype="multipart/form-data">
+<form id="plottingForm" action="{{ url_for('submit') }}" method="post" enctype="multipart/form-data">
     
     <!-- User details -->
     <div class="form-group">
@@ -70,7 +70,7 @@
         <h4>Box Plot File (Optional)</h4>
         <div class="form-group">
             <label for="boxplotFile">Upload Box Plot File:</label>
-            <input type="file" id="boxplotFile" name="boxplotFile">
+            <input type="file" id="boxplotFile" name="boxplotFile" accept=".csv">
         </div>
     </div>
 
@@ -101,6 +101,7 @@
                 boxplotSection.style.display = 'none';
                 setRequiredAttributes(readersSection, true);
                 setRequiredAttributes(averageSection, false);
+                updateReadersSection('reader');
                 break;
             case 'both':
                 averageSection.style.display = 'block';
@@ -108,6 +109,7 @@
                 boxplotSection.style.display = 'block';
                 setRequiredAttributes(readersSection, true);
                 setRequiredAttributes(averageSection, true);
+                updateReadersSection('both');
                 break;
             default:
                 averageSection.style.display = 'none';
@@ -130,8 +132,18 @@
         });
     }
 
+    function updateReadersSection(mode) {
+        const readersRows = document.querySelectorAll('#readersTable tbody tr');
+        readersRows.forEach(row => {
+            const groupCell = row.cells[3];
+            groupCell.innerHTML = mode === 'both' 
+                ? `<select name="readersGroup[]">${getReadersGroupOptions()}</select>` 
+                : `<input type="text" name="readersGroup[]" oninput="validateAnnotation(this);" required>`;
+        });
+    }
+
     // JavaScript to disable the submit button after form submission
-    document.getElementById('uploadForm').addEventListener('submit', function() {
+    document.getElementById('plottingForm').addEventListener('submit', function() {
         const submitButton = document.getElementById('submitButton');
         submitButton.disabled = true;
         submitButton.textContent = 'Submitting...'; // Optional: change button text to indicate submission
@@ -146,12 +158,10 @@
             <td><input type="file" name="averageFile[]" accept=".xlsx" required></td>
             <td>
                 <select name="averageFileType[]">
-                    <option value="xlsx">XLSX</option>
-                    <option value="txt">TXT</option>
-                    <option value="csv">CSV</option>                
+                    <option value="xlsx">XLSX</option>       
                 </select>
             </td>
-            <td><input type="text" name="averageFileAnnotation[]" oninput="updateReadersGroups()" required></td>
+            <td><input type="text" name="averageFileAnnotation[]" oninput="validateAnnotation(this); updateReadersGroups()" required></td>
             <td><button type="button" class="btn-default" onclick="deleteRow(this)">Delete</button></td>
         `;
         averageFileCount++;
@@ -162,20 +172,31 @@
         const table = document.getElementById('readersTable').getElementsByTagName('tbody')[0];
         const newRow = table.insertRow();
         newRow.innerHTML = `
-            <td><input type="file" name="readersFile[]" accept=".txt,.csv,.xlsx" required></td>
+            <td><input type="file" name="readersFile[]" accept=".xlsx" required></td>
             <td>
                 <select name="readersFileType[]">
-                    <option value="txt">TXT</option>
-                    <option value="csv">CSV</option>
                     <option value="xlsx">XLSX</option>
                 </select>
             </td>
-            <td><input type="text" name="readersFileAnnotation[]" required></td>
+            <td><input type="text" name="readersFileAnnotation[]" oninput="validateAnnotation(this);" required></td>
             <td>
-                <select name="readersGroup[]">${getReadersGroupOptions()}</select>
+                ${document.getElementById('analysisType').value === 'both'
+                    ? `<select name="readersGroup[]">${getReadersGroupOptions()}</select>`
+                    : `<input type="text" name="readersGroup[]" oninput="validateAnnotation(this);" required>`
+                }
             </td>
             <td><button type="button" class="btn-default" onclick="deleteRow(this)">Delete</button></td>
         `;
+    }
+
+    function validateAnnotation(input) {
+        const value = input.value;
+        const isValid = /^[a-zA-Z]+$/.test(value); // Only letters are allowed
+        if (!isValid) {
+            input.setCustomValidity('Only letters are allowed. No numbers, underscores, or spaces.');
+        } else {
+            input.setCustomValidity('');
+        }
     }
 
     function deleteRow(button) {
@@ -198,7 +219,7 @@
         const averageAnnotations = document.querySelectorAll('input[name="averageFileAnnotation[]"]');
         let options = '';
         averageAnnotations.forEach((input, index) => {
-            const annotation = input.value || `Group ${index + 1}`;
+            const annotation = input.value || `Group${index + 1}`;
             options += `<option value="${annotation}">${annotation}</option>`;
         });
         return options;
