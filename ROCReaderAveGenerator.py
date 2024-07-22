@@ -220,18 +220,19 @@ yticklabels={{, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0}},
         }
         return settings
 
-    def import_readerave_settings(self, file_path):
-        with open(file_path, 'r') as file:
-            settings = json.load(file)
-            self.page_format = settings['page_format']
-            self.plot_format = settings['plot_format']
-            self.readerave_colors = settings['readerave_colors']
+    def import_readerave_settings(self, settings):
+        if isinstance(settings, str):
+            with open(settings, 'r') as file:
+                settings = json.load(file)
+        self.page_format = settings['page_format']
+        self.plot_format = settings['plot_format']
+        self.readerave_colors = settings['readerave_colors']
             
-            # Update the dependent variables
-            self.document_header = self.generate_document_header()
-            self.make_figure_command = self.generate_make_figure_command()    
-            self.reader_color_definitions = self.generate_reader_color_definitions()
-    
+        # Update the dependent variables
+        self.document_header = self.generate_document_header()
+        self.make_figure_command = self.generate_make_figure_command()    
+        self.readerave_color_definitions = self.generate_readerave_color_definitions()
+           
 if __name__ == "__main__":
     try:
         ave_files = ["Data/NP_average.xlsx", "Data/PBN_average.xlsx"]

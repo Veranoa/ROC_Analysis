@@ -7,6 +7,7 @@ from datetime import datetime
 import subprocess
 from threading import Thread
 import logging
+from werkzeug.datastructures import FileStorage
 
 from config import Config
 from ROCAveGenerator import LaTeXROCAveGenerator
@@ -26,7 +27,12 @@ if os.path.exists(SETTINGS_FILE):
         settings = json.load(f)
         DATA_DIR = settings.get('data_dir', DATA_DIR)
         
-OUTPUT_TEX_DIR = 'output_tex_files'
+# Dictionary to map analysis types to their default styling files
+DEFAULT_STYLING_FILES = {
+    'average': 'average_settings.json',
+    'reader': 'reader_settings.json',
+    'both': 'all_settings.json',
+}
 
 logging.basicConfig(filename=os.path.join(Config.LOG_FOLDER, 'server.log'), level=logging.INFO,
                     format='%(asctime)s %(levelname)s:%(message)s')
@@ -38,13 +44,144 @@ app.secret_key = 'e1221313479442f320168216451c78a2'
 def home():
     return render_template('home.html')
 
+
 @app.route('/plotting')
 def plotting():
     return render_template('plotting.html')
 
+
 @app.route('/analysis')
 def analysis():
     return render_template('analysis.html')
+
+def load_jobs(status_filter=None):
+    log_path = os.path.join(DATA_DIR, 'logfile.json')
+    if os.path.exists(log_path):
+        with open(log_path, 'r') as f:
+            try:
+                jobs = json.load(f)
+                if status_filter:
+                    jobs = [job for job in jobs if job.get('status') == status_filter]
+                return jobs
+            except json.JSONDecodeError:
+                return []
+    return []
+
+
+@app.route('/styling')
+def styling():
+    jobs = load_jobs(status_filter='COMPLETED')
+    return render_template('styling.html', jobs=jobs)
+
+
+@app.route('/download_styling/<job_id>')
+def download_styling(job_id):
+    job_dir = os.path.join(DATA_DIR, job_id)
+    temp_folder = os.path.join(job_dir, 'temp')
+    style_folder = os.path.join(job_dir, 'style')
+
+    # Load form data to determine the analysis type
+    form_data_path = os.path.join(temp_folder, 'form_data.json')
+    if os.path.exists(form_data_path):
+        with open(form_data_path, 'r') as file:
+            form_data = json.load(file)
+        analysis_type = form_data.get('analysis_type')
+        styling_filename = DEFAULT_STYLING_FILES.get(analysis_type)
+        print(analysis_type)
+        print(styling_filename)
+    else:
+        return "Form data file not found", 404
+
+    styling_file_path = os.path.join(style_folder, styling_filename)
+    if os.path.exists(styling_file_path):
+        return send_file(styling_file_path, as_attachment=True)
+    else:
+        return "Styling file not found", 404
+
+@app.route('/upload_styling', methods=['POST'])
+def upload_styling():
+    job_id = request.form['job_id']
+    if 'stylingFile' not in request.files:
+        flash('No file part', 'danger')
+        return redirect(request.url)
+    file = request.files['stylingFile']
+    if file.filename == '':
+        flash('No selected file', 'danger')
+        return redirect(request.url)
+    
+    job_dir = os.path.join(DATA_DIR, job_id)
+    temp_dir = os.path.join(job_dir, 'temp')
+    os.makedirs(temp_dir, exist_ok=True)
+    file_path = os.path.join(temp_dir, 'new_styling.json')
+    file.save(file_path)
+
+    # Store the uploaded file name
+    with open(os.path.join(temp_dir, 'uploaded_styling_file.json'), 'w') as f:
+        json.dump({'filename': 'new_styling.json'}, f)
+
+    flash("Styling file uploaded successfully! Click 'Re-run Analysis' to start the new analysis.", "success")
+    return jsonify({'message': 'Styling file uploaded successfully!', 'filename': file.filename})
+
+@app.route('/rerun_analysis/<job_id>', methods=['POST'])
+def rerun_analysis(job_id):
+    job_dir = os.path.join(DATA_DIR, job_id)
+    temp_dir = os.path.join(job_dir, 'temp')
+
+    form_data_path = os.path.join(temp_dir, 'form_data.json')
+    with open(form_data_path, 'r') as f:
+        form_data = json.load(f)
+
+    new_job_id = str(uuid.uuid4())
+    new_job_dir = os.path.join(DATA_DIR, new_job_id)
+    os.makedirs(new_job_dir, exist_ok=True)
+    shutil.copytree(os.path.join(job_dir, 'input'), os.path.join(new_job_dir, 'input'), dirs_exist_ok=True)
+    shutil.copytree(temp_dir, os.path.join(new_job_dir, 'temp'), dirs_exist_ok=True)
+
+    # Use the stored styling file name
+    styling_file_path = os.path.join(new_job_dir, 'temp', 'new_styling.json')
+    with open(os.path.join(temp_dir, 'uploaded_styling_file.json'), 'r') as f:
+        styling_file_info = json.load(f)
+        styling_file_path = os.path.join(new_job_dir, 'temp', styling_file_info['filename'])
+
+    average_file_objects = []
+    average_folder = os.path.join(new_job_dir, 'input', 'ave')
+    if os.path.exists(average_folder):
+        for filename in os.listdir(average_folder):
+            file_path = os.path.join(average_folder, filename)
+            average_file_objects.append(FileStorage(open(file_path, 'rb'), filename=filename))
+
+    reader_file_objects = []
+    reader_folder = os.path.join(new_job_dir, 'input', 'reader')
+    if os.path.exists(reader_folder):
+        for filename in os.listdir(reader_folder):
+            file_path = os.path.join(reader_folder, filename)
+            reader_file_objects.append(FileStorage(open(file_path, 'rb'), filename=filename))
+
+    boxplot_file_object = None
+    box_folder = os.path.join(new_job_dir, 'input', 'box')
+    if form_data.get('boxplot_file'):
+        boxplot_file_path = os.path.join(box_folder, form_data['boxplot_file'])
+        if os.path.exists(boxplot_file_path):
+            boxplot_file_object = FileStorage(open(boxplot_file_path, 'rb'), filename=form_data['boxplot_file'])
+
+    thread = Thread(target=process_files_and_update_log, args=(
+        new_job_id,
+        form_data['name'],
+        form_data['analysis_name'],
+        form_data['analysis_type'],
+        average_file_objects,
+        reader_file_objects,
+        boxplot_file_object,
+        form_data['average_annotations'],
+        form_data['readers_annotations'],
+        form_data['readers_groups'],
+        styling_file_path
+    ))
+    thread.start()
+
+    flash(f"New analysis job {new_job_id} has been started successfully!", "success")
+    return redirect(url_for('styling'))
+
 
 @app.route('/submit', methods=['POST'])
 def submit():
@@ -114,6 +251,7 @@ def submit():
     
     return render_template('job_started.html')
 
+
 @app.route('/job_status')
 def job_status():
     log_path = os.path.join(DATA_DIR, 'logfile.json')
@@ -136,6 +274,7 @@ def job_details(job_id):
     tex_files = [f for f in os.listdir(output_dir) if f.endswith('.tex')]
     return render_template('job_details.html', job_id=job_id, tex_files=tex_files)
 
+
 @app.route('/job_error/<job_id>')
 def job_error(job_id):
     log_path = os.path.join(DATA_DIR, 'logfile.json')
@@ -155,11 +294,13 @@ def job_error(job_id):
     flash(error_message, 'danger')
     return render_template('job_error.html', job_id=job_id)
 
+
 @app.route('/preview/<job_id>')
 def preview(job_id):
     job_dir = os.path.join(DATA_DIR, job_id, 'output')
     tex_files = [f for f in os.listdir(job_dir) if f.endswith('.tex')]
     return render_template('preview.html', tex_files=tex_files, job_id=job_id)
+
 
 @app.route('/static/tex_files/<job_id>/<filename>')
 def serve_tex_file(job_id, filename):
@@ -168,6 +309,7 @@ def serve_tex_file(job_id, filename):
         return send_file(file_path)
     else:
         return "File not found", 404
+
 
 @app.route('/compile_tex', methods=['POST'])
 def compile_tex():
@@ -222,9 +364,10 @@ def settings():
         # Save settings
         settings = {'data_dir': DATA_DIR}
         with open(SETTINGS_FILE, 'w') as f:
-            json.dump(settings, f)
+            json.dump(settings, f, indent=4)
         return redirect(url_for('settings'))
     return render_template('settings.html', data_dir=DATA_DIR)
+
 
 @app.route('/save_settings', methods=['POST'])
 def save_settings():
@@ -234,12 +377,15 @@ def save_settings():
     # Save settings
     settings = {'data_dir': DATA_DIR}
     with open(SETTINGS_FILE, 'w') as f:
-        json.dump(settings, f)
+        json.dump(settings, f, indent=4)
     return redirect(url_for('settings'))
+
 
 def process_files_and_update_log(job_id, name, analysis_name, analysis_type, 
                                  average_files, readers_files, boxplot_file,
-                                 average_annotations, readers_annotations, readers_groups):
+                                 average_annotations, readers_annotations, readers_groups,
+                                 style_path=None
+                                 ):
     job_dir = os.path.join(DATA_DIR, job_id)
   
     # Save form data as JSON
@@ -254,10 +400,11 @@ def process_files_and_update_log(job_id, name, analysis_name, analysis_type,
         'boxplot_file': boxplot_file.filename if boxplot_file else None,
         'average_annotations': average_annotations,
         'readers_annotations': readers_annotations,
-        'readers_groups': readers_groups
+        'readers_groups': readers_groups,
+        'style_path': style_path
     }
     with open(os.path.join(job_dir, 'temp', 'form_data.json'), 'w') as f:
-        json.dump(form_data, f)
+        json.dump(form_data, f, indent=4)
 
     # Log job creation
     log_entry = {
@@ -280,10 +427,10 @@ def process_files_and_update_log(job_id, name, analysis_name, analysis_type,
 
     log_data.append(log_entry)
     with open(log_path, 'w') as f:
-        json.dump(log_data, f)
+        json.dump(log_data, f, indent=4)
     
     logging.info(f"Job created: {log_entry}")
-        
+    
     # Start the analysis process
     try:
         update_user_log_status(job_id, 'RUNNING')
@@ -291,11 +438,11 @@ def process_files_and_update_log(job_id, name, analysis_name, analysis_type,
 
         # Assuming you have these functions defined for your analysis
         if analysis_type == 'average':
-            result = process_average_analysis(job_id, name, analysis_name, average_files, average_annotations)
+            result = process_average_analysis(job_id, name, analysis_name, average_files, average_annotations, style_path)
         elif analysis_type == 'reader':
-            result = process_reader_analysis(job_id, name, analysis_name, readers_files, readers_annotations, readers_groups)
+            result = process_reader_analysis(job_id, name, analysis_name, readers_files, readers_annotations, readers_groups, style_path)
         elif analysis_type == 'both':
-            result = process_average_and_reader_analysis(job_id, name, analysis_name, average_files, readers_files, boxplot_file, average_annotations, readers_annotations, readers_groups)
+            result = process_average_and_reader_analysis(job_id, name, analysis_name, average_files, readers_files, boxplot_file, average_annotations, readers_annotations, readers_groups, style_path)
         else:
             error_message = 'Unknown analysis type'
             update_user_log_status(job_id, 'FAILED', error_message=error_message)
@@ -333,9 +480,10 @@ def update_user_log_status(job_id, status, error_message=None):
             break
 
     with open(log_path, 'w') as f:
-        json.dump(log_data, f)
+        json.dump(log_data, f, indent=4)
     
     logging.info(f'Updated job status: job_id={job_id}, status={status}, error_message={error_message}')
+
 
 def update_user_log_file(user_log):
     log_path = os.path.join(DATA_DIR, 'logfile.json')
@@ -370,15 +518,19 @@ def update_user_log_file(user_log):
     with open(log_path, 'w') as log_file:
         log_file.write("\n".join(updated_logs) + "\n")
 
-def process_average_analysis(job_id, author_name, analysis_name, average_files, average_annotations):
+
+def process_average_analysis(job_id, author_name, analysis_name, average_files, average_annotations, style=None):
     job_dir = os.path.join(DATA_DIR, job_id)
     input_folder = os.path.join(job_dir, 'input')
     output_folder = os.path.join(job_dir, 'output')
+    style_folder = os.path.join(job_dir, 'style')
+    
     os.makedirs(output_folder, exist_ok=True)
+    os.makedirs(style_folder, exist_ok=True)
     
     ave_folder = os.path.join(input_folder, 'ave')
     average_paths = [os.path.join(ave_folder, file.filename) for file in average_files]
-        
+
     generator = LaTeXROCAveGenerator()
     logging.info(f"Parsing Excel files {[file.filename for file in average_files]} with LaTeXROCAveGenerator engine")
     
@@ -388,6 +540,13 @@ def process_average_analysis(job_id, author_name, analysis_name, average_files, 
         generator.set_header_info(author=author_name)
     if analysis_name:
          generator.set_header_info(name=analysis_name)
+    
+    if style:
+        generator.import_ave_settings(style)
+
+    export_file_path = os.path.join(style_folder, 'average_settings.json')
+    with open(export_file_path, 'w') as file:
+        json.dump(generator.export_ave_settings(), file, indent=4)
     
     latex_document = generator.generate_latex_document()
     doc_file_path = os.path.join(output_folder, 'ROC_average_analysis.tex')
@@ -400,13 +559,16 @@ def process_average_analysis(job_id, author_name, analysis_name, average_files, 
         f.write(latex_image)
         
     return average_paths, average_annotations
-        
-        
-def process_reader_analysis(job_id, author_name, analysis_name, readers_files, readers_annotations, readers_groups):
+  
+             
+def process_reader_analysis(job_id, author_name, analysis_name, readers_files, readers_annotations, readers_groups, style=None):
     job_dir = os.path.join(DATA_DIR, job_id)
     input_folder = os.path.join(job_dir, 'input')
     output_folder = os.path.join(job_dir, 'output')
+    style_folder = os.path.join(job_dir, 'style')
+    
     os.makedirs(output_folder, exist_ok=True)
+    os.makedirs(style_folder, exist_ok=True)
     
     reader_folder = os.path.join(input_folder, 'reader')
     
@@ -434,10 +596,6 @@ def process_reader_analysis(job_id, author_name, analysis_name, readers_files, r
         reader_paths.append(reader_file_paths)
         group_names.append(annotations)
         
-    # print(reader_paths)
-    # print(group_names)
-    # print(type_names)
-    # Process the grouped files and annotations
     generator = LaTeXROCReaderGenerator()
     
     logging.info(f"Parsing Excel files {reader_paths} with LaTeXROCReaderGenerator engine")
@@ -450,6 +608,13 @@ def process_reader_analysis(job_id, author_name, analysis_name, readers_files, r
     
     generator.set_plot_format(legend_style={"at": "{(0.4,0.3)}"})
     generator.set_plot_format(x_ticklabels= "{,,}", y_ticklabels= "{,,}")
+    
+    if style:
+        generator.import_reader_settings(style)
+
+    export_file_path = os.path.join(style_folder, 'reader_settings.json')
+    with open(export_file_path, 'w') as file:
+        json.dump(generator.export_reader_settings(), file, indent=4)
     
     latex_document = generator.generate_latex_document()
     doc_file_path = os.path.join(output_folder, 'ROC_reader_analysis.tex')
@@ -464,31 +629,46 @@ def process_reader_analysis(job_id, author_name, analysis_name, readers_files, r
     return reader_paths, type_names, group_names
 
 
-def process_average_and_reader_analysis(job_id, author_name, analysis_name, average_files, readers_files, boxplot_file, average_annotations, readers_annotations, readers_groups):
+def process_average_and_reader_analysis(job_id, author_name, analysis_name, average_files, readers_files, boxplot_file, average_annotations, readers_annotations, readers_groups, style=None):
     job_dir = os.path.join(DATA_DIR, job_id)
     input_folder = os.path.join(job_dir, 'input')
     output_folder = os.path.join(job_dir, 'output')
+    style_folder = os.path.join(job_dir, 'style')
+    temp_folder = os.path.join(job_dir, 'temp')
+    
     os.makedirs(output_folder, exist_ok=True)
+    os.makedirs(style_folder, exist_ok=True)
     
     box_folder = os.path.join(input_folder, 'box')
     
-    average_paths, average_annotations = process_average_analysis(job_id, author_name, analysis_name, average_files, average_annotations)
-    reader_paths, type_names, group_names = process_reader_analysis(job_id, author_name, analysis_name, readers_files, readers_annotations, readers_groups)
+    settings = {}
     
-    generator = LaTeXROCReaderAveGenerator()
-    generator.parse_readerave_files(average_paths, reader_paths, ave_names=average_annotations, type_names=type_names, group_names=group_names)
+    if style:
+        with open(style, 'r') as file:
+            settings = json.load(file)
+    
+    average_paths, average_annotations = process_average_analysis(job_id, author_name, analysis_name, average_files, average_annotations, style=settings['ave'])
+    reader_paths, type_names, group_names = process_reader_analysis(job_id, author_name, analysis_name, readers_files, readers_annotations, readers_groups=settings['reader'])
+    
+    os.remove(os.path.join(style_folder, 'average_settings.json'))
+    os.remove(os.path.join(style_folder, 'reader_settings.json'))
+    
+    readerave_generator = LaTeXROCReaderAveGenerator()
+    readerave_generator.parse_readerave_files(average_paths, reader_paths, ave_names=average_annotations, type_names=type_names, group_names=group_names)
     
     if author_name:
-        generator.set_header_info(author=author_name)
+        readerave_generator.set_header_info(author=author_name)
     if analysis_name:
-         generator.set_header_info(name=analysis_name)
-         
-    latex_document = generator.generate_latex_document()
+        readerave_generator.set_header_info(name=analysis_name)
+
+    readerave_generator.import_readerave_settings(settings['readerave'])
+    
+    latex_document = readerave_generator.generate_latex_document()
     doc_file_path = os.path.join(output_folder, 'ROC_reader_ave_analysis.tex')
     with open(doc_file_path, 'w') as f:
         f.write(latex_document)
 
-    latex_image = generator.generate_latex_image()
+    latex_image = readerave_generator.generate_latex_image()
     image_file_path = os.path.join(output_folder, 'ROC_reader_ave_image.tex')
     with open(image_file_path, 'w') as f:
         f.write(latex_image)
@@ -504,6 +684,9 @@ def process_average_and_reader_analysis(job_id, author_name, analysis_name, aver
             box_generator.set_header_info(author=author_name)
         if analysis_name:
             box_generator.set_header_info(name=analysis_name)
+        
+        if style:
+            box_generator.import_settings(style['box'])
          
         box_latex_document = box_generator.generate_latex_document()
         box_doc_file_path = os.path.join(output_folder, 'ROC_box_analysis.tex')
@@ -515,13 +698,21 @@ def process_average_and_reader_analysis(job_id, author_name, analysis_name, aver
         with open(box_image_file_path, 'w') as file:
             file.write(box_image_document)
         
-        full_generator = LaTeXROCReport()
-        full_generator.setup(box_file=box_path, ave_files=average_paths, reader_files=reader_paths, ave_names=average_annotations, type_names=type_names, group_names=group_names)
+    full_generator = LaTeXROCReport()
+    full_generator.setup(box_file=box_path, ave_files=average_paths, reader_files=reader_paths, ave_names=average_annotations, type_names=type_names, group_names=group_names)
         
-        full_file_path = os.path.join(output_folder, 'ROC_full_analysis.tex')
-        latex_document = generator.generate_latex_document()
-        with open(full_file_path, 'w') as f:
-            f.write(latex_document)
+    if style:
+        full_generator.import_all_settings(style)
+            
+    all_settings_path = os.path.join(output_folder, 'all_settings.json')
+    with open(all_settings_path, 'w') as file:
+        json.dump(settings, file, indent=4)
+        
+    full_file_path = os.path.join(output_folder, 'ROC_full_analysis.tex')
+    latex_document = readerave_generator.generate_latex_document()
+    with open(full_file_path, 'w') as f:
+        f.write(latex_document)
+
 
 if __name__ == '__main__':
     os.makedirs(DATA_DIR, exist_ok=True)

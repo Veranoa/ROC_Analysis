@@ -5,6 +5,108 @@
 
 {% block content %}
 <h3>Styling</h3>
+<table style="width: 100%; table-layout: fixed;">
+    <thead>
+        <tr>
+            <th style="width: 26%;">Job ID</th>
+            <th style="width: 10%;">Analysis Name</th>
+            <th style="width: 15%;">Created At</th>
+            <th style="width: 10%;">Download Styling File</th>
+            <th style="width: 25%;">Upload New Styling File</th>
+            <th style="width: 14%;">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for job in jobs %}
+        {% if job['status'] == 'COMPLETED' %}
+        <tr>
+            <td>
+                {% if job['status'] == 'FAILED' %}
+                    <a href="{{ url_for('job_error', job_id=job['job_id']) }}">{{ job['job_id'] }}</a>
+                {% else %}
+                    <a href="{{ url_for('job_details', job_id=job['job_id']) }}">{{ job['job_id'] }}</a>
+                {% endif %}
+            </td>
+            <td>{{ job['analysis_name'] }}</td>
+            <td>{{ job['created_at'] }}</td>
+            <td>
+                <a href="{{ url_for('download_styling', job_id=job['job_id']) }}">Download</a>
+            </td>
+            <td>
+                <form action="{{ url_for('upload_styling') }}" method="post" enctype="multipart/form-data" class="table-upload-form" onsubmit="uploadStylingFile(event, '{{ job['job_id'] }}')">
+                    <div class="custom-file-input">
+                        <input type="file" name="stylingFile" id="stylingFile{{ job['job_id'] }}" required onchange="updateFileName(this)">
+                        <label for="stylingFile{{ job['job_id'] }}">Choose file</label>
+                    </div>
+                    <input type="hidden" name="job_id" value="{{ job['job_id'] }}">
+                    <span class="uploaded-file-name"></span>
+                </form>
+            </td>
+            <td>
+                <form action="{{ url_for('rerun_analysis', job_id=job['job_id']) }}" method="post">
+                    <button type="submit">Re-run Analysis</button>
+                </form>
+            </td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
 
+<style>
+.custom-file-input {
+    position: relative;
+    display: inline-block;
+}
 
+.custom-file-input input[type="file"] {
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    cursor: pointer;
+}
+
+.custom-file-input label {
+    display: inline-block;
+    padding: 8px 12px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+</style>
+
+<script>
+function updateFileName(input) {
+    var fileName = input.files[0].name;
+    var label = input.nextElementSibling;
+    label.textContent = fileName;
+}
+
+function uploadStylingFile(event, jobId) {
+    event.preventDefault();
+    var form = event.target;
+    var formData = new FormData(form);
+
+    fetch(form.action, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+        } else {
+            alert(data.message);
+            var span = form.querySelector('.uploaded-file-name');
+            span.textContent = "Selected file: " + data.filename;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+</script>
 {% endblock %}

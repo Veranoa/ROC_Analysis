@@ -10,6 +10,10 @@
     <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <style>
+        body {
+            padding-top: 70px; /* Adjust based on actual navbar height */
+        }
+
         .navbar-brand img {
             height: 30px;
             display: inline-block;
@@ -25,7 +29,7 @@
             align-items: center;
         }
         .flash-messages {
-            margin-top: -70px; /* Adjust margin to ensure it is below the navbar */
+            margin-top: 10px; 
         }
         .header-image {
             background: url("{{ url_for('static', filename='img/background.png') }}") no-repeat center center;
@@ -33,18 +37,19 @@
             height: 500px;
             width: 100%;
         }
-        .content-wrapper {
-            margin-top: -20px; /* Adjust margin to create space below flash messages */
-        }
         .conbody {
             width: 100%;
         }
         .footer {
-            position: fixed;
-            bottom: 0;
+            position: relative; /* Change from fixed to relative if overlapping occurs */
             width: 100%;
             text-align: center;
         }
+
+        .content-wrapper {
+            padding-bottom: 50px; /* Add padding to ensure content does not get hidden under a fixed footer */
+        }
+
         #flash {
             list-style-type: none;
             padding: 0;
@@ -65,7 +70,7 @@
                 <li><a href="{{ url_for('analysis') }}">Analysis</a></li>
                 <li><a href="{{ url_for('plotting') }}">Plotting</a></li>
                 <li><a href="{{ url_for('job_status') }}">Job Status</a></li>
-                <li><a href="{{ url_for('job_status') }}">Styling</a></li>
+                <li><a href="{{ url_for('styling') }}">Styling</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="{{ url_for('settings') }}">Settings</a></li>

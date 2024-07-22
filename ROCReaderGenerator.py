@@ -321,18 +321,19 @@ class LaTeXROCReaderGenerator(LaTeXROCAveGenerator):
             'reader_colors': self.reader_colors
         }
         return settings
-
-    def import_reader_settings(self, file_path):
-        with open(file_path, 'r') as file:
-            settings = json.load(file)
-            self.page_format = settings['page_format']
-            self.plot_format = settings['plot_format']
-            self.reader_colors = settings['reader_colors']
+    
+    def import_reader_settings(self, settings):
+        if isinstance(settings, str):
+            with open(settings, 'r') as file:
+                settings = json.load(file)
+        self.page_format = settings['page_format']
+        self.plot_format = settings['plot_format']
+        self.reader_colors = settings['reader_colors']
             
-            # Update the dependent variables
-            self.document_header = self.generate_document_header()
-            self.make_figure_command = self.generate_make_figure_command()    
-            self.reader_color_definitions = self.generate_reader_color_definitions()
+        # Update the dependent variables
+        self.document_header = self.generate_document_header()
+        self.make_figure_command = self.generate_make_figure_command()    
+        self.reader_color_definitions = self.generate_reader_color_definitions()
 
 if __name__ == "__main__":
     try:

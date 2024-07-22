@@ -173,13 +173,10 @@ class LaTeXROCReport(LaTeXROCGenerator):
     def import_all_settings(self, file_path):
         with open(file_path, 'r') as file:
             settings = json.load(file)
-            self.roc_ave_generator.import_settings(settings['ave'])
-            self.roc_reader_generator.import_settings(settings['reader'])
-            self.roc_reader_ave_generator.import_settings(settings['readerave'])
-            self.roc_box_generator.import_settings(settings['box'])
-
-        
-
+            self.roc_ave_generator.import_ave_settings(settings['ave'])
+            self.roc_reader_generator.import_reader_settings(settings['reader'])
+            self.roc_reader_ave_generator.import_readerave_settings(settings['readerave'])
+            self.roc_box_generator.import_settings(settings['box'])       
 
 if __name__ == "__main__":
 

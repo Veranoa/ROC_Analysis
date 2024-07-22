@@ -4,9 +4,10 @@
 {% block title %}Preview TeX Files{% endblock %}
 
 {% block content %}
-<h3 style="margin-top: 200px;">Job Preview for {{ job_id }}</h3>
+<h3 style="margin-top: 20px;">Job Preview for {{ job_id }}</h3>
 <h4>Generated TeX Files</h4>
-<a>We only provide limited preview access for small files. If the webpage preview failed, please try again or use other Tex to PDF tools. </a>
+<p>We only provide limited preview access for small files. If the webpage preview failed, please try again or use other Tex to PDF tools. </p>
+<a href="{{ url_for('styling') }}">Want to customize the style? Click here to modify the styling file and generate new analysis.</a>
 <div id="texPreview" class="form-inline" >
     <select id="texFileSelect" class="form-control" style="margin-top: 15px;">
         <option value="">Select a TeX file to preview</option>
