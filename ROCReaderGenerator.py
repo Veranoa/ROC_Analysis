@@ -65,7 +65,7 @@ class LaTeXROCReaderGenerator(LaTeXROCAveGenerator):
 
         max_files_per_type = max(len(methods) for _, methods in self.reader_groups)
         if not self.reader_colors:
-            self.reader_colors = [self.default_colors[:max_files_per_type]] * len(type_names)
+            self.reader_colors = self.default_colors[:max_files_per_type]
         self.reader_marks = [self.default_styles[:max_files_per_type]] * len(type_names)
 
         self.reader_data_commands = self.generate_reader_data_commands()
@@ -96,8 +96,8 @@ class LaTeXROCReaderGenerator(LaTeXROCAveGenerator):
         color_definitions = "% Define ROC curve colors:\n"
         for type_index, (type_name, methods) in enumerate(self.reader_groups):
             for method_index, (method_name, file, sheets) in enumerate(methods):
-                color_index = method_index % len(self.default_colors)
-                color = self.default_colors[color_index]
+                color_index = method_index % len(self.reader_colors)
+                color = self.reader_colors[color_index]
                 color_definitions += f"\\definecolor{{COLORo{type_name}{method_name}}}{{named}}{{{color}}}\n"
         color_definitions += "\n"
         return color_definitions

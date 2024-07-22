@@ -87,8 +87,6 @@ def download_styling(job_id):
             form_data = json.load(file)
         analysis_type = form_data.get('analysis_type')
         styling_filename = DEFAULT_STYLING_FILES.get(analysis_type)
-        print(analysis_type)
-        print(styling_filename)
     else:
         return "Form data file not found", 404
 
@@ -102,12 +100,10 @@ def download_styling(job_id):
 def upload_styling():
     job_id = request.form['job_id']
     if 'stylingFile' not in request.files:
-        flash('No file part', 'danger')
-        return redirect(request.url)
+        return jsonify({'error': 'No file part'}), 400
     file = request.files['stylingFile']
     if file.filename == '':
-        flash('No selected file', 'danger')
-        return redirect(request.url)
+        return jsonify({'error': 'No selected file'}), 400
     
     job_dir = os.path.join(DATA_DIR, job_id)
     temp_dir = os.path.join(job_dir, 'temp')
@@ -119,13 +115,27 @@ def upload_styling():
     with open(os.path.join(temp_dir, 'uploaded_styling_file.json'), 'w') as f:
         json.dump({'filename': 'new_styling.json'}, f)
 
-    flash("Styling file uploaded successfully! Click 'Re-run Analysis' to start the new analysis.", "success")
     return jsonify({'message': 'Styling file uploaded successfully!', 'filename': file.filename})
+
 
 @app.route('/rerun_analysis/<job_id>', methods=['POST'])
 def rerun_analysis(job_id):
     job_dir = os.path.join(DATA_DIR, job_id)
     temp_dir = os.path.join(job_dir, 'temp')
+
+    # Load the uploaded styling file name
+    styling_file_info_path = os.path.join(temp_dir, 'uploaded_styling_file.json')
+    if not os.path.exists(styling_file_info_path):
+        flash('No styling file uploaded.', 'danger')
+        return redirect(url_for('styling'))
+
+    with open(styling_file_info_path, 'r') as f:
+        styling_file_info = json.load(f)
+
+    styling_file_path = os.path.join(temp_dir, styling_file_info['filename'])
+    if not os.path.exists(styling_file_path):
+        flash('Styling file not found.', 'danger')
+        return redirect(url_for('styling'))
 
     form_data_path = os.path.join(temp_dir, 'form_data.json')
     with open(form_data_path, 'r') as f:
@@ -135,13 +145,7 @@ def rerun_analysis(job_id):
     new_job_dir = os.path.join(DATA_DIR, new_job_id)
     os.makedirs(new_job_dir, exist_ok=True)
     shutil.copytree(os.path.join(job_dir, 'input'), os.path.join(new_job_dir, 'input'), dirs_exist_ok=True)
-    shutil.copytree(temp_dir, os.path.join(new_job_dir, 'temp'), dirs_exist_ok=True)
-
-    # Use the stored styling file name
-    styling_file_path = os.path.join(new_job_dir, 'temp', 'new_styling.json')
-    with open(os.path.join(temp_dir, 'uploaded_styling_file.json'), 'r') as f:
-        styling_file_info = json.load(f)
-        styling_file_path = os.path.join(new_job_dir, 'temp', styling_file_info['filename'])
+    shutil.copytree(os.path.join(job_dir, 'temp'), os.path.join(new_job_dir, 'temp'), dirs_exist_ok=True)
 
     average_file_objects = []
     average_folder = os.path.join(new_job_dir, 'input', 'ave')
@@ -443,6 +447,7 @@ def process_files_and_update_log(job_id, name, analysis_name, analysis_type,
             result = process_reader_analysis(job_id, name, analysis_name, readers_files, readers_annotations, readers_groups, style_path)
         elif analysis_type == 'both':
             result = process_average_and_reader_analysis(job_id, name, analysis_name, average_files, readers_files, boxplot_file, average_annotations, readers_annotations, readers_groups, style_path)
+            
         else:
             error_message = 'Unknown analysis type'
             update_user_log_status(job_id, 'FAILED', error_message=error_message)
@@ -596,6 +601,10 @@ def process_reader_analysis(job_id, author_name, analysis_name, readers_files, r
         reader_paths.append(reader_file_paths)
         group_names.append(annotations)
         
+    if not reader_paths:
+        logging.error("No reader paths provided for analysis.")
+        return [], [], []
+        
     generator = LaTeXROCReaderGenerator()
     
     logging.info(f"Parsing Excel files {reader_paths} with LaTeXROCReaderGenerator engine")
@@ -604,7 +613,7 @@ def process_reader_analysis(job_id, author_name, analysis_name, readers_files, r
     if author_name:
         generator.set_header_info(author=author_name)
     if analysis_name:
-         generator.set_header_info(name=analysis_name)
+        generator.set_header_info(name=analysis_name)
     
     generator.set_plot_format(legend_style={"at": "{(0.4,0.3)}"})
     generator.set_plot_format(x_ticklabels= "{,,}", y_ticklabels= "{,,}")
@@ -641,14 +650,19 @@ def process_average_and_reader_analysis(job_id, author_name, analysis_name, aver
     
     box_folder = os.path.join(input_folder, 'box')
     
-    settings = {}
+    settings = {
+        "ave": {},
+        "reader": {},
+        "readerave": {},
+        "box": {},
+    }
     
     if style:
         with open(style, 'r') as file:
             settings = json.load(file)
     
     average_paths, average_annotations = process_average_analysis(job_id, author_name, analysis_name, average_files, average_annotations, style=settings['ave'])
-    reader_paths, type_names, group_names = process_reader_analysis(job_id, author_name, analysis_name, readers_files, readers_annotations, readers_groups=settings['reader'])
+    reader_paths, type_names, group_names = process_reader_analysis(job_id, author_name, analysis_name, readers_files, readers_annotations, readers_groups, style=settings['reader'])
     
     os.remove(os.path.join(style_folder, 'average_settings.json'))
     os.remove(os.path.join(style_folder, 'reader_settings.json'))
@@ -660,8 +674,9 @@ def process_average_and_reader_analysis(job_id, author_name, analysis_name, aver
         readerave_generator.set_header_info(author=author_name)
     if analysis_name:
         readerave_generator.set_header_info(name=analysis_name)
-
-    readerave_generator.import_readerave_settings(settings['readerave'])
+        
+    if style:
+        readerave_generator.import_readerave_settings(settings['readerave'])
     
     latex_document = readerave_generator.generate_latex_document()
     doc_file_path = os.path.join(output_folder, 'ROC_reader_ave_analysis.tex')
@@ -673,6 +688,7 @@ def process_average_and_reader_analysis(job_id, author_name, analysis_name, aver
     with open(image_file_path, 'w') as f:
         f.write(latex_image)
     
+    box_path = None
     if boxplot_file:
         box_path = os.path.join(box_folder, boxplot_file.filename)
         # print(box_path)
@@ -703,13 +719,15 @@ def process_average_and_reader_analysis(job_id, author_name, analysis_name, aver
         
     if style:
         full_generator.import_all_settings(style)
-            
-    all_settings_path = os.path.join(output_folder, 'all_settings.json')
+    
+    settings = full_generator.export_all_settings()
+        
+    all_settings_path = os.path.join(style_folder, 'all_settings.json')
     with open(all_settings_path, 'w') as file:
         json.dump(settings, file, indent=4)
         
     full_file_path = os.path.join(output_folder, 'ROC_full_analysis.tex')
-    latex_document = readerave_generator.generate_latex_document()
+    latex_document = full_generator.generate_latex_document()
     with open(full_file_path, 'w') as f:
         f.write(latex_document)
 

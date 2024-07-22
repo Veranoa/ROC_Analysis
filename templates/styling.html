@@ -1,4 +1,3 @@
-<!-- templates/styling.html -->
 {% extends "base.html" %}
 
 {% block title %}Styling{% endblock %}
@@ -11,9 +10,9 @@
             <th style="width: 26%;">Job ID</th>
             <th style="width: 10%;">Analysis Name</th>
             <th style="width: 15%;">Created At</th>
-            <th style="width: 10%;">Download Styling File</th>
-            <th style="width: 25%;">Upload New Styling File</th>
-            <th style="width: 14%;">Action</th>
+            <th style="width: 8%;">Download Styling File</th>
+            <th style="width: 28%;">Upload New Styling File</th>
+            <th style="width: 13%;">Action</th>
         </tr>
     </thead>
     <tbody>
@@ -33,13 +32,13 @@
                 <a href="{{ url_for('download_styling', job_id=job['job_id']) }}">Download</a>
             </td>
             <td>
-                <form action="{{ url_for('upload_styling') }}" method="post" enctype="multipart/form-data" class="table-upload-form" onsubmit="uploadStylingFile(event, '{{ job['job_id'] }}')">
+                <form action="{{ url_for('upload_styling') }}" method="post" enctype="multipart/form-data" class="table-upload-form" id="uploadForm{{ job['job_id'] }}">
                     <div class="custom-file-input">
-                        <input type="file" name="stylingFile" id="stylingFile{{ job['job_id'] }}" required onchange="updateFileName(this)">
+                        <input type="file" name="stylingFile" id="stylingFile{{ job['job_id'] }}" required onchange="updateFileName(this, '{{ job['job_id'] }}')">
                         <label for="stylingFile{{ job['job_id'] }}">Choose file</label>
                     </div>
                     <input type="hidden" name="job_id" value="{{ job['job_id'] }}">
-                    <span class="uploaded-file-name"></span>
+                    <button type="button" onclick="uploadStylingFile('{{ job['job_id'] }}')" id="uploadButton{{ job['job_id'] }}">Upload</button>
                 </form>
             </td>
             <td>
@@ -71,6 +70,7 @@
 
 .custom-file-input label {
     display: inline-block;
+    width: 210px;
     padding: 8px 12px;
     background-color: #f0f0f0;
     border: 1px solid #ccc;
@@ -79,15 +79,18 @@
 </style>
 
 <script>
-function updateFileName(input) {
+function updateFileName(input, jobId) {
     var fileName = input.files[0].name;
     var label = input.nextElementSibling;
     label.textContent = fileName;
+
+    var uploadButton = document.getElementById('uploadButton' + jobId);
+    uploadButton.textContent = 'Upload';
+    uploadButton.disabled = false;
 }
 
-function uploadStylingFile(event, jobId) {
-    event.preventDefault();
-    var form = event.target;
+function uploadStylingFile(jobId) {
+    var form = document.getElementById('uploadForm' + jobId);
     var formData = new FormData(form);
 
     fetch(form.action, {
@@ -100,8 +103,9 @@ function uploadStylingFile(event, jobId) {
             alert(data.error);
         } else {
             alert(data.message);
-            var span = form.querySelector('.uploaded-file-name');
-            span.textContent = "Selected file: " + data.filename;
+            var uploadButton = document.getElementById('uploadButton' + jobId);
+            uploadButton.textContent = 'Uploaded';
+            uploadButton.disabled = true;
         }
     })
     .catch(error => {
