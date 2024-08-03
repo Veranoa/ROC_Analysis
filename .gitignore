@@ -5,6 +5,9 @@ __pycache__/
 # Ignore the Data directory
 Data/
 Output/
+
+output_tex_files/
+Sample/
 # Ignore virtual environments
 venv/
 .env/

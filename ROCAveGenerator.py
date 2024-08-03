@@ -1,3 +1,11 @@
+# ROCAveGenerator.py
+#
+# Copyright (C) 2024-2030 Yun Liu
+# University of Chicago
+#
+# LaTeX ROC Average Generator
+#
+
 import sys
 import os
 import re
@@ -25,9 +33,15 @@ class LaTeXROCAveGenerator(LaTeXROCGenerator):
         self.plot_ave_group_commands = ""
 
     def clean_name(self, name):
+        """
+        Cleans the group or sheet name by removing non-alphanumeric characters.
+        """
         return re.sub(r'[^a-zA-Z0-9]', '', name)
 
     def parse_ave_files(self, group_files, ave_names=None, engine='openpyxl'):
+        """
+        Parses multiple Excel files to extract ROC data and organize it into groups.
+        """
         groups = []
         ave_names = ave_names or list(
             string.ascii_uppercase[:len(group_files)])
@@ -58,6 +72,9 @@ class LaTeXROCAveGenerator(LaTeXROCGenerator):
         self.header_footer = self.generate_header_footer()
 
     def generate_ave_index_map(self):
+        """
+        Generates an index map for the ROC groups and their respective data sheets.
+        """
         index_map = {}
         for group_name, group_data in self.ave_groups:
             for file_index, (_, sheet_name) in enumerate(group_data):
@@ -70,6 +87,9 @@ class LaTeXROCAveGenerator(LaTeXROCGenerator):
         return index_map
 
     def generate_ave_data_commands(self, engine='openpyxl'):
+        """
+        Generates LaTeX commands for ROC data from the parsed Excel files.
+        """
         data_commands = "% ROC curve and AUC data:\n"
         for group_name, group_data in self.ave_groups:
             for _, (xlsx_file, sheet_name) in enumerate(group_data):
@@ -86,6 +106,9 @@ class LaTeXROCAveGenerator(LaTeXROCGenerator):
         return data_commands
 
     def generate_ave_color_definitions(self):
+        """
+        Generates LaTeX commands to define colors for ROC curves.
+        """
         color_definitions = "% Define ROC curve colors:\n"
         for i, color in enumerate(self.ave_colors):
             color_definitions += f"\\definecolor{{COLORo{i}}}{{named}}{{{color}}}\n"
@@ -93,6 +116,9 @@ class LaTeXROCAveGenerator(LaTeXROCGenerator):
         return color_definitions
 
     def generate_ave_plot_commands(self):
+        """
+        Generates LaTeX commands for plotting individual ROC curves.
+        """
         plot_commands = "% Command for plotting ROC curves in one plot:\n"
         for group_name, group_data in self.ave_groups:
             for file_index, (_, sheet_name) in enumerate(group_data):
@@ -104,6 +130,9 @@ class LaTeXROCAveGenerator(LaTeXROCGenerator):
         return plot_commands
 
     def generate_ave_plot_frame_commands(self):
+        """
+        Generates LaTeX commands for plotting grouped ROC curves.
+        """
         plot_frame_commands = "% Commands for plotting grouped ROC curves:\n"
         for group_name, group_data in self.ave_groups:
             plot_frame_commands += f"\\newcommand{{\\PlotFRAMEo{group_name}}}{{\n"
@@ -115,6 +144,9 @@ class LaTeXROCAveGenerator(LaTeXROCGenerator):
         return plot_frame_commands
 
     def generate_plot_fig_command(self):
+        """
+        Generates LaTeX commands for plotting figures.
+        """
         return r"""
 % Command for making one plot:
 \newcommand{\PlotFIG}[1]{
@@ -128,6 +160,9 @@ class LaTeXROCAveGenerator(LaTeXROCGenerator):
 """
 
     def generate_ave_group_commands(self):
+        """
+        Generates LaTeX commands for plotting ROC curves for each group.
+        """
         group_commands = ""
         for group_name, _ in self.ave_groups:
             group_commands += f"""
@@ -139,12 +174,18 @@ class LaTeXROCAveGenerator(LaTeXROCGenerator):
         return group_commands
 
     def generate_document_body_commands(self):
+        """
+        Generates LaTeX commands for the body of the document.
+        """
         body_commands = r""
         for group_name, _ in self.ave_groups:
             body_commands += f"\n\\MakeAfigure{{\\PlotFIGo{group_name}}}"
         return body_commands
 
     def generate_document_body(self):
+        """
+        Generates the complete LaTeX document body.
+        """
         body = r"\begin{document}"
         body += self.generate_document_body_commands()
         body += "\n"
@@ -152,6 +193,9 @@ class LaTeXROCAveGenerator(LaTeXROCGenerator):
         return body
 
     def set_ave_colors(self, *colors):
+        """
+        Sets the colors for the ROC curves. Colors can be provided as a list or tuples.
+        """
         if isinstance(colors[0], tuple) and len(colors) == 2 and isinstance(colors[1], tuple):
             self.ave_colors = [self.default_colors] * len(self.ave_groups)
             for color in colors:
@@ -164,6 +208,9 @@ class LaTeXROCAveGenerator(LaTeXROCGenerator):
         self.ave_color_definitions = self.generate_ave_color_definitions()
 
     def generate_latex_document(self):
+        """
+        Generates the complete LaTeX document.
+        """
         latex_document = (
             self.generate_document_header() +
             self.ave_data_commands +
@@ -180,6 +227,9 @@ class LaTeXROCAveGenerator(LaTeXROCGenerator):
         return latex_document
 
     def generate_latex_image(self):
+        """
+        Generates the LaTeX document for standalone images.
+        """
         image_document = (
             self.generate_image_header() +
             self.ave_data_commands +
@@ -194,6 +244,9 @@ class LaTeXROCAveGenerator(LaTeXROCGenerator):
         return image_document
 
     def generate_pdf(self, tex_file_path, output_dir):
+        """
+        Generates a PDF from the LaTeX file.
+        """
         try:
             subprocess.run(['pdflatex', '-output-directory',
                            output_dir, tex_file_path], check=True)
@@ -203,6 +256,9 @@ class LaTeXROCAveGenerator(LaTeXROCGenerator):
             print(f"Error during PDF generation: {e}")
 
     def update_group_names(self, new_group_names):
+        """
+        Updates the names of the ROC groups.
+        """
         if len(new_group_names) != len(self.ave_groups):
             raise ValueError(
                 "Number of new group names must match the number of groups.")
@@ -220,6 +276,9 @@ class LaTeXROCAveGenerator(LaTeXROCGenerator):
         self.header_footer = self.generate_header_footer()
 
     def export_ave_settings(self):
+        """
+        Exports the current settings of page_format, plot_format, and ave_colors.
+        """
         settings = {
             'page_format': self.page_format,
             'plot_format': self.plot_format,
@@ -228,6 +287,9 @@ class LaTeXROCAveGenerator(LaTeXROCGenerator):
         return settings
 
     def import_ave_settings(self, settings):
+        """
+        Imports settings from a JSON file to page_format, plot_format, and ave_colors.
+        """
         if isinstance(settings, str):
             with open(settings, 'r') as file:
                 settings = json.load(file)

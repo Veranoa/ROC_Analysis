@@ -1,3 +1,11 @@
+# ROCBoxGenerator.py
+#
+# Copyright (C) 2024-2030 Yun Liu
+# University of Chicago
+#
+# LaTeX ROC Box Generator
+#
+
 import sys
 import os
 import re
@@ -21,29 +29,32 @@ class LaTeXROCBoxGenerator(LaTeXROCGenerator):
             "draw": "black",
             "fill": "yellow",
         }
-        self.numeric_xticklabels=False
+        self.numeric_xticklabels = False
 
     def parse_box_file(self, box_file):
+        """
+        Parses the box plot CSV file and generates the necessary LaTeX commands.
+        """
         self.box_file = box_file
         self.box_data_commands = self.generate_box_data_commands()
         self.box_plot_commands = self.generate_box_plot_commands()
 
     def generate_box_data_commands(self):
-        # Load the CSV file
+        """
+        Generates LaTeX commands for box plot data from the parsed CSV file.
+        """
         df = pd.read_csv(self.box_file)
         xticklabels = list(df.iloc[:, 0])
         self.plot_format["xticklabels"] = "{" + ", ".join(map(str, xticklabels)) + "}"
         self.plot_format["xticklabels_label"] = "{" + ", ".join(map(str, xticklabels)) + "}"
-        self.plot_format["xticklabels_numeric"] = "{" + ", ".join([str(i) for i in range(1, len(xticklabels))] + ["All"] if "All" in xticklabels else [str(i) for i in range(1, len(xticklabels)+1)]) + "}"
+        self.plot_format["xticklabels_numeric"] = "{" + ", ".join([str(i) for i in range(1, len(xticklabels) + 1)]) + "}"
 
-        # Start building the LaTeX string for box plots
         box_data = r'''
 \pgfplotsset{compat=1.16}
 \usepgfplotslibrary{statistics}
 \pgfplotstableread{
 Reader max avg median min n qfirst qthird deviation
 '''
-        # Add data from dataframe to LaTeX string
         for index, row in df.iterrows():
             box_data += f"{row['Reader']} {row['max']} {row['avg']} {row['median']} {row['min']} {row['n']} {row['qfirst']} {row['qthird']} {row['deviation']}\n"
 
@@ -53,6 +64,9 @@ Reader max avg median min n qfirst qthird deviation
         return box_data
     
     def generate_box_plot_commands(self):
+        """
+        Generates LaTeX commands for creating box plots.
+        """
         if self.numeric_xticklabels:
             self.plot_format["xticklabels"] = self.plot_format["xticklabels_numeric"]
         else:
@@ -106,12 +120,18 @@ Reader max avg median min n qfirst qthird deviation
         return box_plot_str
 
     def generate_document_body_commands(self):
+        """
+        Generates LaTeX commands for the body of the document.
+        """
         body_commands = ""
         body_commands += self.box_data_commands
         body_commands += self.box_plot_commands
         return body_commands
     
     def generate_document_body(self):
+        """
+        Generates the complete LaTeX document body.
+        """
         body = "\\begin{document}\n"
         body += self.generate_document_body_commands()
         body += self.generate_header_footer()
@@ -120,29 +140,41 @@ Reader max avg median min n qfirst qthird deviation
         return body
     
     def generate_latex_document(self):
+        """
+        Generates the complete LaTeX document.
+        """
         return (
             self.generate_document_header() +
             self.generate_document_body() 
         )
 
     def generate_latex_image(self):
+        """
+        Generates the LaTeX document for standalone images.
+        """
         return (
             self.generate_image_header() +
             self.generate_document_body() 
         )
         
     def set_box_plot_format(self, **kwargs):
+        """
+        Sets the box plot format options.
+        """
         for key, value in kwargs.items():
             if key in self.plot_format:
                 self.plot_format[key] = value
     
     def set_numeric_xticklabels(self, numeric):
-        self.numeric_xticklabels=numeric
+        """
+        Sets whether the x-tick labels should be numeric.
+        """
+        self.numeric_xticklabels = numeric
   
 # Usage example
 if __name__ == "__main__":
     box_generator = LaTeXROCBoxGenerator()
-    box_generator.parse_box_file("Data/bar.csv")  # Assuming your CSV data is in Data/bar.csv
+    box_generator.parse_box_file("Data/bar.csv") 
     latex_document = box_generator.generate_latex_document()
     image_document = box_generator.generate_latex_image()
 
@@ -156,7 +188,6 @@ if __name__ == "__main__":
     # new_export_file_path = os.path.join(output_dir, 'new_settings.json')
     # box_generator.export_settings(new_export_file_path)
         
-    # Optionally, save the output to a .tex file
     with open('Output/ROC_Box_analysis.tex', 'w') as file:
         file.write(latex_document)
 

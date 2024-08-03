@@ -1,3 +1,12 @@
+# ROCGenerator.py
+#
+# Copyright (C) 2024-2030 Yun Liu
+# University of Chicago
+#
+# LaTeX ROC Generator
+# 
+
+
 import sys
 import os
 import re
@@ -10,11 +19,11 @@ import json
 
 class LaTeXROCGenerator:
     def __init__(self):
-        self.default_colors = ['blue', 'red', 'black', 'green', 'orange']
+        self.default_colors = ['blue', 'red', 'black', 'green', 'orange']  # Default colors for ROC plots
         self.header_info = {
             "file_name": "ROC Analysis",
             "author": "Author",
-            "date": datetime.now().strftime("%Y/%m/%d")
+            "date": datetime.now().strftime("%Y/%m/%d")  # Default header information
         }
         self.page_format = {
             "paper_size": "letterpaper",
@@ -24,7 +33,7 @@ class LaTeXROCGenerator:
             "headsep": ".1in",
             "headheight": ".1in",
             "bottom_margin": ".7in",
-            "footskip": ".2in"
+            "footskip": ".2in"  
         }
         self.plot_format = {
             "horizontal_size":"3",
@@ -57,7 +66,7 @@ class LaTeXROCGenerator:
                 "anchor": "west",
                 "fill": "none",
                 "font": "\\fontsize{10pt}{12pt}\\selectfont"
-            }
+            }  
         }
         
         self.make_figure_command = ""
@@ -65,6 +74,9 @@ class LaTeXROCGenerator:
         self.header_footer = self.generate_header_footer()
 
     def generate_document_header(self):
+        """
+        Generates the LaTeX document header based on the current page formatting options.
+        """
         return """
 \\documentclass[class=article, crop=false]{{standalone}}
 \\usepackage[{paper_size}, {orientation}, margin={margin}, 
@@ -82,6 +94,9 @@ bottom={bottom_margin}, footskip={footskip}]{{geometry}}
 """.format(**self.page_format)
 
     def generate_image_header(self):
+        """
+        Generates the LaTeX header for standalone image files.
+        """
         return """
 \\documentclass{{standalone}}
 \\usepackage{{pgfplots}}
@@ -96,6 +111,9 @@ bottom={bottom_margin}, footskip={footskip}]{{geometry}}
 """.format(**self.page_format)
 
     def generate_make_figure_command(self):
+        """
+        Generates the LaTeX command for creating ROC figure plots.
+        """
         tick_style = ", ".join([f"{k}={v}" for k, v in self.plot_format["tick_style"].items()])
         legend_style = ", ".join([f"{k}={v}" for k, v in self.plot_format["legend_style"].items()])
         plot_format_combined = self.plot_format.copy()
@@ -135,6 +153,9 @@ bottom={bottom_margin}, footskip={footskip}]{{geometry}}
         pass
 
     def generate_header_footer(self):
+        """
+        Generates the LaTeX header and footer based on the current header information.
+        """
         return f"""
 % Document header and footer:
 \\pagestyle{{fancy}}
@@ -147,9 +168,15 @@ bottom={bottom_margin}, footskip={footskip}]{{geometry}}
 
 """
     def generate_document_body_commands(self):
+        """
+        Placeholder for generating the document body commands.
+        """
         pass
 
     def generate_document_body(self):
+        """
+        Generates the complete LaTeX document body.
+        """
         body = r"\begin{document}"
         body += self.generate_document_body_commands()
         body += "\n"
@@ -157,6 +184,9 @@ bottom={bottom_margin}, footskip={footskip}]{{geometry}}
         return body
 
     def set_header_info(self, name=None, author=None, date=None):
+        """
+        Sets the header information and regenerates the header/footer.
+        """
         if name:
             self.header_info["file_name"] = name
         if author:
@@ -166,12 +196,18 @@ bottom={bottom_margin}, footskip={footskip}]{{geometry}}
         self.header_footer = self.generate_header_footer()
 
     def set_page_format(self, **kwargs):
+        """
+        Sets the page formatting options and regenerates the document header.
+        """
         for key, value in kwargs.items():
             if key in self.page_format:
                 self.page_format[key] = value
         self.document_header = self.generate_document_header()
 
     def set_plot_format(self, **kwargs):
+        """
+        Sets the plot formatting options and regenerates the make figure command.
+        """
         for key, value in kwargs.items():
             if key in self.plot_format:
                 if isinstance(self.plot_format[key], dict):
@@ -199,7 +235,7 @@ bottom={bottom_margin}, footskip={footskip}]{{geometry}}
                 settings = json.load(file)
         self.page_format = settings['page_format']
         self.plot_format = settings['plot_format']
-        # Update the dependent variables
+
         self.document_header = self.generate_document_header()
         self.make_figure_command = self.generate_make_figure_command()    
             
@@ -212,5 +248,3 @@ bottom={bottom_margin}, footskip={footskip}]{{geometry}}
     def generate_pdf(self, tex_file_path, output_dir):
         pass
 
-
-       

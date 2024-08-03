@@ -200,7 +200,6 @@ if __name__ == "__main__":
         output_dir = 'Output'
         os.makedirs(output_dir, exist_ok=True)
         
-        # Generate full document
         export_file_path = os.path.join(output_dir, 'all_settings.json')
         with open(export_file_path, 'w') as file:
             json.dump(settings, file, indent=4)

@@ -1,3 +1,11 @@
+# ROCReaderAveGenerator.py
+#
+# Copyright (C) 2024-2030 Yun Liu
+# University of Chicago
+#
+# LaTeX ROC Reader and Average Generator
+#
+
 import sys
 import os
 import string
@@ -19,6 +27,9 @@ class LaTeXROCReaderAveGenerator(LaTeXROCReaderGenerator):
         self.plot_readerave_fig_commands = ""
 
     def parse_readerave_files(self, ave_files, reader_files, ave_names=None, type_names=None, group_names=None):
+        """
+        Parses both average and reader files and generates the necessary LaTeX commands.
+        """
         self.parse_ave_files(ave_files, ave_names=ave_names)
         self.parse_reader_files(reader_files, type_names=type_names, group_names=group_names)
         
@@ -32,6 +43,9 @@ class LaTeXROCReaderAveGenerator(LaTeXROCReaderGenerator):
         self.header_footer = self.generate_header_footer()
                
     def parse_ave_files(self, group_files, ave_names=None, engine='openpyxl'):
+        """
+        Parses the average ROC Excel files and prepares the data for LaTeX commands.
+        """
         groups = []
         ave_names = ave_names or list(string.ascii_uppercase[:len(group_files)])
         for group_file, group_name in zip(group_files, ave_names):
@@ -50,10 +64,12 @@ class LaTeXROCReaderAveGenerator(LaTeXROCReaderGenerator):
         self.ave_data_commands = self.generate_ave_data_commands()
         
     def parse_reader_files(self, reader_files, type_names=None, group_names=None, engine='openpyxl'):
+        """
+        Parses the reader ROC Excel files and prepares the data for LaTeX commands.
+        """
         groups = []
         type_names = type_names or list(self.generate_names(len(reader_files)))
         
-        # Setting default group names if not provided
         if group_names is None:
             group_names = [list(self.generate_names(len(type_files))) for type_files in reader_files]
    
@@ -79,6 +95,9 @@ class LaTeXROCReaderAveGenerator(LaTeXROCReaderGenerator):
         self.reader_data_commands = self.generate_reader_data_commands()
 
     def generate_readerave_color_definitions(self):
+        """
+        Generates LaTeX commands to define colors for average and reader ROC curves.
+        """
         color_definitions = "% Define ROC curve colors:\n"
         color_definitions += f"""
 \\definecolor{{COLORo0}}{{named}}{{{self.readerave_colors[0]}}}
@@ -88,6 +107,9 @@ class LaTeXROCReaderAveGenerator(LaTeXROCReaderGenerator):
         return color_definitions
         
     def generate_ave_plot_commands(self):
+        """
+        Generates LaTeX commands for plotting average ROC curves.
+        """
         plot_commands = "% Command for plotting average ROC curves:\n"
         for group_name, group_data in self.ave_groups:
             for file_index, (_, sheet_name) in enumerate(group_data):
@@ -99,6 +121,9 @@ class LaTeXROCReaderAveGenerator(LaTeXROCReaderGenerator):
         return plot_commands
        
     def generate_reader_plot_commands(self):
+        """
+        Generates LaTeX commands for plotting reader ROC curves.
+        """
         plot_style = "% Command for plotting reader ROC curves:\n"
         for type_index, (type_name, methods) in enumerate(self.reader_groups):
             for method_index, (method_name, file, sheets) in enumerate(methods):
@@ -108,6 +133,9 @@ class LaTeXROCReaderAveGenerator(LaTeXROCReaderGenerator):
         return plot_style
        
     def generate_readerave_plot_frame_commands(self):
+        """
+        Generates LaTeX commands for plotting combined average and reader ROC curves.
+        """
         plot_frame_commands = "% Command for plotting ROC curves in one plot:\n"
         for ave_group_index, (ave_group_name, ave_group_data) in enumerate(self.ave_groups):
             for ave_file_index, (ave_file, ave_sheet_name) in enumerate(ave_group_data):
@@ -128,6 +156,9 @@ class LaTeXROCReaderAveGenerator(LaTeXROCReaderGenerator):
         return plot_frame_commands
 
     def generate_readerave_group_commands(self):
+        """
+        Generates LaTeX commands for plotting group ROC curves.
+        """
         group_commands = r"""
 % Command for making one plot:
 \newcommand{\PlotFIG}[1]{
@@ -143,6 +174,9 @@ yticklabels={{, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0}},
         return group_commands
 
     def generate_plot_readerave_fig_commands(self):
+        """
+        Generates LaTeX commands for plotting figures of combined average and reader ROC curves.
+        """
         plot_fig_commands = "%Command for plotting group figures"
         for ave_group_index, (ave_group_name, ave_group_data) in enumerate(self.ave_groups):
             for ave_file_index, (ave_file, ave_sheet_name) in enumerate(ave_group_data):
@@ -156,6 +190,9 @@ yticklabels={{, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0}},
         return plot_fig_commands
 
     def generate_document_body_commands(self):
+        """
+        Generates LaTeX commands for the body of the document.
+        """
         body_commands = r""
         for ave_group_index, (ave_group_name, ave_group_data) in enumerate(self.ave_groups):
             for ave_file_index, (ave_file, ave_sheet_name) in enumerate(ave_group_data):
@@ -165,6 +202,9 @@ yticklabels={{, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0}},
         return body_commands
     
     def generate_document_body(self):
+        """
+        Generates the complete LaTeX document body.
+        """
         body = r"\begin{document}"
         body += self.generate_document_body_commands()
         body += "\n"
@@ -172,6 +212,9 @@ yticklabels={{, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0}},
         return body
     
     def generate_latex_document(self):
+        """
+        Generates the complete LaTeX document.
+        """
         latex_document = (
             self.generate_document_header() +
             self.ave_data_commands +
@@ -192,6 +235,9 @@ yticklabels={{, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0}},
         return latex_document
 
     def generate_latex_image(self):
+        """
+        Generates the LaTeX document for standalone images.
+        """
         latex_document = (
             self.generate_image_header() +
             self.ave_data_commands +
@@ -213,6 +259,9 @@ yticklabels={{, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0}},
         return latex_document
     
     def export_readerave_settings(self):
+        """
+        Exports the current settings of page_format, plot_format, and readerave_colors.
+        """
         settings = {
             'page_format': self.page_format,
             'plot_format': self.plot_format,
@@ -221,6 +270,9 @@ yticklabels={{, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0}},
         return settings
 
     def import_readerave_settings(self, settings):
+        """
+        Imports settings from a JSON file to page_format, plot_format, and readerave_colors.
+        """
         if isinstance(settings, str):
             with open(settings, 'r') as file:
                 settings = json.load(file)
@@ -228,7 +280,6 @@ yticklabels={{, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0}},
         self.plot_format = settings['plot_format']
         self.readerave_colors = settings['readerave_colors']
             
-        # Update the dependent variables
         self.document_header = self.generate_document_header()
         self.make_figure_command = self.generate_make_figure_command()    
         self.readerave_color_definitions = self.generate_readerave_color_definitions()
