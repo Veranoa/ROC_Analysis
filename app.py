@@ -28,7 +28,7 @@ from ROCReaderAveGenerator import LaTeXROCReaderAveGenerator
 from ROCBoxGenerator import LaTeXROCBoxGenerator
 from ROCAllinOne import LaTeXROCReport
 
-from ROCConfidenceGenerator import LaTeXROCConfidenceGenerator
+from TexConfidenceGenerator import LaTeXConfidenceGenerator
 from sci_cr import CI
 
 
@@ -48,6 +48,7 @@ DEFAULT_STYLING_FILES = {
     'average': 'average_settings.json',
     'reader': 'reader_settings.json',
     'both': 'all_settings.json',
+    'confidence':'confidence_settings.json',
 }
 
 logging.basicConfig(filename=os.path.join(Config.LOG_FOLDER, 'server.log'), level=logging.INFO,
@@ -122,7 +123,7 @@ def download_styling(job_id):
         styling_filename = DEFAULT_STYLING_FILES.get(analysis_type)
     else:
         return "Form data file not found", 404
-
+    
     styling_file_path = os.path.join(style_folder, styling_filename)
     if os.path.exists(styling_file_path):
         return send_file(styling_file_path, as_attachment=True)
@@ -229,6 +230,89 @@ def rerun_analysis(job_id):
     thread.start()
 
     flash(f"New analysis job {new_job_id} has been started successfully!", "success")
+    return redirect(url_for('styling'))
+
+@app.route('/upload_confidence_styling', methods=['POST'])
+def upload_confidence_styling():
+    """
+    Upload a new styling file for a confidence interval job.
+    """
+    job_id = request.form['job_id']
+    if 'stylingFile' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+    file = request.files['stylingFile']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+    
+    job_dir = os.path.join(DATA_DIR, job_id)
+    temp_dir = os.path.join(job_dir, 'temp')
+    os.makedirs(temp_dir, exist_ok=True)
+    file_path = os.path.join(temp_dir, 'new_confidence_styling.json')
+    file.save(file_path)
+
+    # Save metadata about the uploaded file
+    with open(os.path.join(temp_dir, 'uploaded_confidence_styling_file.json'), 'w') as f:
+        json.dump({'filename': 'new_confidence_styling.json'}, f)
+
+    return jsonify({'message': 'Styling file uploaded successfully!', 'filename': file.filename})
+
+@app.route('/rerun_confidence_analysis/<job_id>', methods=['POST'])
+def rerun_confidence_analysis(job_id):
+    """
+    Rerun a confidence interval analysis with an updated styling file.
+    """
+    job_dir = os.path.join(DATA_DIR, job_id)
+    temp_dir = os.path.join(job_dir, 'temp')
+
+    styling_file_info_path = os.path.join(temp_dir, 'uploaded_confidence_styling_file.json')
+    if not os.path.exists(styling_file_info_path):
+        flash('No styling file uploaded.', 'danger')
+        return redirect(url_for('styling'))
+
+    with open(styling_file_info_path, 'r') as f:
+        styling_file_info = json.load(f)
+
+    styling_file_path = os.path.join(temp_dir, styling_file_info['filename'])
+    if not os.path.exists(styling_file_path):
+        flash('Styling file not found.', 'danger')
+        return redirect(url_for('styling'))
+
+    form_data_path = os.path.join(temp_dir, 'form_data.json')
+    with open(form_data_path, 'r') as f:
+        form_data = json.load(f)
+        
+    new_job_id = str(uuid.uuid4())
+    new_job_dir = os.path.join(DATA_DIR, new_job_id)
+    os.makedirs(new_job_dir, exist_ok=True)
+    shutil.copytree(os.path.join(job_dir, 'temp'), os.path.join(new_job_dir, 'temp'), dirs_exist_ok=True)
+
+    log_entry = {
+        'job_id': new_job_id,
+        'analysis_name': form_data['analysis_name'], 
+        'analysis_type': 'confidence',
+        'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'status': 'PENDING'
+    }
+    
+    log_path = os.path.join(DATA_DIR, 'logfile.json')
+        
+    if os.path.exists(log_path):
+        with open(log_path, 'r') as f:
+            try:
+                log_data = json.load(f)
+            except json.JSONDecodeError:
+                log_data = []
+    else:
+        log_data = []
+
+    log_data.append(log_entry)
+    with open(log_path, 'w') as f:
+        json.dump(log_data, f, indent=4)
+            
+    thread = Thread(target=process_confidence_job, args=(new_job_id, form_data, styling_file_path))
+    thread.start()
+
+    flash(f"New confidence interval analysis job {new_job_id} has been started successfully!", "success")
     return redirect(url_for('styling'))
 
 @app.route('/submit', methods=['POST'])
@@ -498,13 +582,16 @@ def calculate_confidence():
 
         # Save the form data to a JSON file for later reference
         form_data = {
+            'name': name,
+            'analysis_name': file_name, 
+            'analysis_type': 'confidence',
+            'job_id': job_id,
             'fp': fp,
             'n_n': n_n,
             'tp': tp,
             'n_p': n_p,
             'alpha': alpha,
             'name': name,
-            'file_name': file_name,
         }
         form_data_path = os.path.join(job_dir, 'temp', 'form_data.json')
         with open(form_data_path, 'w') as f:
@@ -951,7 +1038,7 @@ def process_average_and_reader_analysis(job_id, author_name, analysis_name, aver
             box_generator.set_header_info(name=analysis_name)
         
         if style:
-            box_generator.import_settings(style['box'])
+            box_generator.import_confidence_settings(style['box'])
          
         box_latex_document = box_generator.generate_latex_document()
         box_doc_file_path = os.path.join(output_folder, 'ROC_box_analysis.tex')
@@ -980,9 +1067,13 @@ def process_average_and_reader_analysis(job_id, author_name, analysis_name, aver
     with open(full_file_path, 'w') as f:
         f.write(latex_document)
 
-def process_confidence_job(job_id, form_data):
+def process_confidence_job(job_id, form_data, style=None):
     job_dir = os.path.join(DATA_DIR, job_id)
     output_folder = os.path.join(job_dir, 'output')
+    style_folder = os.path.join(job_dir, 'style')
+    
+    os.makedirs(output_folder, exist_ok=True)
+    os.makedirs(style_folder, exist_ok=True)
 
     try:
         update_user_log_status(job_id, 'RUNNING')
@@ -1009,7 +1100,7 @@ def process_confidence_job(job_id, form_data):
             json.dump(result, f, indent=4)
 
         # Generate LaTeX file for the confidence interval plot
-        generator = LaTeXROCConfidenceGenerator()
+        generator = LaTeXConfidenceGenerator()
         generator.set_confidence_data(
             fpf=result['fpf_mle'],
             tpf=result['tpf_mle'],
@@ -1020,12 +1111,22 @@ def process_confidence_job(job_id, form_data):
         )
         
         generator.set_header_info(
-            name=form_data['file_name'], 
+            name=form_data['analysis_name'], 
             author=form_data['name']
         )
+
+        # Ensure style is a dictionary, not a file path
+        if style and isinstance(style, str):
+            with open(style, 'r') as file:
+                style = json.load(file)
+
+        if style:
+            generator.import_confidence_settings(style)
         
-        print(form_data['file_name'],form_data['name'])
-        
+        export_file_path = os.path.join(style_folder, 'confidence_settings.json')
+        with open(export_file_path, 'w') as file:
+            json.dump(generator.export_confidence_settings(), file, indent=4)
+            
         latex_document = generator.generate_latex_document()
         latex_file_path = os.path.join(output_folder, 'ROC_confidence_analysis.tex')
         with open(latex_file_path, 'w') as f:
@@ -1043,7 +1144,6 @@ def process_confidence_job(job_id, form_data):
         error_message = str(e)
         update_user_log_status(job_id, 'FAILED', error_message=error_message, analysis_name='Confidence Interval Calculation', analysis_type='confidence')
         logging.error(f'Error processing confidence interval job: {e}')
-
 
 
 if __name__ == '__main__':

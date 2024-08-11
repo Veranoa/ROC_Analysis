@@ -32,6 +32,16 @@
                 <a href="{{ url_for('download_styling', job_id=job['job_id']) }}">Download</a>
             </td>
             <td>
+                {% if job['analysis_type'] == 'confidence' %}
+                <form action="{{ url_for('upload_confidence_styling') }}" method="post" enctype="multipart/form-data" class="table-upload-form" id="uploadForm{{ job['job_id'] }}">
+                    <div class="custom-file-input">
+                        <input type="file" name="stylingFile" id="stylingFile{{ job['job_id'] }}" required onchange="updateFileName(this, '{{ job['job_id'] }}')">
+                        <label for="stylingFile{{ job['job_id'] }}">Choose file</label>
+                    </div>
+                    <input type="hidden" name="job_id" value="{{ job['job_id'] }}">
+                    <button type="button" onclick="uploadStylingFile('{{ job['job_id'] }}')" id="uploadButton{{ job['job_id'] }}">Upload</button>
+                </form>
+                {% else %}
                 <form action="{{ url_for('upload_styling') }}" method="post" enctype="multipart/form-data" class="table-upload-form" id="uploadForm{{ job['job_id'] }}">
                     <div class="custom-file-input">
                         <input type="file" name="stylingFile" id="stylingFile{{ job['job_id'] }}" required onchange="updateFileName(this, '{{ job['job_id'] }}')">
@@ -40,11 +50,18 @@
                     <input type="hidden" name="job_id" value="{{ job['job_id'] }}">
                     <button type="button" onclick="uploadStylingFile('{{ job['job_id'] }}')" id="uploadButton{{ job['job_id'] }}">Upload</button>
                 </form>
+                {% endif %}
             </td>
             <td>
+                {% if job['analysis_type'] == 'confidence' %}
+                <form action="{{ url_for('rerun_confidence_analysis', job_id=job['job_id']) }}" method="post">
+                    <button type="submit">Re-run Analysis</button>
+                </form>
+                {% else %}
                 <form action="{{ url_for('rerun_analysis', job_id=job['job_id']) }}" method="post">
                     <button type="submit">Re-run Analysis</button>
                 </form>
+                {% endif %}
             </td>
         </tr>
         {% endif %}
