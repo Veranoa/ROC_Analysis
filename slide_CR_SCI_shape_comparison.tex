@@ -1,0 +1,206 @@
+\documentclass[class=article, crop=false]{standalone}
+\usepackage[letterpaper, portrait, margin=.5in, 
+  top=.7in, headsep=.1in, headheight=.1in, 
+  bottom=.7in, footskip=.2in]{geometry}
+\usepackage{pgfplots}
+\usepgfplotslibrary{groupplots}
+\usepackage{comment}
+\usepackage{fancyhdr}
+
+
+% data:
+
+\input{/Users/jiang/Work Space/Project Confidence Region/notes/tex/CR_data}
+
+
+
+% Define colors:
+\definecolor{COLORoNinetynine}{rgb}{1.0, 0.25, 0.0}
+\definecolor{COLORoNinetyfive}{rgb}{.0, .0, 1.0}
+\definecolor{COLORoNinety}{rgb}{.0, 1.0, 0.0}
+\definecolor{COLORoEighty}{rgb}{1.0, .65, 0.}
+  \definecolor{axescolor}{rgb}{1.0, 1.0, 1.0}
+  \definecolor{red}{rgb}{1.0, .0, .0}
+  \definecolor{yellow}{rgb}{1.0, 1.0, .0}
+
+% Command for plotting 2 ROC curves in one plot:
+%\newcommand{\DrawLINEoNPoMG}[2]{
+%\addplot[
+%  color=COLORoMG,
+%  mark=dot,
+%  on layer={axis foreground},
+%] coordinates {#1};
+%\addlegendentry{#2}
+%}
+%
+%\newcommand{\DrawLINEoNPoQT}[2]{
+%\addplot[
+%  color=COLORoQT,
+%  mark=dot,
+%  on layer={axis foreground},
+%] coordinates {#1};
+%\addlegendentry{#2}
+%}
+%
+%\newcommand{\DrawLINEoPBNoMG}[2]{
+%\addplot[
+%  color=COLORoMG,
+%  mark=dot,
+%  on layer={axis foreground},
+%] coordinates {#1};
+%\addlegendentry{#2}
+%}
+%
+%\newcommand{\DrawLINEoPBNoQT}[2]{
+%\addplot[
+%  color=COLORoQT,
+%  mark=dot,
+%  on layer={axis foreground},
+%] coordinates {#1};
+%\addlegendentry{#2}
+%}
+
+\newcommand{\DrawOperatingPOINT}[2]{
+\addplot[
+  color=#2,
+  mark=*,
+  mark size=1.pt,
+  only marks,
+  on layer={axis foreground},
+] coordinates {#1};
+% \addlegendentry{#2}
+}
+
+\newcommand{\DrawPOINTSoCR}[2]{
+\addplot[
+  color=#2,
+  mark=*,
+  mark size=.1pt,
+  line width=1pt,
+%  only marks,
+  on layer={axis foreground},
+] coordinates {#1};
+% \addlegendentry{#2}
+}
+
+\newcommand{\DrawPOINTSoCI}[2]{
+\addplot[
+  color=#2,
+  mark=*,
+  mark size=.1pt,
+%  dashed,
+  line width=1pt,
+%  only marks,
+  on layer={axis foreground},
+] coordinates {#1};
+% \addlegendentry{#2}
+}
+
+% Commands for plotting NP and PBN ROC curves:
+%\newcommand{\PlotFRAMEoPBN}{
+%  \DrawLINEoPBNoQT{\DATAoROCoPBNoQT}{\DATAoAUCoPBNoQT}
+%  \DrawLINEoPBNoMG{\DATAoROCoPBNoMG}{\DATAoAUCoPBNoMG}
+%}
+%
+%\newcommand{\PlotFRAMEoNP}{
+%  \DrawLINEoNPoQT{\DATAoROCoNPoQT}{\DATAoAUCoNPoQT}
+%  \DrawLINEoNPoMG{\DATAoROCoNPoMG}{\DATAoAUCoNPoMG}
+%}
+
+\newcommand{\PlotFRAMEoOP}{
+  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}
+}
+
+\newcommand{\PlotFRAMEoCR}{
+  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}
+
+%  \DrawPOINTSoCR{\CRninetynine}{COLORoNinetynine}
+%  \DrawPOINTSoCR{\CRninetyfive}{COLORoNinetyfive}
+  \DrawPOINTSoCR{\CRninety}{yellow}
+%  \DrawPOINTSoCR{\CReighty}{COLORoEighty}
+
+%  \DrawPOINTSoCI{\CIninetynine}{COLORoNinetynine}
+  \DrawPOINTSoCI{\CIninetyfive}{red}
+%  \DrawPOINTSoCI{\CIninety}{COLORoNinety}
+%  \DrawPOINTSoCI{\CIeighty}{COLORoEighty}
+}
+
+\newcommand{\PlotFRAMEoCI}{
+  \DrawPOINTSoCR{\CIninetynine}{COLORoNinetynine}
+  \DrawPOINTSoCR{\CIninetyfive}{COLORoNinetyfive}
+  \DrawPOINTSoCR{\CIninety}{COLORoNinety}
+  \DrawPOINTSoCR{\CIeighty}{COLORoEighty}
+}
+
+% Command for making one plot:
+\newcommand{\PlotFIG}[1]{
+\nextgroupplot[
+  xlabel = {\textbf{{FPF}}},
+  ylabel = {{\textbf{{TPF}}}},
+  xticklabels={{, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0}},
+  yticklabels={{, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0}},
+] #1
+}
+
+% Command for plotting 2 figures of NP and PBN ROC curves:
+%\newcommand{\PlotFIGoNP}[0]{
+%  \PlotFIG{\PlotFRAMEoNP}
+%}
+%
+%\newcommand{\PlotFIGoPBN}[0]{
+%  \PlotFIG{\PlotFRAMEoPBN}
+%}
+
+\newcommand{\PlotFIGoCR}[0]{
+  \PlotFIG{\PlotFRAMEoCR}
+}
+
+% Command for plotting a figure of a group of ROC curves:
+\newcommand{\MakeAfigure}[1]{
+\begin{center}
+\begin{tikzpicture}
+\begin{groupplot}[
+  group style={group size=3 by 4,
+  horizontal sep=0pt, vertical sep=0pt},
+  width=2.8in,
+  height=2.8in,
+  domain=0:1,
+  restrict y to domain=0:1,
+  samples=100,
+  minor tick num=1,
+  xmin=0, xmax=1,
+  ymin=0, ymax=1,
+  xticklabels={,,},
+  yticklabels={,,},
+  tick label style={font={\fontsize{10pt}{12pt}\selectfont}},
+  tick style={line width=.25pt, color=black, line cap=round},
+  label style={color=axescolor, font={\fontsize{12pt}{14}\selectfont}},
+  tick label style={color=axescolor, font={\fontsize{10pt}{12pt}\selectfont}},
+  tick style={line width=1.pt, color=axescolor, line cap=round},
+  axis line style={color=axescolor, line width=2pt, },
+  legend style={
+    at={(0.25,0.2)},anchor=west,
+    fill=none,
+   % draw opacity=0,
+    font={\fontsize{10pt}{12pt}\selectfont}},
+  set layers=standard,
+] #1
+\end{groupplot}
+\end{tikzpicture}
+\end{center}
+}
+
+% Document header and footer:
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,LO]{QT BR15 Analysis (CONFIDENTIAL)}
+\fancyhead[RE,RO]{Jiang, 3/3/22}
+\fancyfoot[RE,RO]{\thepage}
+\renewcommand{\headrulewidth}{.2pt}
+\renewcommand{\footrulewidth}{.2pt}
+
+% Document body:
+\begin{document}
+\MakeAfigure{\PlotFIGoCR}
+\end{document}
+
