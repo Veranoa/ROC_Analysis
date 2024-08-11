@@ -28,6 +28,10 @@ from ROCReaderAveGenerator import LaTeXROCReaderAveGenerator
 from ROCBoxGenerator import LaTeXROCBoxGenerator
 from ROCAllinOne import LaTeXROCReport
 
+from ROCConfidenceGenerator import LaTeXROCConfidenceGenerator
+from sci_cr import CI
+
+
 # Ensure necessary directories exist
 os.makedirs(Config.LOG_FOLDER, exist_ok=True)
 DATA_DIR = Config.USER_FOLDER
@@ -473,6 +477,98 @@ def save_settings():
         json.dump(settings, f, indent=4)
     return redirect(url_for('settings'))
 
+@app.route('/calculate_confidence', methods=['GET', 'POST'])
+def calculate_confidence():
+    if request.method == 'POST':
+        # Handle form submission and calculations
+        job_id = str(uuid.uuid4())
+        job_dir = os.path.join(DATA_DIR, job_id)
+        os.makedirs(job_dir, exist_ok=True)
+        os.makedirs(os.path.join(job_dir, 'output'), exist_ok=True)
+        os.makedirs(os.path.join(job_dir, 'temp'), exist_ok=True)
+        
+        # Extract form data
+        fp = int(request.form['fp'])
+        n_n = int(request.form['n_n'])
+        tp = int(request.form['tp'])
+        n_p = int(request.form['n_p'])
+        alpha = float(request.form['alpha'])
+        name = request.form['name']
+        file_name = request.form['file_name']
+
+        # Save the form data to a JSON file for later reference
+        form_data = {
+            'fp': fp,
+            'n_n': n_n,
+            'tp': tp,
+            'n_p': n_p,
+            'alpha': alpha,
+            'name': name,
+            'file_name': file_name,
+        }
+        form_data_path = os.path.join(job_dir, 'temp', 'form_data.json')
+        with open(form_data_path, 'w') as f:
+            json.dump(form_data, f, indent=4)
+
+        # Update the log file with the job entry
+        log_entry = {
+            'job_id': job_id,
+            'analysis_name': file_name, 
+            'analysis_type': 'confidence',
+            'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'status': 'PENDING'
+        }
+        log_path = os.path.join(DATA_DIR, 'logfile.json')
+        
+        if os.path.exists(log_path):
+            with open(log_path, 'r') as f:
+                try:
+                    log_data = json.load(f)
+                except json.JSONDecodeError:
+                    log_data = []
+        else:
+            log_data = []
+
+        log_data.append(log_entry)
+        with open(log_path, 'w') as f:
+            json.dump(log_data, f, indent=4)
+        
+        # Start the calculation as a background thread
+        thread = Thread(target=process_confidence_job, args=(job_id, form_data))
+        thread.start()
+        
+        flash("Your confidence interval calculation job has been started successfully!", "success")
+        return redirect(url_for('job_status'))
+    
+    # If GET request, render the form
+    return render_template('confidence_form.html')
+
+@app.route('/confidence_result/<job_id>')
+def confidence_result(job_id):
+    """
+    Display the confidence interval result for a specific job.
+
+    Args:
+        job_id (str): Job ID.
+
+    Returns:
+        response: Renders the confidence_result.html page.
+    """
+    job_dir = os.path.join(DATA_DIR, job_id)
+    result_path = os.path.join(job_dir, 'output', 'result.json')
+
+    if os.path.exists(result_path):
+        with open(result_path, 'r') as f:
+            result = json.load(f)
+        
+        # List generated TeX files in the output directory
+        tex_files = [f for f in os.listdir(os.path.join(job_dir, 'output')) if f.endswith('.tex')]
+        
+        return render_template('confidence_result.html', result=result, tex_files=tex_files, job_id=job_id)
+    else:
+        flash('Result not found', 'danger')
+        return redirect(url_for('job_status'))
+
 def process_files_and_update_log(job_id, name, analysis_name, analysis_type, 
                                  average_files, readers_files, boxplot_file,
                                  average_annotations, readers_annotations, readers_groups,
@@ -564,7 +660,7 @@ def process_files_and_update_log(job_id, name, analysis_name, analysis_type,
         logging.error(f'Error processing analysis: {e}')
         flash(error_message, 'danger')
 
-def update_user_log_status(job_id, status, error_message=None):
+def update_user_log_status(job_id, status, error_message=None, analysis_name=None, analysis_type=None):
     """
     Update the status of a job in the log file.
 
@@ -591,13 +687,16 @@ def update_user_log_status(job_id, status, error_message=None):
             entry['status'] = status
             if error_message:
                 entry['error_message'] = error_message
+            if analysis_name:
+                entry['analysis_name'] = analysis_name
+            if analysis_type:
+                entry['analysis_type'] = analysis_type
             break
 
     with open(log_path, 'w') as f:
         json.dump(log_data, f, indent=4)
     
     logging.info(f'Updated job status: job_id={job_id}, status={status}, error_message={error_message}')
-
 
 def update_user_log_file(user_log):
     log_path = os.path.join(DATA_DIR, 'logfile.json')
@@ -631,7 +730,6 @@ def update_user_log_file(user_log):
     # Write the updated log entries back to the file
     with open(log_path, 'w') as log_file:
         log_file.write("\n".join(updated_logs) + "\n")
-
 
 def process_average_analysis(job_id, author_name, analysis_name, average_files, average_annotations, style=None):
     """
@@ -881,6 +979,72 @@ def process_average_and_reader_analysis(job_id, author_name, analysis_name, aver
     latex_document = full_generator.generate_latex_document()
     with open(full_file_path, 'w') as f:
         f.write(latex_document)
+
+def process_confidence_job(job_id, form_data):
+    job_dir = os.path.join(DATA_DIR, job_id)
+    output_folder = os.path.join(job_dir, 'output')
+
+    try:
+        update_user_log_status(job_id, 'RUNNING')
+        logging.info(f'Confidence interval job {job_id} has been started!')
+
+        # Perform the confidence interval calculation
+        ci_calculator = CI()
+        fpf_ci = ci_calculator.cal(x=form_data['fp'], n=form_data['n_n'], alpha=[form_data['alpha']])
+        tpf_ci = ci_calculator.cal(x=form_data['tp'], n=form_data['n_p'], alpha=[form_data['alpha']])
+
+        result = {
+            'fpf_mle': fpf_ci['mle'],
+            'fpf_lower': fpf_ci['CI'][form_data['alpha']]['L'],
+            'fpf_upper': fpf_ci['CI'][form_data['alpha']]['R'],
+            'tpf_mle': tpf_ci['mle'],
+            'tpf_lower': tpf_ci['CI'][form_data['alpha']]['L'],
+            'tpf_upper': tpf_ci['CI'][form_data['alpha']]['R'],
+            'confidence_level': (1 - form_data['alpha']) * 100
+        }
+
+        # Save the result to a JSON file
+        result_path = os.path.join(output_folder, 'result.json')
+        with open(result_path, 'w') as f:
+            json.dump(result, f, indent=4)
+
+        # Generate LaTeX file for the confidence interval plot
+        generator = LaTeXROCConfidenceGenerator()
+        generator.set_confidence_data(
+            fpf=result['fpf_mle'],
+            tpf=result['tpf_mle'],
+            fpf_lower=result['fpf_lower'],
+            fpf_upper=result['fpf_upper'],
+            tpf_lower=result['tpf_lower'],
+            tpf_upper=result['tpf_upper']
+        )
+        
+        generator.set_header_info(
+            name=form_data['file_name'], 
+            author=form_data['name']
+        )
+        
+        print(form_data['file_name'],form_data['name'])
+        
+        latex_document = generator.generate_latex_document()
+        latex_file_path = os.path.join(output_folder, 'ROC_confidence_analysis.tex')
+        with open(latex_file_path, 'w') as f:
+            f.write(latex_document)
+
+        image_document = generator.generate_latex_document()
+        latex_file_path = os.path.join(output_folder, 'ROC_confidence_image.tex')
+        with open(latex_file_path, 'w') as f:
+            f.write(image_document)
+            
+        update_user_log_status(job_id, 'COMPLETED')
+        logging.info(f'Confidence interval job {job_id} has been completed successfully!')
+
+    except Exception as e:
+        error_message = str(e)
+        update_user_log_status(job_id, 'FAILED', error_message=error_message, analysis_name='Confidence Interval Calculation', analysis_type='confidence')
+        logging.error(f'Error processing confidence interval job: {e}')
+
+
 
 if __name__ == '__main__':
     os.makedirs(DATA_DIR, exist_ok=True)

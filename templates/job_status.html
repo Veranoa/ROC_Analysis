@@ -23,7 +23,11 @@
                 {% if job['status'] == 'FAILED' %}
                     <a href="{{ url_for('job_error', job_id=job['job_id']) }}">{{ job['job_id'] }}</a>
                 {% else %}
-                    <a href="{{ url_for('job_details', job_id=job['job_id']) }}">{{ job['job_id'] }}</a>
+                    {% if job['analysis_type'] == 'confidence' %}
+                        <a href="{{ url_for('confidence_result', job_id=job['job_id']) }}">{{ job['job_id'] }}</a>
+                    {% else %}
+                        <a href="{{ url_for('job_details', job_id=job['job_id']) }}">{{ job['job_id'] }}</a>
+                    {% endif %}
                 {% endif %}
             </td>
             <td>{{ job['analysis_name'] }}</td>

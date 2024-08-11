@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Confidence Interval Result{% endblock %}
+
+{% block content %}
+<h3>Job Details for {{ job_id }}</h3>
+<h4>Confidence Interval Result</h4>
+<p>Confidence Level: {{ result['confidence_level'] }}%</p>
+
+<table>
+    <tr>
+        <th>Metric</th>
+        <th>Maximum Likelihood Estimate (MLE)</th>
+        <th>Lower Bound</th>
+        <th>Upper Bound</th>
+    </tr>
+    <tr>
+        <td>False Positive Fraction (FPF)</td>
+        <td>{{ result['fpf_mle'] }}</td>
+        <td>{{ result['fpf_lower'] }}</td>
+        <td>{{ result['fpf_upper'] }}</td>
+    </tr>
+    <tr>
+        <td>True Positive Fraction (TPF)</td>
+        <td>{{ result['tpf_mle'] }}</td>
+        <td>{{ result['tpf_lower'] }}</td>
+        <td>{{ result['tpf_upper'] }}</td>
+    </tr>
+</table>
+
+
+<h4>Generated TeX Files</h4>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">File Name</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for file in tex_files %}
+        <tr>
+            <td>{{ file }}</td>
+            <td>
+                <a class="btn btn-primary btn-sm" href="{{ url_for('preview', job_id=job_id, filename=file) }}" role="button">Preview</a>
+                <a class="btn btn-secondary btn-sm" href="{{ url_for('serve_tex_file', job_id=job_id, filename=file) }}" role="button" download>Download</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{{ url_for('job_status') }}" class="btn btn-primary">Back to Job Status</a>
+{% endblock %}

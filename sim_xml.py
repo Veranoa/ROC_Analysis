@@ -1,14 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import xml.etree.ElementTree as ET
-import gzip
-from datetime import datetime
-import platform
-import uuid
-import os
-import numpy as np
-import xml.dom.minidom
-
 
 class sim_xml():
     def __init__(self, CI):

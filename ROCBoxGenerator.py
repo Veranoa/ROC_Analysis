@@ -19,35 +19,35 @@ from ROCGenerator import LaTeXROCGenerator
 class LaTeXROCBoxGenerator(LaTeXROCGenerator):
     def __init__(self):
         super().__init__()
-        self.box_file = None
-        self.box_data_commands = ""
-        self.box_plot_commands = ""
-        self.plot_format = {
+        self.__box_file = None
+        self.__box_data_commands = ""
+        self.__box_plot_commands = ""
+        self.__plot_format = {
             "xlabel": r"\textbf{Reader(s)}",
             "ylabel": r"\textbf{QT POM--FFDM POM}",
             "height": "12cm",
             "draw": "black",
             "fill": "yellow",
         }
-        self.numeric_xticklabels = False
+        self.__numeric_xticklabels = False
 
     def parse_box_file(self, box_file):
         """
         Parses the box plot CSV file and generates the necessary LaTeX commands.
         """
-        self.box_file = box_file
-        self.box_data_commands = self.generate_box_data_commands()
-        self.box_plot_commands = self.generate_box_plot_commands()
+        self.__box_file = box_file
+        self.__box_data_commands = self.__generate_box_data_commands()
+        self.__box_plot_commands = self.__generate_box_plot_commands()
 
-    def generate_box_data_commands(self):
+    def __generate_box_data_commands(self):
         """
         Generates LaTeX commands for box plot data from the parsed CSV file.
         """
-        df = pd.read_csv(self.box_file)
+        df = pd.read_csv(self.__box_file)
         xticklabels = list(df.iloc[:, 0])
-        self.plot_format["xticklabels"] = "{" + ", ".join(map(str, xticklabels)) + "}"
-        self.plot_format["xticklabels_label"] = "{" + ", ".join(map(str, xticklabels)) + "}"
-        self.plot_format["xticklabels_numeric"] = "{" + ", ".join([str(i) for i in range(1, len(xticklabels) + 1)]) + "}"
+        self.__plot_format["xticklabels"] = "{" + ", ".join(map(str, xticklabels)) + "}"
+        self.__plot_format["xticklabels_label"] = "{" + ", ".join(map(str, xticklabels)) + "}"
+        self.__plot_format["xticklabels_numeric"] = "{" + ", ".join([str(i) for i in range(1, len(xticklabels) + 1)]) + "}"
 
         box_data = r'''
 \pgfplotsset{compat=1.16}
@@ -63,14 +63,14 @@ Reader max avg median min n qfirst qthird deviation
 '''
         return box_data
     
-    def generate_box_plot_commands(self):
+    def __generate_box_plot_commands(self):
         """
         Generates LaTeX commands for creating box plots.
         """
-        if self.numeric_xticklabels:
-            self.plot_format["xticklabels"] = self.plot_format["xticklabels_numeric"]
+        if self.__numeric_xticklabels:
+            self.__plot_format["xticklabels"] = self.__plot_format["xticklabels_numeric"]
         else:
-            self.plot_format["xticklabels"] = self.plot_format["xticklabels_label"]
+            self.__plot_format["xticklabels"] = self.__plot_format["xticklabels_label"]
 
         box_plot_str = r'''
 \begin{tikzpicture}
@@ -115,7 +115,7 @@ Reader max avg median min n qfirst qthird deviation
 \end{axis}
 \end{tikzpicture}
 '''
-        for key, value in self.plot_format.items():
+        for key, value in self.__plot_format.items():
             box_plot_str = box_plot_str.replace(f"{key}={{{key}}}", f"{key}={value}")
         return box_plot_str
 
@@ -124,8 +124,8 @@ Reader max avg median min n qfirst qthird deviation
         Generates LaTeX commands for the body of the document.
         """
         body_commands = ""
-        body_commands += self.box_data_commands
-        body_commands += self.box_plot_commands
+        body_commands += self.__box_data_commands
+        body_commands += self.__box_plot_commands
         return body_commands
     
     def generate_document_body(self):
@@ -162,14 +162,14 @@ Reader max avg median min n qfirst qthird deviation
         Sets the box plot format options.
         """
         for key, value in kwargs.items():
-            if key in self.plot_format:
-                self.plot_format[key] = value
+            if key in self.__plot_format:
+                self.__plot_format[key] = value
     
     def set_numeric_xticklabels(self, numeric):
         """
         Sets whether the x-tick labels should be numeric.
         """
-        self.numeric_xticklabels = numeric
+        self.__numeric_xticklabels = numeric
   
 # Usage example
 if __name__ == "__main__":

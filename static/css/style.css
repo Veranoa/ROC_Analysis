@@ -84,6 +84,10 @@ table {
   margin-bottom: 20px;
 }
 
+.default-gray {
+  color: gray;
+}
+
 table,
 th,
 td {

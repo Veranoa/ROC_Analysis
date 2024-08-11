@@ -18,35 +18,35 @@ from ROCAveGenerator import LaTeXROCAveGenerator
 class LaTeXROCReaderGenerator(LaTeXROCAveGenerator):
     def __init__(self):
         super().__init__()
-        self.reader_files = []
-        self.reader_groups = []
-        self.reader_index_map = {}
+        self.__reader_files = []
+        self.__reader_groups = []
+        self.__reader_index_map = {}
         
-        self.sheet_names = set()
-        self.reader_colors = []  
-        self.reader_marks = []
-        self.default_styles = ['square*', '*', 'dot', 'triangle*', 'x', 'pentagon*']
+        self.__sheet_names = set()
+        self.__reader_colors = []  
+        self.__reader_marks = []
+        self.__default_styles = ['square*', '*', 'dot', 'triangle*', 'x', 'pentagon*']
 
-        self.reader_data_commands = ""
-        self.reader_color_definitions = ""
-        self.reader_plot_commands = ""
-        self.reader_plot_frame_commands = ""
-        self.plot_reader_group_commands = ""
-        self.plot_reader_fig_command = ""
-        self.make_figure_command = ""
+        self.__reader_data_commands = ""
+        self.__reader_color_definitions = ""
+        self.__reader_plot_commands = ""
+        self.__reader_plot_frame_commands = ""
+        self.__plot_reader_group_commands = ""
+        self.__plot_reader_fig_command = ""
+        self.__make_figure_command = ""
 
-    def clean_name(self, name):
+    def __clean_name(self, name):
         """
         Cleans the group or sheet name by removing non-alphanumeric characters.
         """
         return re.sub(r'[^a-zA-Z0-9]', '', name)
 
-    def generate_reader_index_map(self):
+    def __generate_reader_index_map(self):
         """
         Generates an index map for the reader ROC groups and their respective data sheets.
         """
         index_map = {}
-        for type_name, methods in self.reader_groups:
+        for type_name, methods in self.__reader_groups:
             for method_name, file, sheets in methods:
                 for sheet_name in sheets:
                     cmd_index = f"{type_name}_{method_name}_{sheet_name}"
@@ -59,10 +59,10 @@ class LaTeXROCReaderGenerator(LaTeXROCAveGenerator):
         Parses multiple Excel files to extract reader ROC data and organize it into groups.
         """
         groups = []
-        type_names = type_names or list(self.generate_names(len(reader_files)))
+        type_names = type_names or list(self.__generate_names(len(reader_files)))
         
         if group_names is None:
-            group_names = [list(self.generate_names(len(type_files))) for type_files in reader_files]
+            group_names = [list(self.__generate_names(len(type_files))) for type_files in reader_files]
    
         for type_files, type_name, methods in zip(reader_files, type_names, group_names):
             if not all(os.path.exists(file) and file.endswith('.xlsx') for file in type_files):
@@ -71,34 +71,34 @@ class LaTeXROCReaderGenerator(LaTeXROCAveGenerator):
             method_sheets = []
             for file, method_name in zip(type_files, methods):
                 sheets = pd.ExcelFile(file, engine=engine).sheet_names
-                self.sheet_names.update(sheets)
+                self.__sheet_names.update(sheets)
                 method_sheets.append((method_name, file, sheets))
             groups.append((type_name, method_sheets))
         
-        self.reader_files = reader_files
-        self.reader_groups = groups
-        self.reader_index_map = self.generate_reader_index_map()
+        self.__reader_files = reader_files
+        self.__reader_groups = groups
+        self.__reader_index_map = self.__generate_reader_index_map()
 
-        max_files_per_type = max(len(methods) for _, methods in self.reader_groups)
-        if not self.reader_colors:
-            self.reader_colors = self.default_colors[:max_files_per_type]
-        self.reader_marks = [self.default_styles[:max_files_per_type]] * len(type_names)
+        max_files_per_type = max(len(methods) for _, methods in self.__reader_groups)
+        if not self.__reader_colors:
+            self.__reader_colors = self._LaTeXROCGenerator__default_colors[:max_files_per_type]
+        self.__reader_marks = [self.__default_styles[:max_files_per_type]] * len(type_names)
 
-        self.reader_data_commands = self.generate_reader_data_commands()
-        self.reader_color_definitions = self.generate_reader_color_definitions()
-        self.reader_plot_commands = self.generate_reader_plot_commands()
-        self.reader_plot_frame_commands = self.generate_reader_plot_frame_commands()
-        self.make_figure_command = self.generate_make_figure_command()
-        self.plot_fig_command = self.generate_plot_fig_command()
-        self.plot_reader_group_commands = self.generate_reader_group_commands()
-        self.header_footer = self.generate_header_footer()
+        self.__reader_data_commands = self.__generate_reader_data_commands()
+        self.__reader_color_definitions = self.__generate_reader_color_definitions()
+        self.__reader_plot_commands = self.__generate_reader_plot_commands()
+        self.__reader_plot_frame_commands = self.__generate_reader_plot_frame_commands()
+        self._LaTeXROCGenerator__make_figure_command = self._LaTeXROCGenerator__generate_make_figure_command()
+        self.__plot_reader_fig_command = self.__generate_plot_fig_command()
+        self.__plot_reader_group_commands = self.__generate_reader_group_commands()
+        self._LaTeXROCGenerator__header_footer = self._LaTeXROCGenerator__generate_header_footer()
 
-    def generate_reader_data_commands(self):
+    def __generate_reader_data_commands(self):
         """
         Generates LaTeX commands for reader ROC data from the parsed Excel files.
         """
         data_commands = "% Reader ROC curve and AUC data:\n"
-        for type_name, methods in self.reader_groups:
+        for type_name, methods in self.__reader_groups:
             for method_name, file, sheets in methods:
                 for sheet_name in sheets:
                     wb = load_workbook(file)
@@ -106,36 +106,36 @@ class LaTeXROCReaderGenerator(LaTeXROCAveGenerator):
                     auc_value = ws['B1'].value
                     roc_data = [(row[0], row[1]) for row in ws.iter_rows(min_row=3, values_only=True)]
                     cmd_index = f"{type_name}_{method_name}_{sheet_name}"
-                    letter_index = self.reader_index_map[cmd_index]
+                    letter_index = self.__reader_index_map[cmd_index]
                     data_commands += f"\\newcommand{{\\{letter_index}AUC}}[0]{{{auc_value}}}\n"
                     data_commands += f"\\newcommand{{\\{letter_index}Data}}[0]{{\n  " + "\n  ".join([f"({x[0]},{x[1]})" for x in roc_data]) + "\n}\n\n"
         return data_commands
     
-    def generate_reader_color_definitions(self):
+    def __generate_reader_color_definitions(self):
         """
         Generates LaTeX commands to define colors for reader ROC curves.
         """
         color_definitions = "% Define ROC curve colors:\n"
-        for type_index, (type_name, methods) in enumerate(self.reader_groups):
+        for type_index, (type_name, methods) in enumerate(self.__reader_groups):
             for method_index, (method_name, file, sheets) in enumerate(methods):
-                color_index = method_index % len(self.reader_colors)
-                color = self.reader_colors[color_index]
+                color_index = method_index % len(self.__reader_colors)
+                color = self.__reader_colors[color_index]
                 color_definitions += f"\\definecolor{{COLORo{type_name}{method_name}}}{{named}}{{{color}}}\n"
         color_definitions += "\n"
         return color_definitions
 
-    def generate_reader_plot_commands(self):
+    def __generate_reader_plot_commands(self):
         """
         Generates LaTeX commands for plotting individual reader ROC curves.
         """
         plot_style = "% Command for plotting reader ROC curves:\n"
         is_first_plot = 1
-        for type_index, (type_name, methods) in enumerate(self.reader_groups):
+        for type_index, (type_name, methods) in enumerate(self.__reader_groups):
             for method_index, (method_name, file, sheets) in enumerate(methods):
-                mark_type = self.reader_marks[type_index][method_index]
+                mark_type = self.__reader_marks[type_index][method_index]
                 for sheet_index, sheet_name in enumerate(sheets):
                     cmd_index = f"{type_name}_{method_name}_{sheet_name}"
-                    letter_index = self.reader_index_map[cmd_index]
+                    letter_index = self.__reader_index_map[cmd_index]
 
                     wb = load_workbook(file)
                     ws = wb[sheet_name]
@@ -154,26 +154,26 @@ class LaTeXROCReaderGenerator(LaTeXROCAveGenerator):
                     plot_style += f"\\addplot[\n  color=COLORo{type_name}{method_name},\n  only marks,\n  mark={mark_type},\n  on layer={{axis foreground}},\n] coordinates {{#1}};\n"
                 else:
                     plot_style += f"\\addplot[\n  color=COLORo{type_name}{method_name},\n  mark=dot,\n  on layer={{axis foreground}},\n] coordinates {{#1}};\n"
-                    self.reader_marks[type_index][method_index] = 'dot'
+                    self.__reader_marks[type_index][method_index] = 'dot'
                     
                 plot_style += f"\\addlegendentry{{#2}}\n}}\n\n"
         return plot_style
     
-    def generate_reader_plot_frame_commands(self):
+    def __generate_reader_plot_frame_commands(self):
         """
         Generates LaTeX commands for plotting grouped reader ROC curves.
         """
         plot_frame_commands = "% Commands for plotting ROC curves for every reader:\n"
 
-        for sheet_name in sorted(self.sheet_names):
-            clean_sheet_name = self.clean_name(sheet_name)
+        for sheet_name in sorted(self.__sheet_names):
+            clean_sheet_name = self.__clean_name(sheet_name)
             plot_frame_commands += f"\\newcommand{{\\R{clean_sheet_name}}}{{\n"
             first_entry = True
-            for type_name, methods in self.reader_groups:
+            for type_name, methods in self.__reader_groups:
                 for method_name, file, sheets in methods:
                     if sheet_name in sheets:
                         cmd_index = f"{type_name}_{method_name}_{sheet_name}"
-                        letter_index = self.reader_index_map[cmd_index]
+                        letter_index = self.__reader_index_map[cmd_index]
                         plot_frame_commands += f"  \\{type_name}{method_name}{{\\{letter_index}Data}}{{\\{letter_index}AUC}}"
                         if first_entry:  
                             plot_frame_commands += f"{{{sheet_name}}}"
@@ -272,12 +272,12 @@ class LaTeXROCReaderGenerator(LaTeXROCAveGenerator):
 
 """
 
-    def generate_reader_group_commands(self):
+    def __generate_reader_group_commands(self):
         """
         Generates LaTeX commands for plotting ROC curves for each group of readers.
         """
         group_commands = ""
-        sheet_names = sorted(self.sheet_names)
+        sheet_names = sorted(self.__sheet_names)
         num_sheets = len(sheet_names)
         num_pages = (num_sheets + 11) // 12 
 
@@ -292,7 +292,7 @@ class LaTeXROCReaderGenerator(LaTeXROCAveGenerator):
                 for col in range(3):
                     idx = start + row * 3 + col
                     if idx < num_sheets:
-                        clean_sheet_name = self.clean_name(sheet_names[idx])
+                        clean_sheet_name = self.__clean_name(sheet_names[idx])
                         group_commands += f"\\R{clean_sheet_name}"
                     else:
                         group_commands += ""
@@ -302,24 +302,24 @@ class LaTeXROCReaderGenerator(LaTeXROCAveGenerator):
             group_commands += "}\n\n"
         return group_commands
     
-    def generate_document_body_commands(self):
+    def __generate_document_body_commands(self):
         """
         Generates LaTeX commands for the body of the document.
         """
         body_commands = r""
-        sheet_names = sorted(self.sheet_names)
+        sheet_names = sorted(self.__sheet_names)
         num_sheets = len(sheet_names)
         num_pages = (num_sheets + 11) // 12 
         for page in range(num_pages):
             body_commands += f"\\MakeAfigure{{\\ROCplotPage{chr(65 + page)}}}\n"
         return body_commands
 
-    def generate_document_body(self):
+    def __generate_document_body(self):
         """
         Generates the complete LaTeX document body.
         """
         body = r"\begin{document}"
-        body += self.generate_document_body_commands()
+        body += self.__generate_document_body_commands()
         body += "\n"
         body += r"\end{document}"
         return body
@@ -329,16 +329,16 @@ class LaTeXROCReaderGenerator(LaTeXROCAveGenerator):
         Generates the complete LaTeX document.
         """
         latex_document = (
-            self.generate_document_header() +
-            self.reader_data_commands +
-            self.reader_color_definitions +
-            self.reader_plot_commands +
-            self.reader_plot_frame_commands +
-            self.make_figure_command +
-            self.plot_fig_command +
-            self.plot_reader_group_commands +
-            self.header_footer +
-            self.generate_document_body()
+            self._LaTeXROCGenerator__generate_document_header() +
+            self.__reader_data_commands +
+            self.__reader_color_definitions +
+            self.__reader_plot_commands +
+            self.__reader_plot_frame_commands +
+            self.__make_figure_command +
+            self.__plot_reader_fig_command +
+            self.__plot_reader_group_commands +
+            self._LaTeXROCGenerator__header_footer +
+            self.__generate_document_body()
         )
         return latex_document
 
@@ -347,15 +347,15 @@ class LaTeXROCReaderGenerator(LaTeXROCAveGenerator):
         Generates the LaTeX document for standalone images.
         """
         latex_document = (
-            self.generate_image_header() +
-            self.reader_data_commands +
-            self.reader_color_definitions +
-            self.reader_plot_commands +
-            self.reader_plot_frame_commands +
-            self.make_figure_command +
-            self.plot_fig_command +
-            self.plot_reader_group_commands +
-            self.generate_document_body()
+            self._LaTeXROCGenerator__generate_image_header() +
+            self.__reader_data_commands +
+            self.__reader_color_definitions +
+            self.__reader_plot_commands +
+            self.__reader_plot_frame_commands +
+            self.__make_figure_command +
+            self.__plot_reader_fig_command +
+            self.__plot_reader_group_commands +
+            self.__generate_document_body()
         )
         return latex_document
 
@@ -364,9 +364,9 @@ class LaTeXROCReaderGenerator(LaTeXROCAveGenerator):
         Exports the current settings of page_format, plot_format, and reader_colors.
         """
         settings = {
-            'page_format': self.page_format,
-            'plot_format': self.plot_format,
-            'reader_colors': self.reader_colors
+            'page_format': self._LaTeXROCGenerator__page_format,
+            'plot_format': self._LaTeXROCGenerator__plot_format,
+            'reader_colors': self.__reader_colors
         }
         return settings
     
@@ -377,13 +377,13 @@ class LaTeXROCReaderGenerator(LaTeXROCAveGenerator):
         if isinstance(settings, str):
             with open(settings, 'r') as file:
                 settings = json.load(file)
-        self.page_format = settings['page_format']
-        self.plot_format = settings['plot_format']
-        self.reader_colors = settings['reader_colors']
+        self._LaTeXROCGenerator__page_format = settings['page_format']
+        self._LaTeXROCGenerator__plot_format = settings['plot_format']
+        self.__reader_colors = settings['reader_colors']
             
-        self.document_header = self.generate_document_header()
-        self.make_figure_command = self.generate_make_figure_command()    
-        self.reader_color_definitions = self.generate_reader_color_definitions()
+        self._LaTeXROCGenerator__document_header = self._LaTeXROCGenerator__generate_document_header()
+        self._LaTeXROCGenerator__make_figure_command = self._LaTeXROCGenerator__generate_make_figure_command()
+        self.__reader_color_definitions = self.__generate_reader_color_definitions()
 
 if __name__ == "__main__":
     try:
@@ -412,7 +412,7 @@ if __name__ == "__main__":
         # generator.set_plot_format(width="3in", height="3in", tick_style={"draw": "red"}, legend_style={"anchor": "west"})
 
         generator.set_plot_format(legend_style={"at": "{(0.4,0.3)}"})
-        generator.set_plot_format(x_ticklabels= "{,,}", y_ticklabels= "{,,}")
+        generator.set_plot_format(x_ticklabels="{,,}", y_ticklabels="{,,}")
         generator.set_header_info(name="ROC Reader Analysis")
 
         # Generate full document
