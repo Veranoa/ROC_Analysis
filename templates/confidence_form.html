@@ -1,3 +1,5 @@
+<!-- templates/confidence_form.html -->
+
 {% extends "base.html" %}
 
 {% block title %}Calculate Confidence Interval{% endblock %}
@@ -52,13 +54,13 @@
     <!-- Confidence Level Selection -->
     <div class="form-group">
         <label for="alpha">Confidence Level (α):</label>
-        <select id="alpha" name="alpha" class="form-control input-default" required>
-            <option value="0.05">95%</</option>
+        <select id="alpha" name="alpha" class="form-control input-default" multiple required>
+            <option value="0.05">95%</option>
             <option value="0.01">99%</option>
             <option value="0.10">90%</option>
             <option value="0.20">80%</option>
         </select>
-        <small class="form-text text-muted">Select the confidence level.</small>
+        <small class="form-text text-muted">Select one or more confidence levels. Use Ctrl or Cmd key to select multiple options.</small>
     </div>
 
     <!-- Submit button -->

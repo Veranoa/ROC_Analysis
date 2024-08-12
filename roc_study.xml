@@ -1,0 +1,3698 @@
+<root>
+    <Info xmlns:i="http://www.uchicago.edu/cROC/roc/info">
+        <i:ID type="uuid1">d3079ca8-52f1-11ef-adf1-dadd472bcc69</i:ID>
+        <i:study_title_short>ROC Study</i:study_title_short>
+        <i:study_title_full>ROC Study Full Title</i:study_title_full>
+        <i:study_description>Study on ROC analysis</i:study_description>
+        <i:created>2024-08-05T01:13:25.286228</i:created>
+        <i:saved />
+        <i:by>root</i:by>
+        <i:with_src>
+            <i:src_date>2024-08-05T01:13:23.358437</i:src_date>
+            <i:src_dir>/Users/summersane/Desktop/RA/Radiology/ROC_Analysis</i:src_dir>
+        </i:with_src>
+        <i:work_dir>/Users/summersane/Desktop/RA/Radiology/ROC_Analysis</i:work_dir>
+        <i:host>
+            <i:host_node>YundeMacBook-Air.local</i:host_node>
+            <i:host_system>Darwin</i:host_system>
+            <i:host_release>23.5.0</i:host_release>
+            <i:host_version>Darwin Kernel Version 23.5.0: Wed May  1 20:19:05 PDT 2024; root:xnu-10063.121.3~5/RELEASE_ARM64_T8112</i:host_version>
+            <i:host_machine>arm64</i:host_machine>
+            <i:host_processor>arm</i:host_processor>
+            <i:host_architecture>('64bit', '')</i:host_architecture>
+        </i:host>
+        <i:python>
+            <i:python_version>3.12.2</i:python_version>
+            <i:python_build>('main', 'Feb 16 2024 20:54:21')</i:python_build>
+            <i:python_compiler>Clang 16.0.6 </i:python_compiler>
+            <i:python_branch />
+            <i:python_revision />
+            <i:python_implementation>CPython</i:python_implementation>
+        </i:python>
+    </Info>
+    <Glossary xmlns:g="http://www.uchicago.edu/cROC/roc/glossary">
+        <g:Info tag="Info">Information of date, time, user, executable source file, directories, host computer, and python environment</g:Info>
+        <g:Glossary tag="Glossary">Explanation of tags</g:Glossary>
+        <g:DataSummary tag="DataSummary">Summary results of the simulation results</g:DataSummary>
+        <g:DataForPlot tag="DataForPlot">Data for generating summary plots of the simulation results</g:DataForPlot>
+        <g:Data tag="Data">Simulation raw data</g:Data>
+        <g:d:Case tag="d:Case">A standalone case in the study</g:d:Case>
+        <g:d:Experiment tag="d:Experiment">A standalone simulation experiment</g:d:Experiment>
+        <g:d:Reader tag="d:Reader">A reader participating in the study</g:d:Reader>
+        <g:Info tag="Info">
+            <g:i tag="i:ID">Unique file ID, and also serves as the file name</g:i>
+            <g:i tag="i:study_title_short">Short study title for identification purpose</g:i>
+            <g:i tag="i:study_title_full">Full descriptive study title</g:i>
+            <g:i tag="i:study_description">Additional description of the study</g:i>
+            <g:i tag="i:created">Date and time data in this file began to be created</g:i>
+            <g:i tag="i:saved">Date and time data in this file were saved</g:i>
+            <g:i tag="i:by">The login user name who created this file</g:i>
+            <g:i tag="i:with_src">The executable source file that was used to create data in this file</g:i>
+            <g:i tag="i:src_date">Date and time of the executable source file that created data in this file</g:i>
+            <g:i tag="i:src_dir">Directory of the executable source file that created data in this file</g:i>
+            <g:i tag="i:work_dir">Directory in which the executable source file was run to create data in this file</g:i>
+            <g:i tag="i:host">Information of the host computer</g:i>
+            <g:i tag="i:host_node">The host computer network name</g:i>
+            <g:i tag="i:host_system">The host computer system/OS name</g:i>
+            <g:i tag="i:host_release">The host computer system release</g:i>
+            <g:i tag="i:host_version">The host computer system release version</g:i>
+            <g:i tag="i:host_machine">The host computer machine type</g:i>
+            <g:i tag="i:host_processor">The host computer (real) processor name</g:i>
+            <g:i tag="i:host_architecture">The host computer executable (Python interpreter binary) architecture information</g:i>
+            <g:i tag="i:python">Information of the Python interpreter</g:i>
+            <g:i tag="i:python_version">Python version</g:i>
+            <g:i tag="i:python_build">Python build number and date</g:i>
+            <g:i tag="i:python_compiler">Python compiler used to create data in this file</g:i>
+            <g:i tag="i:python_branch">Python implementation SCM branch</g:i>
+            <g:i tag="i:python_revision">Python implementation SCM revision</g:i>
+            <g:i tag="i:python_implementation">Python implementation</g:i>
+        </g:Info>
+        <g:Data tag="Data">
+            <g:d tag="d:Case">A standalone case in the study<g:dc tag="dc:StudyCase">Unique identifier for the case</g:dc>
+                <g:dc tag="dc:truth">Truth label for the case</g:dc>
+                <g:dc tag="dc:Modality1">First modality used for the case</g:dc>
+                <g:dc tag="dc:Modality2">Second modality used for the case</g:dc>
+            </g:d>
+            <g:d tag="d:Experiment">A standalone simulation experiment<g:de tag="de:ExperimentID">Unique identifier for the experiment</g:de>
+                <g:de tag="de:StudyCase">Identifier for the case being studied</g:de>
+                <g:de tag="de:ReaderID">Identifier for the reader conducting the experiment</g:de>
+                <g:de tag="de:Modality">Modality used in the experiment</g:de>
+                <g:de tag="de:ConfidenceRating">Confidence rating given by the reader</g:de>
+                <g:de tag="de:BIRADS">BI-RADS assessment given by the reader</g:de>
+                <g:de tag="de:TimestampImageLoaded">Timestamp when the image was loaded</g:de>
+                <g:de tag="de:TimestampReportSubmitted">Timestamp when the report was submitted</g:de>
+            </g:d>
+            <g:d tag="d:Reader">A reader participating in the study<g:dr tag="dr:ReaderID">Unique identifier for the reader</g:dr>
+                <g:dr tag="dr:Name">Name of the reader</g:dr>
+                <g:dr tag="dr:Institution">Institution of the reader</g:dr>
+                <g:dr tag="dr:Experience">Experience level of the reader</g:dr>
+            </g:d>
+        </g:Data>
+    </Glossary>
+    <Data xmlns:d="http://www.uchicago.edu/cROC/roc/data">
+        <Cases>
+            <d:Case id="dcedca6c6a-79a1-407c-89eb-e530e64177e1">
+                <dc:StudyCase>CRRS-4001</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc6a9c0601-ec72-4fc6-bb3b-d8eec9433704">
+                <dc:StudyCase>CRRS-4002</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>50</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4b</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc0a174eb6-d11e-46cd-8496-9011cf5eeb92">
+                <dc:StudyCase>CRRS-4003</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dce6e38b54-c02c-4e29-9dc9-b97cfefe56b3">
+                <dc:StudyCase>CRRS-4004</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc74fc6cba-f5a4-4b21-b65d-c77bc2bd7f83">
+                <dc:StudyCase>CRRS-4005</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcedc5e7ce-6e63-4175-9909-7ced03b2a8b0">
+                <dc:StudyCase>CRRS-4006</dc:StudyCase>
+                <dc:truth>C</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name />
+                    <d:LOM />
+                    <d:BIRADS />
+                    <d:ForcedBIRADS />
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc891046ef-bcde-408c-b5c3-a6376387494d">
+                <dc:StudyCase>CRRS-4007</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc7bde5543-e452-4de6-abc1-23254e0b7259">
+                <dc:StudyCase>CRRS-4008</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>75</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4c</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>100</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc79224376-a83c-475e-aa35-019464a29717">
+                <dc:StudyCase>CRRS-4009</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc77b7b8dc-c07a-4881-94e7-210d4b2965e9">
+                <dc:StudyCase>CRRS-4010</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>20</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4a</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>10</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4a</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc4adca4f8-a644-4f27-a7eb-57e73906bb47">
+                <dc:StudyCase>CRRS-4011</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc5b416cee-c96d-4a79-a483-e7e28e247eb5">
+                <dc:StudyCase>CRRS-4012</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc92ef22f0-c10f-40cd-8afb-f7a616664b30">
+                <dc:StudyCase>CRRS-4013</dc:StudyCase>
+                <dc:truth>C</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name />
+                    <d:LOM />
+                    <d:BIRADS />
+                    <d:ForcedBIRADS />
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc49730e8c-3ab3-4922-8409-36c4394100cf">
+                <dc:StudyCase>CRRS-4014</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>2</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcbb61e5b4-4e32-4326-bd7f-6b33eab44f7d">
+                <dc:StudyCase>CRRS-4015</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>25</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4a</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>10</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4a</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcd83ec4d5-8a44-4388-911e-f1d08eeb9c6c">
+                <dc:StudyCase>CRRS-4016</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>26</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4b</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcac7141f2-a34b-4551-83e7-9b8a8d6b02d7">
+                <dc:StudyCase>CRRS-4017</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc738fef0b-05d8-4ae4-a29e-1d15bfe82494">
+                <dc:StudyCase>CRRS-4018</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcaebb62a3-c867-418c-86d6-ca0c86002da8">
+                <dc:StudyCase>CRRS-4019</dc:StudyCase>
+                <dc:truth>C</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name />
+                    <d:LOM />
+                    <d:BIRADS />
+                    <d:ForcedBIRADS />
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc90444377-ca4c-409a-a1f9-1c0c82c1f10c">
+                <dc:StudyCase>CRRS-4020</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcd64361fe-22ee-4f9b-8e4e-cddec0c18315">
+                <dc:StudyCase>CRRS-4021</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcfa066304-dc11-4f3c-af97-bb7144779e95">
+                <dc:StudyCase>CRRS-4022</dc:StudyCase>
+                <dc:truth>B</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>3</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>96</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc1614203c-d0fa-4548-bcf1-ce83062c5860">
+                <dc:StudyCase>CRRS-4023</dc:StudyCase>
+                <dc:truth>C</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name />
+                    <d:LOM />
+                    <d:BIRADS />
+                    <d:ForcedBIRADS />
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc3a3df39f-13ff-4122-83d4-38f288c2a379">
+                <dc:StudyCase>CRRS-4024</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>5</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4a</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>90</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4c</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc9c89cb01-b269-47e9-8c5f-b06d3a289a41">
+                <dc:StudyCase>CRRS-4025</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>15</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4a</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>98</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcbc7c8ab4-dd10-4dd7-8fab-25c1954b092d">
+                <dc:StudyCase>CRRS-4026</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcca321806-d24b-45cc-8e57-54612bdbded7">
+                <dc:StudyCase>CRRS-4027</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>20</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4a</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcc9bcccf5-efd1-426c-bf75-fe480402785d">
+                <dc:StudyCase>CRRS-4028</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>2</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcfc827319-603f-4e8c-b86d-481bb8cc27bb">
+                <dc:StudyCase>CRRS-4029</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>5</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>3</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc221adbf0-b34d-45fc-8c5d-298bb0dde8d7">
+                <dc:StudyCase>CRRS-4030</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcd9940ce8-6005-4599-bef9-cee321b79055">
+                <dc:StudyCase>CRRS-4031</dc:StudyCase>
+                <dc:truth>B</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>95</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>100</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcee144971-ed34-4e5b-9ff3-a6e482441be2">
+                <dc:StudyCase>CRRS-4032</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc4df1f5dc-d37c-44bf-8b61-6fad08bf299a">
+                <dc:StudyCase>CRRS-4033</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>5</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>1</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc602c1f7a-9079-445a-b455-2e4642967b15">
+                <dc:StudyCase>CRRS-4034</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>75</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4c</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcd704c137-4bef-4dad-829e-ea04a18d7b48">
+                <dc:StudyCase>CRRS-4035</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc94f185a1-5873-4729-87ac-dceaf5203f13">
+                <dc:StudyCase>CRRS-4036</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc8fd1e856-6429-438a-b4e4-14bd63af31b6">
+                <dc:StudyCase>CRRS-4037</dc:StudyCase>
+                <dc:truth>B</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>80</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4c</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>90</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4c</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcc25b0955-4855-4499-8055-2770747d34c6">
+                <dc:StudyCase>CRRS-4038</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc7b457e20-eaa7-45d0-9a73-9d5f100d3ff2">
+                <dc:StudyCase>CRRS-4039</dc:StudyCase>
+                <dc:truth>B</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>15</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>3</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>60</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4b</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc7d16e995-b3b5-4cfc-938d-e19323c81bce">
+                <dc:StudyCase>CRRS-4040</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc5e5abe5a-5ab6-44f5-9427-c675e24c56f4">
+                <dc:StudyCase>CRRS-4041</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc23e104ce-9409-4ccc-a2e1-b0777d121c6a">
+                <dc:StudyCase>CRRS-4042</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>96</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>96</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4c</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc010b0a3b-126e-467b-8a67-c39b2faf8fb3">
+                <dc:StudyCase>CRRS-4043</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcb463b66b-8dee-4ad9-af9a-7506887739ca">
+                <dc:StudyCase>CRRS-4044</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>70</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4c</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>95</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcb0e3468a-1f96-40c9-b6d1-ed9d23b7d8a9">
+                <dc:StudyCase>CRRS-4045</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcd4de33ee-dcce-4f1d-bd96-3d2e928afd07">
+                <dc:StudyCase>CRRS-4046</dc:StudyCase>
+                <dc:truth>B</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc143ff71c-3341-4830-ab7d-5ab6f019ce83">
+                <dc:StudyCase>CRRS-4047</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc77cf6e83-1924-4df2-8ff8-c4b43a33b1a5">
+                <dc:StudyCase>CRRS-4048</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>50</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4b</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc1b12c6c8-a08b-4715-8d39-834ab94b7f39">
+                <dc:StudyCase>CRRS-4049</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dca787095c-bb2f-4f60-9f1a-0a1d00dd0940">
+                <dc:StudyCase>CRRS-4050</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc0de66bc1-b42d-4ea5-bd16-92fc3e371204">
+                <dc:StudyCase>CRRS-4051</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc48c9cb60-e67e-4e96-bf3c-7c2ffcb25da1">
+                <dc:StudyCase>CRRS-4052</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc5731a1bb-f4ff-4f47-bef3-79268fe40c38">
+                <dc:StudyCase>CRRS-4053</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>25</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4a</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>25</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4a</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcdcf1aba8-3d21-49e1-b4cb-ac7bba6c4aee">
+                <dc:StudyCase>CRRS-4054</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc32487af3-8b40-4202-abcd-01c5518a90f1">
+                <dc:StudyCase>CRRS-4055</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcb8e9b0e0-b7d9-47fb-86fa-e0cefce552df">
+                <dc:StudyCase>CRRS-4056</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcf30ec63a-b74c-409b-bcdd-16f0aea1f64a">
+                <dc:StudyCase>CRRS-4057</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>70</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4c</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>100</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcfb795836-a1f0-4652-86c7-f633316fa8cb">
+                <dc:StudyCase>CRRS-4058</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcaaa8d4ce-e00e-4871-8bd5-8d216ae5f602">
+                <dc:StudyCase>CRRS-4059</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc430124de-a7dd-4783-af99-535918b0b81b">
+                <dc:StudyCase>CRRS-4060</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>15</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4a</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>100</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcd0c37942-19ec-487c-9c06-e0eb5c36c294">
+                <dc:StudyCase>CRRS-4061</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcbcf07530-339f-4845-b9e2-d4b4317f9570">
+                <dc:StudyCase>CRRS-4062</dc:StudyCase>
+                <dc:truth>B</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>96</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>100</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcf4cf39db-78a4-405e-b98f-ade47a96c4c0">
+                <dc:StudyCase>CRRS-4063</dc:StudyCase>
+                <dc:truth>B</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>3</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>90</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4c</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc24d79be4-ae64-4fb9-95a9-94d34ee7575f">
+                <dc:StudyCase>CRRS-4064</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc77605b6b-d4c7-4111-b88f-6d46f91969da">
+                <dc:StudyCase>CRRS-4065</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc5954128b-6cba-4ac1-8062-5f98abfdaa8e">
+                <dc:StudyCase>CRRS-4066</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>2</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>2</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcba7b17c0-3d0b-4aec-9918-0279b3dd349d">
+                <dc:StudyCase>CRRS-4067</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>3</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc5973b8da-fa54-463d-b4f3-170fd3296b88">
+                <dc:StudyCase>CRRS-4068</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>3</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcbbe6fc59-a8e5-4a00-85b0-3e2ea79c65be">
+                <dc:StudyCase>CRRS-4069</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc73a1cd45-bdb8-4829-92f7-1a1f01869418">
+                <dc:StudyCase>CRRS-4070</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc247d72a7-0efd-445c-99c6-ea9ca5bcdc2f">
+                <dc:StudyCase>CRRS-4071</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcb0ce8b2b-b78b-4434-bae3-824e59e715b3">
+                <dc:StudyCase>CRRS-4072</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>40</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4b</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc0c1b9d60-3678-4b23-ab23-fb93019fa3d0">
+                <dc:StudyCase>CRRS-4073</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc7fd6d229-cc18-4dc0-a4a1-f4ae8c6d339d">
+                <dc:StudyCase>CRRS-4074</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc17ce1665-d34e-4103-ad19-000b5d64e374">
+                <dc:StudyCase>CRRS-4075</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcd6caa1af-f6cb-4f7a-bc0a-d0b0884e148c">
+                <dc:StudyCase>CRRS-4076</dc:StudyCase>
+                <dc:truth>D</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>10</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>2</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name />
+                    <d:LOM />
+                    <d:BIRADS />
+                    <d:ForcedBIRADS />
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dccc9dcabd-02a9-4b88-abe8-cbb72419cc97">
+                <dc:StudyCase>CRRS-4077</dc:StudyCase>
+                <dc:truth>B</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>70</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4c</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>100</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcce3c2c94-4ffc-44b5-a322-6674dae060cd">
+                <dc:StudyCase>CRRS-4078</dc:StudyCase>
+                <dc:truth>B</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>99</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>100</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc7e2314a0-426c-4b44-bfcd-c5780559e41c">
+                <dc:StudyCase>CRRS-4079</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc3e3e2ac6-0de5-4ebe-8d02-632cf3c0ba75">
+                <dc:StudyCase>CRRS-4080</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>2</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc55d48484-2188-485f-baec-e3ea84a932aa">
+                <dc:StudyCase>CRRS-4081</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>4</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4a</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>4</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4a</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dce9803766-17b3-486b-bf31-efa1490c188b">
+                <dc:StudyCase>CRRS-4082</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc9edb6cf9-415f-4853-95a0-55d1f3225829">
+                <dc:StudyCase>CRRS-4083</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc7baac56b-0591-4e43-9fa7-6384bb45ec70">
+                <dc:StudyCase>CRRS-4084</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>3</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>1</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc3ebe55e0-e072-4db7-ad16-c38ff17e89b7">
+                <dc:StudyCase>CRRS-4085</dc:StudyCase>
+                <dc:truth>C</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name />
+                    <d:LOM />
+                    <d:BIRADS />
+                    <d:ForcedBIRADS />
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcf8d7647c-7fe9-4a65-b46a-b719250fa252">
+                <dc:StudyCase>CRRS-4086</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc28bed15d-4444-4f65-9e29-8b16ab859bd0">
+                <dc:StudyCase>CRRS-4087</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dce50f4539-0063-4037-a85d-d385e767cdd9">
+                <dc:StudyCase>CRRS-4088</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcae50b1a0-4f3c-4423-9330-61b757472af2">
+                <dc:StudyCase>CRRS-4089</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc7d4e7609-0046-4e30-b80a-be1a72ecd433">
+                <dc:StudyCase>CRRS-4090</dc:StudyCase>
+                <dc:truth>D</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>55</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4b</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name />
+                    <d:LOM />
+                    <d:BIRADS />
+                    <d:ForcedBIRADS />
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcfe9fe836-ab33-4533-b610-16f12df9c71a">
+                <dc:StudyCase>CRRS-4091</dc:StudyCase>
+                <dc:truth>B</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>50</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4b</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>50</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4b</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc5595a8a8-f82d-4e0f-a0a6-47c4da52428c">
+                <dc:StudyCase>CRRS-4092</dc:StudyCase>
+                <dc:truth>C</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name />
+                    <d:LOM />
+                    <d:BIRADS />
+                    <d:ForcedBIRADS />
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc84391b32-83ed-4420-9b78-c43e85b4971d">
+                <dc:StudyCase>CRRS-4093</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>75</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4c</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>100</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc0e061d9e-b028-4892-b16f-1bc8815c095b">
+                <dc:StudyCase>CRRS-4094</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc3b179709-c10f-4af9-b271-ec7d59cfcdd4">
+                <dc:StudyCase>CRRS-4095</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>3</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>5</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4a</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc8f7b0fdf-c298-4897-b485-375cec0bbb82">
+                <dc:StudyCase>CRRS-4096</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcfa5335c6-5f9f-4b15-84a7-5f9087b04984">
+                <dc:StudyCase>CRRS-4097</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcf84efa08-353f-4909-9860-4341efd04a41">
+                <dc:StudyCase>CRRS-4098</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcf0763459-9f80-4af3-8081-015b0f4028bf">
+                <dc:StudyCase>CRRS-4099</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dca39af7a5-5f1d-480d-bfd0-d10d79f5407c">
+                <dc:StudyCase>CRRS-4100</dc:StudyCase>
+                <dc:truth>C</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name />
+                    <d:LOM />
+                    <d:BIRADS />
+                    <d:ForcedBIRADS />
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcb9c376e2-1231-41ba-8cb2-283b9075f8e6">
+                <dc:StudyCase>CRRS-4101</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc9c6ce681-cda9-4cdf-a403-6ad5773c65d9">
+                <dc:StudyCase>CRRS-4102</dc:StudyCase>
+                <dc:truth>C</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name />
+                    <d:LOM />
+                    <d:BIRADS />
+                    <d:ForcedBIRADS />
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc28291dad-4824-46ba-bdfc-a832bacd97d2">
+                <dc:StudyCase>CRRS-4103</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc85e7d4f7-a5a7-45c3-9370-af0c71dd8bf1">
+                <dc:StudyCase>CRRS-4104</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc2559beae-7b0f-4173-b600-d998de79fc6e">
+                <dc:StudyCase>CRRS-4105</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>10</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4a</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcf30ae897-6379-4694-9313-61379042ea60">
+                <dc:StudyCase>CRRS-4106</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>3</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>3</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc6cf0dfca-5dc8-4525-b95c-0fb383934f4d">
+                <dc:StudyCase>CRRS-4107</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dce7a58e26-b2f5-4968-812c-9f460f254de8">
+                <dc:StudyCase>CRRS-4108</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc4457f781-e945-462c-9e6c-8a5e2473d126">
+                <dc:StudyCase>CRRS-4109</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dccedf5e33-0eb6-4393-9395-8a4b41038488">
+                <dc:StudyCase>CRRS-4110</dc:StudyCase>
+                <dc:truth>B</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>85</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4c</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>95</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc0cfdf32f-6233-4a92-94a9-6198fac89810">
+                <dc:StudyCase>CRRS-4111</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc46ac3a25-8a86-46c8-8f4f-fe2885031d8d">
+                <dc:StudyCase>CRRS-4112</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>2</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc873bbeee-6175-4de3-9d2f-210a55498fe3">
+                <dc:StudyCase>CRRS-4113</dc:StudyCase>
+                <dc:truth>C</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name />
+                    <d:LOM />
+                    <d:BIRADS />
+                    <d:ForcedBIRADS />
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcd50f1d90-13d8-4155-b025-5446af0757b9">
+                <dc:StudyCase>CRRS-4114</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcef940f53-e481-4afa-b309-03b25cff8170">
+                <dc:StudyCase>CRRS-4115</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcea0b662d-0415-450a-a903-83fd52d42345">
+                <dc:StudyCase>CRRS-4116</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc3eddf095-2644-4c1a-8393-4757baa7a64c">
+                <dc:StudyCase>CRRS-4117</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc2520a40f-1315-4046-b66a-0bfa4d26d176">
+                <dc:StudyCase>CRRS-4118</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc3808075e-9657-43d6-b267-52f3a88165a0">
+                <dc:StudyCase>CRRS-4119</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc1145dfaa-3474-49d3-b03c-1c913fbbcf47">
+                <dc:StudyCase>CRRS-4120</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>3</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc27b58439-cc8f-4223-98b5-2bc2f68802d0">
+                <dc:StudyCase>CRRS-4121</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcbe2f149e-ea2a-4e25-966a-a6f460852111">
+                <dc:StudyCase>CRRS-4122</dc:StudyCase>
+                <dc:truth>B</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>70</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4c</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>100</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc6f90b5bb-2b12-41c4-981a-f3098f9d619a">
+                <dc:StudyCase>CRRS-4123</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc762dec59-e13e-4dbb-a9bd-76ae949af9d8">
+                <dc:StudyCase>CRRS-4124</dc:StudyCase>
+                <dc:truth>D</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name />
+                    <d:LOM />
+                    <d:BIRADS />
+                    <d:ForcedBIRADS />
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc4570a2a6-45a9-4bc5-a1e9-1f76e8ced13a">
+                <dc:StudyCase>CRRS-4125</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcb95d1457-1d3e-4561-8a9e-19af389d67e7">
+                <dc:StudyCase>CRRS-4126</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>15</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4a</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc7a4ef0ce-e686-4d4c-ba90-e3dc8ad7385d">
+                <dc:StudyCase>CRRS-4127</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>98</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc87425019-88e8-4c65-b166-3342a0f66860">
+                <dc:StudyCase>CRRS-4128</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcb186fb38-ace2-46ea-a072-1f2ce9b7a7a2">
+                <dc:StudyCase>CRRS-4129</dc:StudyCase>
+                <dc:truth>C</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name />
+                    <d:LOM />
+                    <d:BIRADS />
+                    <d:ForcedBIRADS />
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcffd1a194-47d4-4c69-926a-4b7691ef8dc3">
+                <dc:StudyCase>CRRS-4130</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc52600f75-e465-4417-9051-3bb2c974cb58">
+                <dc:StudyCase>CRRS-4131</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc6776c312-315b-449a-bf0b-0f45701a66fe">
+                <dc:StudyCase>CRRS-4132</dc:StudyCase>
+                <dc:truth>B</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>70</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4c</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>99</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc9407eef6-7579-4701-8b8d-4e89a1cde48f">
+                <dc:StudyCase>CRRS-4133</dc:StudyCase>
+                <dc:truth>C</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name />
+                    <d:LOM />
+                    <d:BIRADS />
+                    <d:ForcedBIRADS />
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcfa4983f5-559b-425d-9a6d-0d80438b1d88">
+                <dc:StudyCase>CRRS-4134</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc5f089345-31bb-4794-8be7-2b7e44637a62">
+                <dc:StudyCase>CRRS-4135</dc:StudyCase>
+                <dc:truth>B</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc6c7be74f-52c7-4648-925c-cd4144e6e299">
+                <dc:StudyCase>CRRS-4136</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc1b0f0716-c9ce-4c68-8b40-e14164b67a5a">
+                <dc:StudyCase>CRRS-4137</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcddc03e2d-6ce2-47a6-a88d-598a4a1e3197">
+                <dc:StudyCase>CRRS-4138</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc22f9e3a2-462d-4bed-872f-dc36dc09700a">
+                <dc:StudyCase>CRRS-4139</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc1138b746-8838-4eab-bdc6-d1949825629a">
+                <dc:StudyCase>CRRS-4140</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc02cddeb8-9e6b-4502-9230-b78eee8d6252">
+                <dc:StudyCase>CRRS-4141</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcfd06b532-d10c-43f1-bf9a-90932f50ecb2">
+                <dc:StudyCase>CRRS-4142</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>60</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4b</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>15</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4a</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcde7e6a30-d870-4038-b825-431be714cbe1">
+                <dc:StudyCase>CRRS-4143</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcdadc6388-1899-4130-8dbb-131fee20ddec">
+                <dc:StudyCase>CRRS-4144</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcb4d0ce07-6447-41ef-aec2-bb8fb95ed14f">
+                <dc:StudyCase>CRRS-4145</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc5f1164e6-a8ea-466f-a756-72a5a6ccec2e">
+                <dc:StudyCase>CRRS-4146</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc03baddc7-f8c8-4811-8819-42eb530276d8">
+                <dc:StudyCase>CRRS-4147</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>100</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc9d78244d-996a-4aa7-b6e1-6b7297a86d1c">
+                <dc:StudyCase>CRRS-4148</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcad412254-dcda-48c2-a1e7-c95c4662e27b">
+                <dc:StudyCase>CRRS-4149</dc:StudyCase>
+                <dc:truth>B</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>70</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4b</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>70</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4b</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc8085bf93-6d6a-42c7-b8b1-b770f311c4be">
+                <dc:StudyCase>CRRS-4150</dc:StudyCase>
+                <dc:truth>B</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>100</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>100</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc57f1565b-c9d8-4a5a-8efe-ff60836b8788">
+                <dc:StudyCase>CRRS-4151</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcac1750db-46d8-4d87-ae1b-6df5eef54096">
+                <dc:StudyCase>CRRS-4152</dc:StudyCase>
+                <dc:truth>B</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>75</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4c</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>100</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcca433712-4e4f-46b9-9707-0c92e942800e">
+                <dc:StudyCase>CRRS-4153</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc369d7ee4-496f-427e-b546-137b1803ef06">
+                <dc:StudyCase>CRRS-4154</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc32288bd8-6107-47ac-aa64-596d9df21c80">
+                <dc:StudyCase>CRRS-4155</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc663b1457-585b-4faf-ae7a-ebcf58aa992d">
+                <dc:StudyCase>CRRS-4156</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>55</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4c</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>100</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcdc9636d6-5daf-443d-bf8f-aa72663dcd06">
+                <dc:StudyCase>CRRS-4157</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc07af7d9d-9117-43cb-9615-55b8479d4b56">
+                <dc:StudyCase>CRRS-4158</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcd5c308fb-c7e3-47bb-bdef-d5ef2c21f750">
+                <dc:StudyCase>CRRS-4159</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc9005aa57-96a9-4846-be62-eaeba117a53d">
+                <dc:StudyCase>CRRS-4160</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc68284fb8-9047-4fe8-aae8-35cf6895e14d">
+                <dc:StudyCase>CRRS-4161</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcaaa60d20-7aa3-4695-9139-5c630c7d39ee">
+                <dc:StudyCase>CRRS-4162</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcd5e74cfa-d945-409e-9842-4563f76e11aa">
+                <dc:StudyCase>CRRS-4163</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>69</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4c</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc646290d6-0e85-486e-9fcb-cf1c99108213">
+                <dc:StudyCase>CRRS-4164</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>3</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>3</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc4c11388d-064a-43c8-8a25-25ff4a308983">
+                <dc:StudyCase>CRRS-4165</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcfb60a2f6-7168-4013-a946-371d5df31bda">
+                <dc:StudyCase>CRRS-4166</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc6a98c734-18fa-4535-9b6e-cb68caf2bea4">
+                <dc:StudyCase>CRRS-4167</dc:StudyCase>
+                <dc:truth>B</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>96</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>100</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcafc9e926-2efb-4bcc-a1fb-4c264cda728c">
+                <dc:StudyCase>CRRS-4168</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>100</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcac23afa3-f2ac-4d40-98c2-a4a16b4dfe53">
+                <dc:StudyCase>CRRS-4169</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dccbab1bc4-083a-4970-ad96-1f55df314ab2">
+                <dc:StudyCase>CRRS-4170</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc821cb500-e37d-4de8-a185-91fa93472b80">
+                <dc:StudyCase>CRRS-4171</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc6602e783-5d71-4e49-880e-a7ac3231bb58">
+                <dc:StudyCase>CRRS-4172</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>76</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4c</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dce5e4a9a1-3654-46d1-9993-802af02fbd97">
+                <dc:StudyCase>CRRS-4173</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc09988bb3-3535-4d5e-b9bb-e68f872bb7a5">
+                <dc:StudyCase>CRRS-4174</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc33dbd2fb-3c6e-421d-a405-ff99b7d3f37d">
+                <dc:StudyCase>CRRS-4175</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>5</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>3</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcd392faa8-e8ea-46a5-aa9d-f1390206ff84">
+                <dc:StudyCase>CRRS-4176</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc57909b12-d08c-4cc8-a7d0-3f8cf1f07bad">
+                <dc:StudyCase>CRRS-4177</dc:StudyCase>
+                <dc:truth>C</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name />
+                    <d:LOM />
+                    <d:BIRADS />
+                    <d:ForcedBIRADS />
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc06d8fbb1-5821-42b9-91df-9310b9cfc174">
+                <dc:StudyCase>CRRS-4178</dc:StudyCase>
+                <dc:truth>B</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>30</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4b</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>99</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcaf81523e-1955-4ef0-a531-47020fee45a3">
+                <dc:StudyCase>CRRS-4179</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>75</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4c</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcf64c4aae-cff6-4508-92ef-f3b2b8733f24">
+                <dc:StudyCase>CRRS-4180</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc4b1d2ea8-1df5-4c70-af9c-1bd504707893">
+                <dc:StudyCase>CRRS-4181</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dce67cf83a-d369-40c8-bc7a-3485c3243b20">
+                <dc:StudyCase>CRRS-4182</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc8618b6cd-dd75-448e-89f2-82c55a4173e4">
+                <dc:StudyCase>CRRS-4183</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc428acd62-aa9e-4047-89ed-c4050f385b2d">
+                <dc:StudyCase>CRRS-4184</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc7a8f9c6d-4c50-416d-a121-e66e12009baf">
+                <dc:StudyCase>CRRS-4185</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcef5b928b-5095-495c-b0c0-eae257d21911">
+                <dc:StudyCase>CRRS-4186</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>96</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc681483f5-3567-43ff-b1ce-a6fa4c50d704">
+                <dc:StudyCase>CRRS-4187</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc5fac4210-ed73-455a-8cb2-1b54bd457286">
+                <dc:StudyCase>CRRS-4188</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc7dfa6516-68fc-4acd-92cc-121d8d225af3">
+                <dc:StudyCase>CRRS-4189</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc205b34a4-3ad4-4188-a9ac-02e23b9171d1">
+                <dc:StudyCase>CRRS-4190</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>30</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>4b</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>10</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>3</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcaaa01f8d-1ff7-45d7-a749-ec5ba3c55e88">
+                <dc:StudyCase>CRRS-4191</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc907ebae5-1e93-4a8f-b75e-dd738f4d5b22">
+                <dc:StudyCase>CRRS-4192</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc70455132-b81e-46fa-bccc-6f3d629954d7">
+                <dc:StudyCase>CRRS-4193</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dce617bed3-6f22-4d30-a412-8583d80ee4b0">
+                <dc:StudyCase>CRRS-4194</dc:StudyCase>
+                <dc:truth>B</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>96</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>100</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc1f274d71-cc70-4cb2-8cbd-97efa4a81831">
+                <dc:StudyCase>CRRS-4195</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcd24ab050-5c56-4d0e-b679-95131f00efdc">
+                <dc:StudyCase>CRRS-4196</dc:StudyCase>
+                <dc:truth>B</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>3</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc61badb4e-99ae-47a8-83c9-513ed95afce8">
+                <dc:StudyCase>CRRS-4197</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc32d0b24c-b261-4d07-a900-2e4bb72a27fc">
+                <dc:StudyCase>CRRS-4198</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dcbeb9d9d7-8f07-474b-80e2-1f074cba1a5a">
+                <dc:StudyCase>CRRS-4199</dc:StudyCase>
+                <dc:truth>N</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>2</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>3</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>0</d:LOM>
+                    <d:BIRADS>1</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation />
+                </dc:Modality2>
+            </d:Case>
+            <d:Case id="dc41d471b9-a509-4079-a1c2-c4b9b7ef709a">
+                <dc:StudyCase>CRRS-4200</dc:StudyCase>
+                <dc:truth>A</dc:truth>
+                <dc:Modality1>
+                    <d:Name>MG</d:Name>
+                    <d:LOM>1</d:LOM>
+                    <d:BIRADS>2</d:BIRADS>
+                    <d:ForcedBIRADS>NA</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>0</d:DetectionAtLocation>
+                </dc:Modality1>
+                <dc:Modality2>
+                    <d:Name>MG+ABUS</d:Name>
+                    <d:LOM>100</d:LOM>
+                    <d:BIRADS>0</d:BIRADS>
+                    <d:ForcedBIRADS>5</d:ForcedBIRADS>
+                    <d:DetectionAtLocation>1</d:DetectionAtLocation>
+                </dc:Modality2>
+            </d:Case>
+        </Cases>
+        <Experiments />
+        <Readers />
+    </Data>
+</root>

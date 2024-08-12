@@ -29,7 +29,7 @@ from ROCBoxGenerator import LaTeXROCBoxGenerator
 from ROCAllinOne import LaTeXROCReport
 
 from TexConfidenceGenerator import LaTeXConfidenceGenerator
-from sci_cr import CI
+from sci_cr import CI, CG2
 
 
 # Ensure necessary directories exist
@@ -576,7 +576,7 @@ def calculate_confidence():
         n_n = int(request.form['n_n'])
         tp = int(request.form['tp'])
         n_p = int(request.form['n_p'])
-        alpha = float(request.form['alpha'])
+        alpha = [float(a) for a in request.form.getlist('alpha')]
         name = request.form['name']
         file_name = request.form['file_name']
 
@@ -591,7 +591,6 @@ def calculate_confidence():
             'tp': tp,
             'n_p': n_p,
             'alpha': alpha,
-            'name': name,
         }
         form_data_path = os.path.join(job_dir, 'temp', 'form_data.json')
         with open(form_data_path, 'w') as f:
@@ -1079,35 +1078,50 @@ def process_confidence_job(job_id, form_data, style=None):
         update_user_log_status(job_id, 'RUNNING')
         logging.info(f'Confidence interval job {job_id} has been started!')
 
-        # Perform the confidence interval calculation
         ci_calculator = CI()
-        fpf_ci = ci_calculator.cal(x=form_data['fp'], n=form_data['n_n'], alpha=[form_data['alpha']])
-        tpf_ci = ci_calculator.cal(x=form_data['tp'], n=form_data['n_p'], alpha=[form_data['alpha']])
+        alphas = form_data['alpha']  
+        fpf_ci = ci_calculator.cal(x=form_data['fp'], n=form_data['n_n'], alpha=alphas)
+        tpf_ci = ci_calculator.cal(x=form_data['tp'], n=form_data['n_p'], alpha=alphas)
 
         result = {
             'fpf_mle': fpf_ci['mle'],
-            'fpf_lower': fpf_ci['CI'][form_data['alpha']]['L'],
-            'fpf_upper': fpf_ci['CI'][form_data['alpha']]['R'],
             'tpf_mle': tpf_ci['mle'],
-            'tpf_lower': tpf_ci['CI'][form_data['alpha']]['L'],
-            'tpf_upper': tpf_ci['CI'][form_data['alpha']]['R'],
-            'confidence_level': (1 - form_data['alpha']) * 100
+            'confidence_intervals': {}
         }
+        
+        for alpha in alphas:
+            result['confidence_intervals'][str(alpha)] = {
+                'fpf_lower': fpf_ci['CI'][alpha]['L'],
+                'fpf_upper': fpf_ci['CI'][alpha]['R'],
+                'tpf_lower': tpf_ci['CI'][alpha]['L'],
+                'tpf_upper': tpf_ci['CI'][alpha]['R'],
+                'confidence_level': (1 - alpha) * 100
+            }
 
-        # Save the result to a JSON file
         result_path = os.path.join(output_folder, 'result.json')
         with open(result_path, 'w') as f:
             json.dump(result, f, indent=4)
 
-        # Generate LaTeX file for the confidence interval plot
         generator = LaTeXConfidenceGenerator()
+        cg2 = CG2()
+        
+        fp = form_data['fp']
+        tp = form_data['tp']
+        n_n = form_data['n_n']
+        n_p = form_data['n_p']
+        dx = 0.001
+        dy = 0.001
+        
+        tex = {'dir': output_folder, 'CR_data': 'cg2_CR_results'}
+    
+        esmt = cg2.cal(fp=fp, n_n=n_n, tp=tp, n_p=n_p, alpha=alphas, dx=dx, dy=dy, FPF=None, TPF=None, tex=tex, verbose=True, CI=ci_calculator)
+
+        data_file_path = os.path.join(tex['dir'], f"{tex['CR_data']}.{fp}_{n_n}.{tp}_{n_p}")
+        with open(data_file_path, 'r') as file:
+            data = file.read()
+
         generator.set_confidence_data(
-            fpf=result['fpf_mle'],
-            tpf=result['tpf_mle'],
-            fpf_lower=result['fpf_lower'],
-            fpf_upper=result['fpf_upper'],
-            tpf_lower=result['tpf_lower'],
-            tpf_upper=result['tpf_upper']
+            fp=fp, n_n=n_n, tp=tp, n_p=n_p, alpha=alphas, data=data
         )
         
         generator.set_header_info(
@@ -1115,7 +1129,6 @@ def process_confidence_job(job_id, form_data, style=None):
             author=form_data['name']
         )
 
-        # Ensure style is a dictionary, not a file path
         if style and isinstance(style, str):
             with open(style, 'r') as file:
                 style = json.load(file)
@@ -1133,8 +1146,8 @@ def process_confidence_job(job_id, form_data, style=None):
             f.write(latex_document)
 
         image_document = generator.generate_latex_document()
-        latex_file_path = os.path.join(output_folder, 'ROC_confidence_image.tex')
-        with open(latex_file_path, 'w') as f:
+        image_file_path = os.path.join(output_folder, 'ROC_confidence_image.tex')
+        with open(image_file_path, 'w') as f:
             f.write(image_document)
             
         update_user_log_status(job_id, 'COMPLETED')

@@ -469,11 +469,11 @@ class CG2():
             return
         __text = ''
         __dict = {
-            'mle': r'\\newcommand{\MLE}[0]{',
-            '99':  r'\\newcommand{\CIninetynine}[0]{',
-            '95':  r'\\newcommand{\CIninetyfive}[0]{',
-            '90':  r'\\newcommand{\CIninety}[0]{',
-            '80':  r'\\newcommand{\CIeighty}[0]{', 
+            'mle': r'\newcommand{\MLE}[0]{',
+            '99':  r'\newcommand{\CIninetynine}[0]{',
+            '95':  r'\newcommand{\CIninetyfive}[0]{',
+            '90':  r'\newcommand{\CIninety}[0]{',
+            '80':  r'\newcommand{\CIeighty}[0]{', 
         }  
         __text += f"{__dict['mle']}\n"
         __text += f"  ({esmt['mle']['FPF']:.4f},{esmt['mle']['TPF']:.4f})\n"
@@ -493,10 +493,10 @@ class CG2():
                              fpf_CI=esmt['CI FPF'], tpf_CI=esmt['CI TPF'])
     
         __dict = {
-            '99':  r'\\newcommand{\CRninetynine}[0]{',
-            '95':  r'\\newcommand{\CRninetyfive}[0]{',
-            '90':  r'\\newcommand{\CRninety}[0]{',
-            '80':  r'\\newcommand{\CReighty}[0]{', 
+            '99':  r'\newcommand{\CRninetynine}[0]{',
+            '95':  r'\newcommand{\CRninetyfive}[0]{',
+            '90':  r'\newcommand{\CRninety}[0]{',
+            '80':  r'\newcommand{\CReighty}[0]{', 
         }   
         for a in sorted(esmt['CG2'].keys()):
             k = f"{(1. - a) * 100:.0f}"
