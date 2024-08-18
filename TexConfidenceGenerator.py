@@ -82,7 +82,7 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
         Generate LaTeX commands for plotting the confidence intervals and the ellipse with customization.
         """
         commands = r"""
-\newcommand{\DrawOperatingPOINT}[2]{
+\newcommand{\DrawOperatingPOINT}[3]{
 \addplot[
   color=#2,
   mark=*,
@@ -90,33 +90,32 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
   only marks,
   on layer={axis foreground},
 ] coordinates {#1};
-% \addlegendentry{#2}
+\if\relax\detokenize{#3}\relax\else\addlegendentry{#3}\fi
 }
 
-\newcommand{\DrawPOINTSoCR}[2]{
+\newcommand{\DrawPOINTSoCR}[3]{
 \addplot[
   color=#2,
   mark=*,
   mark size=.1pt,
   line width=1pt,
-%  only marks,
   on layer={axis foreground},
 ] coordinates {#1};
-% \addlegendentry{#2}
+\if\relax\detokenize{#3}\relax\else\addlegendentry{#3}\fi
 }
 
-\newcommand{\DrawPOINTSoCI}[2]{
+\newcommand{\DrawPOINTSoCI}[3]{
 \addplot[
   color=#2,
   mark=*,
   mark size=.1pt,
-%  dashed,
+  dashed,
+  dash pattern=on 3pt off 3pt,  % Adjust the dash pattern here
   line width=1pt,
-%  only marks,
   on layer={axis foreground},
 ] coordinates {#1};
-% \addlegendentry{#2}
-}       
+\if\relax\detokenize{#3}\relax\else\addlegendentry{#3}\fi
+}      
 """
         return commands
 
@@ -125,29 +124,29 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
         Generates LaTeX commands for plotting the confidence intervals and CRs, based on the specified alpha values.
         """
         alpha_commands = {
-            0.01: "\\DrawPOINTSoCR{\\CRninetynine}{COLORoNinetynine}\n\\DrawPOINTSoCI{\\CIninetynine}{COLORoNinetynine}",
-            0.05: "\\DrawPOINTSoCR{\\CRninetyfive}{COLORoNinetyfive}\n\\DrawPOINTSoCI{\\CIninetyfive}{COLORoNinetyfive}",
-            0.10: "\\DrawPOINTSoCR{\\CRninety}{COLORoNinety}\n\\DrawPOINTSoCI{\\CIninety}{COLORoNinety}",
-            0.20: "\\DrawPOINTSoCR{\\CReighty}{COLORoEighty}\n\\DrawPOINTSoCI{\\CIeighty}{COLORoEighty}",
+            0.01: "\\DrawPOINTSoCR{\\CRninetynine}{COLORoNinetynine}{CR Ninetynine}\n\\DrawPOINTSoCI{\\CIninetynine}{COLORoNinetynine}{CI Ninetynine}",
+            0.05: "\\DrawPOINTSoCR{\\CRninetyfive}{COLORoNinetyfive}{CR Ninetyfive}\n\\DrawPOINTSoCI{\\CIninetyfive}{COLORoNinetyfive}{CI Ninetyfive}",
+            0.10: "\\DrawPOINTSoCR{\\CRninety}{COLORoNinety}{CR Ninety}\n\\DrawPOINTSoCI{\\CIninety}{COLORoNinety}{CI Ninety}",
+            0.20: "\\DrawPOINTSoCR{\\CReighty}{COLORoEighty}{CR Eighty}\n\\DrawPOINTSoCI{\\CIeighty}{COLORoEighty}{CI Eighty}",
         }
         
         alpha_CI_commands = {
-            0.01: "\\DrawPOINTSoCI{\\CIninetynine}{COLORoNinetynine}",
-            0.05: "\\DrawPOINTSoCI{\\CIninetyfive}{COLORoNinetyfive}",
-            0.10: "\\DrawPOINTSoCI{\\CIninety}{COLORoNinety}",
-            0.20: "\\DrawPOINTSoCI{\\CIeighty}{COLORoEighty}",
+            0.01: "\\DrawPOINTSoCI{\\CIninetynine}{COLORoNinetynine}{}",
+            0.05: "\\DrawPOINTSoCI{\\CIninetyfive}{COLORoNinetyfive}{}",
+            0.10: "\\DrawPOINTSoCI{\\CIninety}{COLORoNinety}{}",
+            0.20: "\\DrawPOINTSoCI{\\CIeighty}{COLORoEighty}{}",
         }
 
         alpha_CR_commands = {
-            0.01: "\\DrawPOINTSoCR{\\CRninetynine}{COLORoNinetynine}",
-            0.05: "\\DrawPOINTSoCR{\\CRninetyfive}{COLORoNinetyfive}",
-            0.10: "\\DrawPOINTSoCR{\\CRninety}{COLORoNinety}",
-            0.20: "\\DrawPOINTSoCR{\\CReighty}{COLORoEighty}",
+            0.01: "\\DrawPOINTSoCR{\\CRninetynine}{COLORoNinetynine}{}",
+            0.05: "\\DrawPOINTSoCR{\\CRninetyfive}{COLORoNinetyfive}{}",
+            0.10: "\\DrawPOINTSoCR{\\CRninety}{COLORoNinety}{}",
+            0.20: "\\DrawPOINTSoCR{\\CReighty}{COLORoEighty}{}",
         }
         
         commands = r"""
 \newcommand{\PlotFRAMEoCIoCR}{
-  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}
+  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}{Operating Point}
 """
 
         for a in self.alpha:
@@ -159,7 +158,7 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
 
         commands += r"""
 \newcommand{\PlotFRAMEoCI}{
-  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}
+  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}{}
 """
 
         for a in self.alpha:
@@ -171,7 +170,7 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
 
         commands += r"""
 \newcommand{\PlotFRAMEoCR}{
-  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}
+  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}{}
 """
 
         for a in self.alpha:
@@ -187,73 +186,73 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
                 if a == 0.01:
                     commands += r"""
 \newcommand{\PlotFRAMEoNinetynineoCIoCR}{
-  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}
-  \DrawPOINTSoCR{\CRninetynine}{COLORoNinetynine}
-  \DrawPOINTSoCI{\CIninetynine}{COLORoNinetynine}
+  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}{Ninetynine}
+  \DrawPOINTSoCR{\CRninetynine}{COLORoNinetynine}{CR Ninetynine}
+  \DrawPOINTSoCI{\CIninetynine}{COLORoNinetynine}{CI Ninetynine}
 }
 
 \newcommand{\PlotFRAMEoNinetynineoCI}{
-  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}
-  \DrawPOINTSoCI{\CIninetynine}{COLORoNinetynine}
+  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}{}
+  \DrawPOINTSoCI{\CIninetynine}{COLORoNinetynine}{}
 }
 
 \newcommand{\PlotFRAMEoNinetynineoCR}{
-  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}
-  \DrawPOINTSoCR{\CRninetynine}{COLORoNinetynine}
+  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}{}
+  \DrawPOINTSoCR{\CRninetynine}{COLORoNinetynine}{}
 }
 """
                 elif a == 0.05:
                     commands += r"""
 \newcommand{\PlotFRAMEoNinetyfiveoCIoCR}{
-  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}
-  \DrawPOINTSoCR{\CRninetyfive}{COLORoNinetyfive}
-  \DrawPOINTSoCI{\CIninetyfive}{COLORoNinetyfive}
+  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}{Ninetyfive}
+  \DrawPOINTSoCR{\CRninetyfive}{COLORoNinetyfive}{CR Ninetyfive}
+  \DrawPOINTSoCI{\CIninetyfive}{COLORoNinetyfive}{CI Ninetyfive}
 }
 
 \newcommand{\PlotFRAMEoNinetyfiveoCI}{
-  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}
-  \DrawPOINTSoCI{\CIninetyfive}{COLORoNinetyfive}
+  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}{}
+  \DrawPOINTSoCI{\CIninetyfive}{COLORoNinetyfive}{}
 }
 
 \newcommand{\PlotFRAMEoNinetyfiveoCR}{
-  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}
-  \DrawPOINTSoCR{\CRninetyfive}{COLORoNinetyfive}
+  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}{}
+  \DrawPOINTSoCR{\CRninetyfive}{COLORoNinetyfive}{}
 }
 """
                 elif a == 0.10:
                     commands += r"""
 \newcommand{\PlotFRAMEoNinetyoCIoCR}{
-  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}
-  \DrawPOINTSoCR{\CRninety}{COLORoNinety}
-  \DrawPOINTSoCI{\CIninety}{COLORoNinety}
+  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}{Ninety}
+  \DrawPOINTSoCR{\CRninety}{COLORoNinety}{CR Ninety}
+  \DrawPOINTSoCI{\CIninety}{COLORoNinety}{CI Ninety}
 }
 
 \newcommand{\PlotFRAMEoNinetyoCI}{
-  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}
-  \DrawPOINTSoCI{\CIninety}{COLORoNinety}
+  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}{}
+  \DrawPOINTSoCI{\CIninety}{COLORoNinety}{}
 }
 
 \newcommand{\PlotFRAMEoNinetCR}{
-  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}
-  \DrawPOINTSoCR{\CRninety}{COLORoNinety}
+  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}{}
+  \DrawPOINTSoCR{\CRninety}{COLORoNinety}{}
 }
 """
                 elif a == 0.20:
                     commands += r"""
 \newcommand{\PlotFRAMEoEightyoCIoCR}{
-  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}
-  \DrawPOINTSoCR{\CReighty}{COLORoEighty}
-  \DrawPOINTSoCI{\CIeighty}{COLORoEighty}
+  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}{Eighty}
+  \DrawPOINTSoCR{\CReighty}{COLORoEighty}{CR Eighty}
+  \DrawPOINTSoCI{\CIeighty}{COLORoEighty}{CI Eighty}
 }
 
 \newcommand{\PlotFRAMEoEightyoCI}{
-  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}
-  \DrawPOINTSoCI{\CIeighty}{COLORoEighty}
+  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}{}
+  \DrawPOINTSoCI{\CIeighty}{COLORoEighty}{}
 }
 
 \newcommand{\PlotFRAMEoEightyoCR}{
-  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}
-  \DrawPOINTSoCR{\CReighty}{COLORoEighty}
+  \DrawOperatingPOINT{\MLE}{COLORoNinetynine}{}
+  \DrawPOINTSoCR{\CReighty}{COLORoEighty}{}
 }
 """
 
@@ -274,12 +273,23 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
   yticklabels={{, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0}},
 ] #1
 }
+
+\newcommand{\PlotMainFIG}[1]{
+\nextgroupplot[
+  xlabel = {\textbf{{FPF}}},
+  ylabel = {{\textbf{{TPF}}}},
+  xticklabels={{, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0}},
+  yticklabels={{, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0}},
+  legend style={at={(0.42,1.3)}, anchor=north, legend columns=6, font=\small}, 
+  legend cell align={left},
+] #1
+}
 """
 
     def generate_confidence_group_commands(self):
         commands = r"""
 \newcommand{\PlotFIGoCIoCR}[0]{
-  \PlotFIG{\PlotFRAMEoCIoCR}
+  \PlotMainFIG{\PlotFRAMEoCIoCR}
 }
 \newcommand{\PlotFIGoCI}[0]{
   \PlotFIG{\PlotFRAMEoCI}
@@ -294,7 +304,7 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
                 if a == 0.01:
                     commands += r"""
 \newcommand{\PlotFIGoNinetynineoCIoCR}[0]{
-  \PlotFIG{\PlotFRAMEoNinetynineoCIoCR}
+  \PlotMainFIG{\PlotFRAMEoNinetynineoCIoCR}
 }
 
 \newcommand{\PlotFIGoNinetynineoCI}[0]{
@@ -308,7 +318,7 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
                 elif a == 0.05:
                     commands += r"""
 \newcommand{\PlotFIGoNinetyfiveoCIoCR}[0]{
-  \PlotFIG{\PlotFRAMEoNinetyfiveoCIoCR}
+  \PlotMainFIG{\PlotFRAMEoNinetyfiveoCIoCR}
 }
 
 \newcommand{\PlotFIGoNinetyfiveoCI}[0]{
@@ -322,7 +332,7 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
                 elif a == 0.10:
                     commands += r"""
 \newcommand{\PlotFIGoNinetyoCIoCR}[0]{
-  \PlotFIG{\PlotFRAMEoNinetyoCIoCR}
+  \PlotMainFIG{\PlotFRAMEoNinetyoCIoCR}
 }
 
 \newcommand{\PlotFIGoNinetyoCI}[0]{
@@ -336,7 +346,7 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
                 elif a == 0.20:
                     commands += r"""
 \newcommand{\PlotFIGoEightyoCIoCR}[0]{
-  \PlotFIG{\PlotFRAMEoEightyoCIoCR}
+  \PlotMainFIG{\PlotFRAMEoEightyoCIoCR}
 }
 
 \newcommand{\PlotFIGoEightyoCIoCR}[0]{
@@ -395,12 +405,14 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
         
         if len(self.alpha) == 1:
             body_commands = r"""
+  \textbf{}
   \MakeAfigure{\PlotFIGoCIoCR}
   \MakeAfigure{\PlotFIGoCI}
   \MakeAfigure{\PlotFIGoCR}
 """
         else:
             body_commands = r"""
+  \textbf{}
   \MakeAfigure{\PlotFIGoCIoCR}
   \MakeAfigure{\PlotFIGoCI}
   \MakeAfigure{\PlotFIGoCR}
@@ -408,24 +420,32 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
             for a in self.alpha:
                 if a == 0.01:
                     body_commands += r"""
+  \newpage
+  \textbf{}
   \MakeAfigure{\PlotFIGoNinetynineoCIoCR}
   \MakeAfigure{\PlotFIGoNinetynineoCI}
   \MakeAfigure{\PlotFIGoNinetynineoCR}
 """         
                 elif a == 0.05:
                     body_commands += r"""
+  \newpage
+  \textbf{}
   \MakeAfigure{\PlotFIGoNinetyfiveoCIoCR}
   \MakeAfigure{\PlotFIGoNinetyfiveoCI}
   \MakeAfigure{\PlotFIGoNinetyfiveoCR}
 """
                 elif a == 0.10:
                     body_commands += r"""
+  \newpage
+  \textbf{}
   \MakeAfigure{\PlotFIGoNinetyoCIoCR}
   \MakeAfigure{\PlotFIGoNinetyoCI}
   \MakeAfigure{\PlotFIGoNinetyoCR}
 """
                 elif a == 0.10:
                     body_commands += r"""
+  \newpage
+  \textbf{}
   \MakeAfigure{\PlotFIGoEightyoCIoCR}
   \MakeAfigure{\PlotFIGoEightyoCI}
   \MakeAfigure{\PlotFIGoEightyoCR}
