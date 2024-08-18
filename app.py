@@ -1120,6 +1120,7 @@ def process_confidence_job(job_id, form_data, style=None):
         with open(data_file_path, 'r') as file:
             data = file.read()
 
+        print(alphas)
         generator.set_confidence_data(
             fp=fp, n_n=n_n, tp=tp, n_p=n_p, alpha=alphas, data=data
         )
@@ -1157,7 +1158,6 @@ def process_confidence_job(job_id, form_data, style=None):
         error_message = str(e)
         update_user_log_status(job_id, 'FAILED', error_message=error_message, analysis_name='Confidence Interval Calculation', analysis_type='confidence')
         logging.error(f'Error processing confidence interval job: {e}')
-
 
 if __name__ == '__main__':
     os.makedirs(DATA_DIR, exist_ok=True)
