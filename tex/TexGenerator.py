@@ -1,9 +1,9 @@
-# ROCGenerator.py
+# TexGenerator.py
 #
 # Copyright (C) 2024-2030 Yun Liu
 # University of Chicago
 #
-# LaTeX ROC Generator
+# LaTeX Generator
 # 
 
 

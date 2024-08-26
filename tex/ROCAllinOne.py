@@ -1,3 +1,10 @@
+# ROCAllInOne.py
+#
+# Copyright (C) 2024-2030 Yun Liu
+# University of Chicago
+#
+#
+
 import sys
 import os
 import re
@@ -7,11 +14,11 @@ import string
 from openpyxl import load_workbook
 from datetime import datetime
 
-from TexGenerator import LaTeXGenerator
-from ROCBoxGenerator import LaTeXROCBoxGenerator
-from ROCAveGenerator import LaTeXROCAveGenerator
-from ROCReaderGenerator import LaTeXROCReaderGenerator
-from ROCReaderAveGenerator import LaTeXROCReaderAveGenerator
+from tex.TexGenerator import LaTeXGenerator
+from tex.ROCBoxGenerator import LaTeXROCBoxGenerator
+from tex.ROCAveGenerator import LaTeXROCAveGenerator
+from tex.ROCReaderGenerator import LaTeXROCReaderGenerator
+from tex.ROCReaderAveGenerator import LaTeXROCReaderAveGenerator
 
 class LaTeXROCReport(LaTeXGenerator):
     def __init__(self):

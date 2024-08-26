@@ -22,14 +22,14 @@ import logging
 from werkzeug.datastructures import FileStorage
 
 from config import Config
-from ROCAveGenerator import LaTeXROCAveGenerator
-from ROCReaderGenerator import LaTeXROCReaderGenerator 
-from ROCReaderAveGenerator import LaTeXROCReaderAveGenerator
-from ROCBoxGenerator import LaTeXROCBoxGenerator
-from ROCAllinOne import LaTeXROCReport
+from tex.ROCAveGenerator import LaTeXROCAveGenerator
+from tex.ROCReaderGenerator import LaTeXROCReaderGenerator 
+from tex.ROCReaderAveGenerator import LaTeXROCReaderAveGenerator
+from tex.ROCBoxGenerator import LaTeXROCBoxGenerator
+from tex.ROCAllinOne import LaTeXROCReport
 
-from TexConfidenceGenerator import LaTeXConfidenceGenerator
-from sci_cr import CI, CG2
+from tex.TexConfidenceGenerator import LaTeXConfidenceGenerator
+from tex.sci_cr import CI, CG2
 
 
 # Ensure necessary directories exist

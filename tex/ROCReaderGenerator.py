@@ -13,7 +13,7 @@ import pandas as pd
 import string
 import json
 from openpyxl import load_workbook
-from ROCAveGenerator import LaTeXROCAveGenerator
+from tex.ROCAveGenerator import LaTeXROCAveGenerator
 
 class LaTeXROCReaderGenerator(LaTeXROCAveGenerator):
     def __init__(self):

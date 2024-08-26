@@ -1,4 +1,3 @@
-
 # ROC_Analysis
 
 **[This analysis tool is still in development.]**
@@ -79,6 +78,7 @@ Once the application is running, open your web browser and navigate to `http://l
 - `static/`: Static files including CSS, JavaScript, and images.
 - `logs/`: Directory for storing log files.
 - `data/`: Directory for storing user data and job files.
+- `tex/`: Directory for generate tex file
 
 ## Troubleshooting
 

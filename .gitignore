@@ -12,6 +12,8 @@ Sample/
 venv/
 .env/
 
+tex/__pycache__/
+
 # Ignore OS-specific files
 .DS_Store
 Thumbs.db

@@ -15,7 +15,7 @@ import string
 import subprocess
 import itertools
 from datetime import datetime
-from TexGenerator import LaTeXGenerator
+from tex.TexGenerator import LaTeXGenerator
 
 
 class LaTeXROCAveGenerator(LaTeXGenerator):

@@ -1,8 +1,8 @@
-from TexGenerator import LaTeXGenerator
+from tex.TexGenerator import LaTeXGenerator
 import sys
 import os
 import json
-from sci_cr import CI, CG2
+from tex.sci_cr import CI, CG2
 
 class LaTeXConfidenceGenerator(LaTeXGenerator):
     def __init__(self):
@@ -477,11 +477,11 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
   \MakeAfigure{{\PlotFIGoCI}}
   \MakeAfigure{{\PlotFIGoCR}}
 """
-            body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]} shows the ROC plot with both Confidence Intervals (CI) and Credible Regions (CR).}}"
+            body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot with both Confidence Intervals (CI) and Credible Regions (CR).}}"
             fig_num += 1
-            body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]} displays the ROC plot with Confidence Intervals (CI) only.}}"
+            body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot with Confidence Intervals (CI) only.}}"
             fig_num += 1
-            body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]} presents the ROC plot with Credible Regions (CR) only.}}"
+            body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot with Credible Regions (CR) only.}}"
             fig_num += 1
         else:
             body_commands = rf"""
@@ -490,11 +490,11 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
   \MakeAfigure{{\PlotFIGoCI}}
   \MakeAfigure{{\PlotFIGoCR}}
 """
-            body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]} shows the ROC plot with both Confidence Intervals (CI) and Credible Regions (CR).}}"
+            body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot with both Confidence Intervals (CI) and Credible Regions (CR).}}"
             fig_num += 1
-            body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]} displays the ROC plot with Confidence Intervals (CI) only.}}"
+            body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot with Confidence Intervals (CI) only.}}"
             fig_num += 1
-            body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]} presents the ROC plot with Credible Regions (CR) only.}}"
+            body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot with Credible Regions (CR) only.}}"
             fig_num += 1
 
             for a in self.alpha:
@@ -507,11 +507,11 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
   \MakeAfigure{{\PlotFIGoNinetynineoCI}}
   \MakeAfigure{{\PlotFIGoNinetynineoCR}}
 """
-                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]} shows the ROC plot for 99\% CI and CR.}}"
+                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot for 99\% CI and CR.}}"
                     fig_num += 1
-                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]} displays the ROC plot for 99\% CI only.}}"
+                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot for 99\% CI only.}}"
                     fig_num += 1
-                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]} presents the ROC plot for 99\% CR only.}}"
+                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot for 99\% CR only.}}"
                     fig_num += 1
                 elif a == 0.05:
                     body_commands += rf"""
@@ -522,11 +522,11 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
   \MakeAfigure{{\PlotFIGoNinetyfiveoCI}}
   \MakeAfigure{{\PlotFIGoNinetyfiveoCR}}
 """
-                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]} shows the ROC plot for 95\% CI and CR.}}"
+                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot for 95\% CI and CR.}}"
                     fig_num += 1
-                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]} displays the ROC plot for 95\% CI only.}}"
+                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot for 95\% CI only.}}"
                     fig_num += 1
-                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]} presents the ROC plot for 95\% CR only.}}"
+                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot for 95\% CR only.}}"
                     fig_num += 1
                 elif a == 0.10:
                     body_commands += rf"""
@@ -537,11 +537,11 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
   \MakeAfigure{{\PlotFIGoNinetyoCI}}
   \MakeAfigure{{\PlotFIGoNinetyoCR}}
 """
-                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]} shows the ROC plot for 90\% CI and CR.}}"
+                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot for 90\% CI and CR.}}"
                     fig_num += 1
-                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]} displays the ROC plot for 90\% CI only.}}"
+                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot for 90\% CI only.}}"
                     fig_num += 1
-                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]} presents the ROC plot for 90\% CR only.}}"
+                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot for 90\% CR only.}}"
                     fig_num += 1
                 elif a == 0.20:
                     body_commands += rf"""
@@ -552,11 +552,11 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
   \MakeAfigure{{\PlotFIGoEightyoCI}}
   \MakeAfigure{{\PlotFIGoEightyoCR}}
 """
-                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]} shows the ROC plot for 80\% CI and CR.}}"
+                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot for 80\% CI and CR.}}"
                     fig_num += 1
-                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]} displays the ROC plot for 80\% CI only.}}"
+                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot for 80\% CI only.}}"
                     fig_num += 1
-                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]} presents the ROC plot for 80\% CR only.}}"
+                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot for 80\% CR only.}}"
                     fig_num += 1
 
         # Combine captions into one paragraph per page

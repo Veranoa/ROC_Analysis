@@ -12,7 +12,7 @@ import string
 import pandas as pd
 import json
 from openpyxl import load_workbook
-from ROCReaderGenerator import LaTeXROCReaderGenerator 
+from tex.ROCReaderGenerator import LaTeXROCReaderGenerator 
 
 class LaTeXROCReaderAveGenerator(LaTeXROCReaderGenerator):
     def __init__(self):

@@ -14,7 +14,7 @@ import json
 import string
 import subprocess
 from datetime import datetime
-from TexGenerator import LaTeXGenerator
+from tex.TexGenerator import LaTeXGenerator
 
 class LaTeXROCBoxGenerator(LaTeXGenerator):
     def __init__(self):
