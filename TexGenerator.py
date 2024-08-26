@@ -19,7 +19,14 @@ import json
 
 class LaTeXGenerator:
     def __init__(self):
-        self.default_colors = ['blue', 'red', 'black', 'green', 'orange']  # Default colors for ROC plots
+        self.default_colors = [
+            '{0, 0, 1}',   # blue
+            '{1, 0, 0}',   # red
+            '{0, 0, 0}',   # black
+            '{0, 1, 0}',   # green
+            '{1, 0.65, 0}' # orange
+        ]
+
         self.header_info = {
             "file_name": "ROC Analysis",
             "author": "Author",

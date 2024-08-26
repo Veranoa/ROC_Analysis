@@ -120,7 +120,7 @@ class LaTeXROCReaderGenerator(LaTeXROCAveGenerator):
             for method_index, (method_name, file, sheets) in enumerate(methods):
                 color_index = method_index % len(self.reader_colors)
                 color = self.reader_colors[color_index]
-                color_definitions += f"\\definecolor{{COLORo{type_name}{method_name}}}{{named}}{{{color}}}\n"
+                color_definitions += f"\\definecolor{{COLORo{type_name}{method_name}}}{{rgb}}{color}\n"
         color_definitions += "\n"
         return color_definitions
 

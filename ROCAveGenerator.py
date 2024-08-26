@@ -111,7 +111,7 @@ class LaTeXROCAveGenerator(LaTeXGenerator):
         """
         color_definitions = "% Define ROC curve colors:\n"
         for i, color in enumerate(self.ave_colors):
-            color_definitions += f"\\definecolor{{COLORo{i}}}{{named}}{{{color}}}\n"
+            color_definitions += f"\\definecolor{{COLORo{i}}}{{rgb}}{color}\n"
         color_definitions += "\n"
         return color_definitions
 
@@ -323,15 +323,14 @@ if __name__ == "__main__":
 
         # Generate full document
         export_file_path = os.path.join(output_dir, 'average_settings.json')
-        # generator.export_ave_settings(export_file_path)
-        # with open(export_file_path, 'w') as file:
-        #     json.dump(generator.export_ave_settings(), file, indent=4)
-
-        generator.import_ave_settings(export_file_path)
-        new_export_file_path = os.path.join(
-            output_dir, 'new_average_settings.json')
-        with open(new_export_file_path, 'w') as file:
+        with open(export_file_path, 'w') as file:
             json.dump(generator.export_ave_settings(), file, indent=4)
+
+        # generator.import_ave_settings(export_file_path)
+        # new_export_file_path = os.path.join(
+        #     output_dir, 'new_average_settings.json')
+        # with open(new_export_file_path, 'w') as file:
+        #     json.dump(generator.export_ave_settings(), file, indent=4)
 
         latex_document = generator.generate_latex_document()
         doc_file_path = os.path.join(output_dir, 'ROC_average_analysis.tex')

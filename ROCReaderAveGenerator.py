@@ -18,7 +18,7 @@ class LaTeXROCReaderAveGenerator(LaTeXROCReaderGenerator):
     def __init__(self):
         super().__init__()
         self.reader_files = []
-        self.readerave_colors = ['blue', 'red']
+        self.readerave_colors = ['{0, 0, 1}', '{1, 0, 0}']
         
         self.readerave_color_definitions = ""
         self.readerave_plot_frame_commands = ""
@@ -100,8 +100,8 @@ class LaTeXROCReaderAveGenerator(LaTeXROCReaderGenerator):
         """
         color_definitions = "% Define ROC curve colors:\n"
         color_definitions += f"""
-\\definecolor{{COLORo0}}{{named}}{{{self.readerave_colors[0]}}}
-\\definecolor{{COLORo1}}{{named}}{{{self.readerave_colors[1]}}}
+\\definecolor{{COLORo0}}{{rgb}}{self.readerave_colors[0]}
+\\definecolor{{COLORo1}}{{rgb}}{self.readerave_colors[1]}
 
 """
         return color_definitions
