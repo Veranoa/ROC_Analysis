@@ -1,3 +1,4 @@
+from datetime import datetime
 from tex.TexGenerator import LaTeXGenerator
 import sys
 import os
@@ -18,8 +19,16 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
             'COLORoEighty': '{1.0, .65, 0.}',
         }
         
-        self.figure_number_position = (0.92, 0.92)
+        self.header_info = {
+            "file_name": "Confidence Region/Confidence Interval Analysis",
+            "author": "Author",
+            "date": datetime.now().strftime("%Y/%m/%d")  # Default header information
+        }
+        
+        self.figure_number_position = (-0.2, 0.92)
         self.legend_position = (0.65, 0.45)
+        
+        self.fig_labels = ['(a)', '(b)', '(c)', '(d)', '(e)', '(f)', '(g)', '(h)','(i)', '(j)', '(k)', '(l)', '(m)', '(n)', '(o)', '(p)']
         
         self.confidence_data_commands = ""
         self.confidence_color_definitions = ""
@@ -126,42 +135,120 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
         """
         Generates LaTeX commands for plotting the confidence intervals and CRs, based on the specified alpha values.
         """
-        alpha_commands = {
-            0.01: "\\DrawPOINTSoCR{\\CRninetynine}{COLORoNinetynine}{CR Ninetynine}\n  \\DrawPOINTSoCI{\\CIninetynine}{COLORoNinetynine}{CI Ninetynine}",
-            0.05: "\\DrawPOINTSoCR{\\CRninetyfive}{COLORoNinetyfive}{CR Ninetyfive}\n  \\DrawPOINTSoCI{\\CIninetyfive}{COLORoNinetyfive}{CI Ninetyfive}",
-            0.10: "\\DrawPOINTSoCR{\\CRninety}{COLORoNinety}{CR Ninety}\n  \\DrawPOINTSoCI{\\CIninety}{COLORoNinety}{CI Ninety}",
-            0.20: "\\DrawPOINTSoCR{\\CReighty}{COLORoEighty}{CR Eighty}\n  \\DrawPOINTSoCI{\\CIeighty}{COLORoEighty}{CI Eighty}",
-        }
+        commands = ""
         
-        alpha_CI_commands = {
-            0.01: "\\DrawPOINTSoCI{\\CIninetynine}{COLORoNinetynine}{CI Ninetynine}",
-            0.05: "\\DrawPOINTSoCI{\\CIninetyfive}{COLORoNinetyfive}{CI Ninetyfive}",
-            0.10: "\\DrawPOINTSoCI{\\CIninety}{COLORoNinety}{CI Ninety}",
-            0.20: "\\DrawPOINTSoCI{\\CIeighty}{COLORoEighty}{CI Eighty}",
-        }
+        if len(self.alpha) > 1:
+            for a in self.alpha:
+                if a == 0.01:
+                    commands += r"""
+\newcommand{\PlotFRAMEoNinetynineoCR}{
+  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Operating Point} 
+  \DrawPOINTSoCR{\CRninetynine}{COLORoNinetynine}{99\% CR } 
+}
+
+\newcommand{\PlotFRAMEoNinetynineoCI}{
+  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Operating Point}
+  \DrawPOINTSoCI{\CIninetynine}{COLORoNinetynine}{99\% SCI} 
+}
+
+\newcommand{\PlotFRAMEoNinetynineoCIoCR}{
+  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Operating Point}
+  \DrawPOINTSoCR{\CRninetynine}{COLORoNinetynine}{99\% CR}
+  \DrawPOINTSoCI{\CIninetynine}{COLORoNinetynine}{99\% SCI}
+}
+"""
+                elif a == 0.05:
+                    commands += r"""
+\newcommand{\PlotFRAMEoNinetyfiveoCR}{
+  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Operating Point}
+  \DrawPOINTSoCR{\CRninetyfive}{COLORoNinetyfive}{95\% CR}
+}
+
+\newcommand{\PlotFRAMEoNinetyfiveoCI}{
+  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Operating Point}
+  \DrawPOINTSoCI{\CIninetyfive}{COLORoNinetyfive}{95\% SCI}
+}
+
+\newcommand{\PlotFRAMEoNinetyfiveoCIoCR}{
+  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Operating Point}
+  \DrawPOINTSoCR{\CRninetyfive}{COLORoNinetyfive}{95\% CR}
+  \DrawPOINTSoCI{\CIninetyfive}{COLORoNinetyfive}{95\% SCI}
+}
+"""
+                elif a == 0.10:
+                    commands += r"""
+\newcommand{\PlotFRAMEoNinetyoCR}{
+  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Operating Point}
+  \DrawPOINTSoCR{\CRninety}{COLORoNinety}{90\% CR}
+}
+
+\newcommand{\PlotFRAMEoNinetyoCI}{
+  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Operating Point}
+  \DrawPOINTSoCI{\CIninety}{COLORoNinety}{90\% SCI}
+}
+
+\newcommand{\PlotFRAMEoNinetyoCIoCR}{
+  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Operating Point}
+  \DrawPOINTSoCR{\CRninety}{COLORoNinety}{90\% CR}
+  \DrawPOINTSoCI{\CIninety}{COLORoNinety}{90\% SCI}
+}
+"""
+                elif a == 0.20:
+                    commands += r"""
+\newcommand{\PlotFRAMEoEightyoCR}{
+  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Operating Point}
+  \DrawPOINTSoCR{\CReighty}{COLORoEighty}{80\% CR}
+}
+
+\newcommand{\PlotFRAMEoEightyoCI}{
+  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Operating Point}
+  \DrawPOINTSoCI{\CIeighty}{COLORoEighty}{80\% SCI}
+}
+
+\newcommand{\PlotFRAMEoEightyoCIoCR}{
+  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Operating Point}
+  \DrawPOINTSoCR{\CReighty}{COLORoEighty}{80\% CR}
+  \DrawPOINTSoCI{\CIeighty}{COLORoEighty}{80\% SCI}
+}
+"""
 
         alpha_CR_commands = {
-            0.01: "\\DrawPOINTSoCR{\\CRninetynine}{COLORoNinetynine}{CR Ninetynine}",
-            0.05: "\\DrawPOINTSoCR{\\CRninetyfive}{COLORoNinetyfive}{CR Ninetyfive}",
-            0.10: "\\DrawPOINTSoCR{\\CRninety}{COLORoNinety}{CR Ninety}",
-            0.20: "\\DrawPOINTSoCR{\\CReighty}{COLORoEighty}{CR Eighty}",
+            0.01: "\\DrawPOINTSoCR{\\CRninetynine}{COLORoNinetynine}{99\\% CR}",
+            0.05: "\\DrawPOINTSoCR{\\CRninetyfive}{COLORoNinetyfive}{95\\% CR}",
+            0.10: "\\DrawPOINTSoCR{\\CRninety}{COLORoNinety}{90\\% CR}",
+            0.20: "\\DrawPOINTSoCR{\\CReighty}{COLORoEighty}{80\\% CR}",
         }
-        
-        commands = r"""
-\newcommand{\PlotFRAMEoCIoCR}{
+                
+        alpha_CI_commands = {
+            0.01: "\\DrawPOINTSoCI{\\CIninetynine}{COLORoNinetynine}{99\\% SCI}",
+            0.05: "\\DrawPOINTSoCI{\\CIninetyfive}{COLORoNinetyfive}{95\\% SCI}",
+            0.10: "\\DrawPOINTSoCI{\\CIninety}{COLORoNinety}{90\\% SCI}",
+            0.20: "\\DrawPOINTSoCI{\\CIeighty}{COLORoEighty}{80\\% SCI}",
+        }
+
+        alpha_commands = {
+            0.01: "\\DrawPOINTSoCR{\\CRninetynine}{COLORoNinetynine}{99\\% CR}\n  \\DrawPOINTSoCI{\\CIninetynine}{COLORoNinetynine}{99\\% SCI}",
+            0.05: "\\DrawPOINTSoCR{\\CRninetyfive}{COLORoNinetyfive}{95\\% CR}\n  \\DrawPOINTSoCI{\\CIninetyfive}{COLORoNinetyfive}{95\\% SCI}",
+            0.10: "\\DrawPOINTSoCR{\\CRninety}{COLORoNinety}{90\\% CR}\n  \\DrawPOINTSoCI{\\CIninety}{COLORoNinety}{90\\% SCI}",
+            0.20: "\\DrawPOINTSoCR{\\CReighty}{COLORoEighty}{80\\% CR}\n  \\DrawPOINTSoCI{\\CIeighty}{COLORoEighty}{80\\% SCI}",
+        }
+
+        commands += r"""
+\newcommand{\PlotFRAMEoCR}{
   \DrawOperatingPOINT{\MLE}{COLORoMLE}{Operating Point}
 """
 
         for a in self.alpha:
-            if a in alpha_commands:
-                commands += "  " + alpha_commands[a] + "\n"
+            if a in alpha_CR_commands:
+                commands += "  " + alpha_CR_commands[a] + "\n"
 
         commands += r"""}
 """
 
+
         commands += r"""
 \newcommand{\PlotFRAMEoCI}{
-  \DrawOperatingPOINT{\MLE}{COLORoMLE}{}
+  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Operating Point}
 """
 
         for a in self.alpha:
@@ -172,90 +259,15 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
 """
 
         commands += r"""
-\newcommand{\PlotFRAMEoCR}{
-  \DrawOperatingPOINT{\MLE}{COLORoMLE}{}
+\newcommand{\PlotFRAMEoCIoCR}{
+  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Operating Point}
 """
 
         for a in self.alpha:
-            if a in alpha_CR_commands:
-                commands += "  " + alpha_CR_commands[a] + "\n"
+            if a in alpha_commands:
+                commands += "  " + alpha_commands[a] + "\n"
 
         commands += r"""}
-"""
-
-        if len(self.alpha) > 1:
-            for a in self.alpha:
-                if a == 0.01:
-                    commands += r"""
-\newcommand{\PlotFRAMEoNinetynineoCIoCR}{
-  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Ninetynine}
-  \DrawPOINTSoCR{\CRninetynine}{COLORoNinetynine}{CR Ninetynine}
-  \DrawPOINTSoCI{\CIninetynine}{COLORoNinetynine}{CI Ninetynine}
-}
-
-\newcommand{\PlotFRAMEoNinetynineoCI}{
-  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Ninetynine}
-  \DrawPOINTSoCI{\CIninetynine}{COLORoNinetynine}{CI Ninetynine}
-}
-
-\newcommand{\PlotFRAMEoNinetynineoCR}{
-  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Ninetynine}
-  \DrawPOINTSoCR{\CRninetynine}{COLORoNinetynine}{CR Ninetynine}
-}
-"""
-                elif a == 0.05:
-                    commands += r"""
-\newcommand{\PlotFRAMEoNinetyfiveoCIoCR}{
-  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Ninetyfive}
-  \DrawPOINTSoCR{\CRninetyfive}{COLORoNinetyfive}{CR Ninetyfive}
-  \DrawPOINTSoCI{\CIninetyfive}{COLORoNinetyfive}{CI Ninetyfive}
-}
-
-\newcommand{\PlotFRAMEoNinetyfiveoCI}{
-  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Ninetyfive}
-  \DrawPOINTSoCI{\CIninetyfive}{COLORoNinetyfive}{CI Ninetyfive}
-}
-
-\newcommand{\PlotFRAMEoNinetyfiveoCR}{
-  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Ninetyfive}
-  \DrawPOINTSoCR{\CRninetyfive}{COLORoNinetyfive}{CR Ninetyfive}
-}
-"""
-                elif a == 0.10:
-                    commands += r"""
-\newcommand{\PlotFRAMEoNinetyoCIoCR}{
-  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Ninety}
-  \DrawPOINTSoCR{\CRninety}{COLORoNinety}{CR Ninety}
-  \DrawPOINTSoCI{\CIninety}{COLORoNinety}{CI Ninety}
-}
-
-\newcommand{\PlotFRAMEoNinetyoCI}{
-  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Ninety}
-  \DrawPOINTSoCI{\CIninety}{COLORoNinety}{CI Ninety}
-}
-
-\newcommand{\PlotFRAMEoNinetyoCR}{
-  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Ninety}
-  \DrawPOINTSoCR{\CRninety}{COLORoNinety}{CR Ninety}
-}
-"""
-                elif a == 0.20:
-                    commands += r"""
-\newcommand{\PlotFRAMEoEightyoCIoCR}{
-  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Eighty}
-  \DrawPOINTSoCR{\CReighty}{COLORoEighty}{CR Eighty}
-  \DrawPOINTSoCI{\CIeighty}{COLORoEighty}{CI Eighty}
-}
-
-\newcommand{\PlotFRAMEoEightyoCI}{
-  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Eighty}
-  \DrawPOINTSoCI{\CIeighty}{COLORoEighty}{CI Eighty}
-}
-
-\newcommand{\PlotFRAMEoEightyoCR}{
-  \DrawOperatingPOINT{\MLE}{COLORoMLE}{Eighty}
-  \DrawPOINTSoCR{\CReighty}{COLORoEighty}{CR Eighty}
-}
 """
 
         return commands
@@ -275,6 +287,10 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
   yticklabels={{, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0}},
   legend style={{at={{({self.legend_position[0]},{self.legend_position[1]})}}, anchor=north, font=\small}}, 
   legend cell align={{left}},
+  % Increase outer separation
+  enlarge x limits=0.2,
+  enlarge y limits=0.2,
+  clip=false,  % Allow drawing outside the axis
 ] #1
 
 % Add figure number in the top right corner
@@ -285,76 +301,76 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
 
     def generate_confidence_group_commands(self):
         fig_num = 0 
-        fig_labels = ['(a)', '(b)', '(c)', '(d)', '(e)', '(f)', '(g)', '(h)','(i)', '(j)', '(k)', '(l)', '(m)', '(n)', '(o)', '(p)']
+        commands = ""
         
-        commands = rf"""
-\newcommand{{\PlotFIGoCIoCR}}[0]{{
-  \PlotFIG{{\PlotFRAMEoCIoCR}}{{{fig_labels[fig_num]}}}
-}}
-\newcommand{{\PlotFIGoCI}}[0]{{
-  \PlotFIG{{\PlotFRAMEoCI}}{{{fig_labels[fig_num + 1]}}}
-}}
-\newcommand{{\PlotFIGoCR}}[0]{{
-  \PlotFIG{{\PlotFRAMEoCR}}{{{fig_labels[fig_num + 2]}}}
-}}
-"""
-        fig_num += 3 
-
         if len(self.alpha) > 1:
             for a in self.alpha:
                 if a == 0.01:
                     commands += rf"""
-\newcommand{{\PlotFIGoNinetynineoCIoCR}}[0]{{
-  \PlotFIG{{\PlotFRAMEoNinetynineoCIoCR}}{{{fig_labels[fig_num]}}}
+\newcommand{{\PlotFIGoNinetynineoCR}}[0]{{
+  \PlotFIG{{\PlotFRAMEoNinetynineoCR}}{{{self.fig_labels[fig_num]}}}
 }}
 \newcommand{{\PlotFIGoNinetynineoCI}}[0]{{
-  \PlotFIG{{\PlotFRAMEoNinetynineoCI}}{{{fig_labels[fig_num + 1]}}}
+  \PlotFIG{{\PlotFRAMEoNinetynineoCI}}{{{self.fig_labels[fig_num + 1]}}}
 }}
-\newcommand{{\PlotFIGoNinetynineoCR}}[0]{{
-  \PlotFIG{{\PlotFRAMEoNinetynineoCR}}{{{fig_labels[fig_num + 2]}}}
+\newcommand{{\PlotFIGoNinetynineoCIoCR}}[0]{{
+  \PlotFIG{{\PlotFRAMEoNinetynineoCIoCR}}{{{self.fig_labels[fig_num + 2]}}}
 }}
 """
                     fig_num += 3  
                 elif a == 0.05:
                     commands += rf"""
-\newcommand{{\PlotFIGoNinetyfiveoCIoCR}}[0]{{
-  \PlotFIG{{\PlotFRAMEoNinetyfiveoCIoCR}}{{{fig_labels[fig_num]}}}
+\newcommand{{\PlotFIGoNinetyfiveoCR}}[0]{{
+  \PlotFIG{{\PlotFRAMEoNinetyfiveoCR}}{{{self.fig_labels[fig_num]}}}
 }}
 \newcommand{{\PlotFIGoNinetyfiveoCI}}[0]{{
-  \PlotFIG{{\PlotFRAMEoNinetyfiveoCI}}{{{fig_labels[fig_num + 1]}}}
+  \PlotFIG{{\PlotFRAMEoNinetyfiveoCI}}{{{self.fig_labels[fig_num + 1]}}}
 }}
-\newcommand{{\PlotFIGoNinetyfiveoCR}}[0]{{
-  \PlotFIG{{\PlotFRAMEoNinetyfiveoCR}}{{{fig_labels[fig_num + 2]}}}
+\newcommand{{\PlotFIGoNinetyfiveoCIoCR}}[0]{{
+  \PlotFIG{{\PlotFRAMEoNinetyfiveoCIoCR}}{{{self.fig_labels[fig_num + 2]}}}
 }}
 """
                     fig_num += 3 
                 elif a == 0.10:
                     commands += rf"""
-\newcommand{{\PlotFIGoNinetyoCIoCR}}[0]{{
-  \PlotFIG{{\PlotFRAMEoNinetyoCIoCR}}{{{fig_labels[fig_num]}}}
+\newcommand{{\PlotFIGoNinetyoCR}}[0]{{
+  \PlotFIG{{\PlotFRAMEoNinetyoCR}}{{{self.fig_labels[fig_num]}}}
 }}
 \newcommand{{\PlotFIGoNinetyoCI}}[0]{{
-  \PlotFIG{{\PlotFRAMEoNinetyoCI}}{{{fig_labels[fig_num + 1]}}}
+  \PlotFIG{{\PlotFRAMEoNinetyoCI}}{{{self.fig_labels[fig_num + 1]}}}
 }}
-\newcommand{{\PlotFIGoNinetyoCR}}[0]{{
-  \PlotFIG{{\PlotFRAMEoNinetyoCR}}{{{fig_labels[fig_num + 2]}}}
+\newcommand{{\PlotFIGoNinetyoCIoCR}}[0]{{
+  \PlotFIG{{\PlotFRAMEoNinetyoCIoCR}}{{{self.fig_labels[fig_num + 2]}}}
 }}
 """
                     fig_num += 3  
                 elif a == 0.20:
                     commands += rf"""
-\newcommand{{\PlotFIGoEightyoCIoCR}}[0]{{
-  \PlotFIG{{\PlotFRAMEoEightyoCIoCR}}{{{fig_labels[fig_num]}}}
+\newcommand{{\PlotFIGoEightyoCR}}[0]{{
+  \PlotFIG{{\PlotFRAMEoEightyoCR}}{{{self.fig_labels[fig_num]}}}
 }}
 \newcommand{{\PlotFIGoEightyoCI}}[0]{{
-  \PlotFIG{{\PlotFRAMEoEightyoCI}}{{{fig_labels[fig_num + 1]}}}
+  \PlotFIG{{\PlotFRAMEoEightyoCI}}{{{self.fig_labels[fig_num + 1]}}}
 }}
-\newcommand{{\PlotFIGoEightyoCR}}[0]{{
-  \PlotFIG{{\PlotFRAMEoEightyoCR}}{{{fig_labels[fig_num + 2]}}}
+\newcommand{{\PlotFIGoEightyoCIoCR}}[0]{{
+  \PlotFIG{{\PlotFRAMEoEightyoCIoCR}}{{{self.fig_labels[fig_num + 2]}}}
 }}
 """
                     fig_num += 3  
 
+        commands += rf"""
+\newcommand{{\PlotFIGoCR}}[0]{{
+  \PlotFIG{{\PlotFRAMEoCR}}{{{self.fig_labels[fig_num]}}}
+}}
+\newcommand{{\PlotFIGoCI}}[0]{{
+  \PlotFIG{{\PlotFRAMEoCI}}{{{self.fig_labels[fig_num + 1]}}}
+}}
+\newcommand{{\PlotFIGoCIoCR}}[0]{{
+  \PlotFIG{{\PlotFRAMEoCIoCR}}{{{self.fig_labels[fig_num + 2]}}}
+}}
+"""
+        fig_num += 3 
+        
         return commands
 
         
@@ -402,53 +418,54 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
         body_commands = ""
         
         if len(self.alpha) == 1:
-            body_commands = r"""
+            body_commands += r"""
   \textbf{}
-  \MakeAfigure{\PlotFIGoCIoCR}
-  \MakeAfigure{\PlotFIGoCI}
   \MakeAfigure{\PlotFIGoCR}
+  \MakeAfigure{\PlotFIGoCI}
+  \MakeAfigure{\PlotFIGoCIoCR}
 """
         else:
-            body_commands = r"""
-  \textbf{}
-  \MakeAfigure{\PlotFIGoCIoCR}
-  \MakeAfigure{\PlotFIGoCI}
-  \MakeAfigure{\PlotFIGoCR}
-"""
             for a in self.alpha:
                 if a == 0.01:
                     body_commands += r"""
   \newpage
   \textbf{}
-  \MakeAfigure{\PlotFIGoNinetynineoCIoCR}
-  \MakeAfigure{\PlotFIGoNinetynineoCI}
   \MakeAfigure{\PlotFIGoNinetynineoCR}
+  \MakeAfigure{\PlotFIGoNinetynineoCI}
+  \MakeAfigure{\PlotFIGoNinetynineoCIoCR}
 """         
                 elif a == 0.05:
                     body_commands += r"""
   \newpage
   \textbf{}
-  \MakeAfigure{\PlotFIGoNinetyfiveoCIoCR}
-  \MakeAfigure{\PlotFIGoNinetyfiveoCI}
   \MakeAfigure{\PlotFIGoNinetyfiveoCR}
+  \MakeAfigure{\PlotFIGoNinetyfiveoCI}
+  \MakeAfigure{\PlotFIGoNinetyfiveoCIoCR}
 """
                 elif a == 0.10:
                     body_commands += r"""
   \newpage
   \textbf{}
-  \MakeAfigure{\PlotFIGoNinetyoCIoCR}
-  \MakeAfigure{\PlotFIGoNinetyoCI}
   \MakeAfigure{\PlotFIGoNinetyoCR}
+  \MakeAfigure{\PlotFIGoNinetyoCI}
+  \MakeAfigure{\PlotFIGoNinetyoCIoCR}
 """
                 elif a == 0.20:
                     body_commands += r"""
   \newpage
   \textbf{}
-  \MakeAfigure{\PlotFIGoEightyoCIoCR}
-  \MakeAfigure{\PlotFIGoEightyoCI}
   \MakeAfigure{\PlotFIGoEightyoCR}
+  \MakeAfigure{\PlotFIGoEightyoCI}
+  \MakeAfigure{\PlotFIGoEightyoCIoCR}
 """
         
+            body_commands += r"""
+  \newpage
+  \textbf{}
+  \MakeAfigure{\PlotFIGoCR}
+  \MakeAfigure{\PlotFIGoCI}
+  \MakeAfigure{\PlotFIGoCIoCR}
+"""        
         return body_commands
 
     def generate_document_body_with_caption(self):
@@ -467,97 +484,120 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
         """
         body_commands = ""
         fig_num = 0  
-        fig_labels = ['(a)', '(b)', '(c)', '(d)', '(e)', '(f)', '(g)', '(h)','(i)', '(j)', '(k)', '(l)', '(m)', '(n)', '(o)', '(p)']
+        page_num = 1
         captions = []
 
         if len(self.alpha) == 1:
-            body_commands = rf"""
+            body_commands += rf"""
   \textbf{{}}
-  \MakeAfigure{{\PlotFIGoCIoCR}}
-  \MakeAfigure{{\PlotFIGoCI}}
   \MakeAfigure{{\PlotFIGoCR}}
+  \MakeAfigure{{\PlotFIGoCI}}
+  \MakeAfigure{{\PlotFIGoCIoCR}}
 """
-            body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot with both Confidence Intervals (CI) and Credible Regions (CR).}}"
+            body_commands +=rf"  \textnormal{{ Figure {page_num}. Plot in the ROC space of "
+            page_num += 1
+            body_commands +=rf"{self.fig_labels[fig_num]} credible region (CR), " 
             fig_num += 1
-            body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot with Confidence Intervals (CI) only.}}"
+            body_commands +=rf"{self.fig_labels[fig_num]} simultaneous confidence intervals (SCI), " 
             fig_num += 1
-            body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot with Credible Regions (CR) only.}}"
+            body_commands +=rf"{self.fig_labels[fig_num]} CR and SCI."
             fig_num += 1
+            body_commands +=rf"}}"
+            
+            ##### Figure 1. Plot in the ROC space of (a) 99% confidence region (CR), (b) 99% simultaneous confidence interval (SCI), (c) 99% CR and SCI.
         else:
-            body_commands = rf"""
-  \textbf{{}}
-  \MakeAfigure{{\PlotFIGoCIoCR}}
-  \MakeAfigure{{\PlotFIGoCI}}
-  \MakeAfigure{{\PlotFIGoCR}}
-"""
-            body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot with both Confidence Intervals (CI) and Credible Regions (CR).}}"
-            fig_num += 1
-            body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot with Confidence Intervals (CI) only.}}"
-            fig_num += 1
-            body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot with Credible Regions (CR) only.}}"
-            fig_num += 1
-
             for a in self.alpha:
                 if a == 0.01:
                     body_commands += rf"""
                     
   \newpage
   \textbf{{}}
-  \MakeAfigure{{\PlotFIGoNinetynineoCIoCR}}
-  \MakeAfigure{{\PlotFIGoNinetynineoCI}}
   \MakeAfigure{{\PlotFIGoNinetynineoCR}}
+  \MakeAfigure{{\PlotFIGoNinetynineoCI}}
+  \MakeAfigure{{\PlotFIGoNinetynineoCIoCR}}
 """
-                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot for 99\% CI and CR.}}"
+                    body_commands +=rf"  \textnormal{{ Figure {page_num}. Plot in the ROC space of "
+                    page_num += 1
+                    body_commands +=rf"{self.fig_labels[fig_num]} 99\% credible region (CR), "
                     fig_num += 1
-                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot for 99\% CI only.}}"
+                    body_commands +=rf"{self.fig_labels[fig_num]} 99\% simultaneous confidence intervals (SCI), " 
                     fig_num += 1
-                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot for 99\% CR only.}}"
+                    body_commands +=rf"{self.fig_labels[fig_num]} 99\% CR and SCI."
                     fig_num += 1
+                    body_commands +=rf"}}"
+                    
                 elif a == 0.05:
                     body_commands += rf"""
                     
   \newpage
   \textbf{{}}
-  \MakeAfigure{{\PlotFIGoNinetyfiveoCIoCR}}
-  \MakeAfigure{{\PlotFIGoNinetyfiveoCI}}
   \MakeAfigure{{\PlotFIGoNinetyfiveoCR}}
+  \MakeAfigure{{\PlotFIGoNinetyfiveoCI}}
+  \MakeAfigure{{\PlotFIGoNinetyfiveoCIoCR}}
 """
-                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot for 95\% CI and CR.}}"
+                    body_commands +=rf"  \textnormal{{ Figure {page_num}. Plot in the ROC space of "
+                    page_num += 1
+                    body_commands +=rf"{self.fig_labels[fig_num]} 95\% credible region (CR), "
                     fig_num += 1
-                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot for 95\% CI only.}}"
+                    body_commands +=rf"{self.fig_labels[fig_num]} 95\% simultaneous confidence intervals (SCI), " 
                     fig_num += 1
-                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot for 95\% CR only.}}"
+                    body_commands +=rf"{self.fig_labels[fig_num]} 95\% CR and SCI."
                     fig_num += 1
+                    body_commands +=rf"}}"
+                    
                 elif a == 0.10:
                     body_commands += rf"""
                     
   \newpage
   \textbf{{}}
-  \MakeAfigure{{\PlotFIGoNinetyoCIoCR}}
-  \MakeAfigure{{\PlotFIGoNinetyoCI}}
   \MakeAfigure{{\PlotFIGoNinetyoCR}}
+  \MakeAfigure{{\PlotFIGoNinetyoCI}}
+  \MakeAfigure{{\PlotFIGoNinetyoCIoCR}}
 """
-                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot for 90\% CI and CR.}}"
+                    body_commands +=rf"  \textnormal{{ Figure {page_num}. Plot in the ROC space of "
+                    page_num += 1
+                    body_commands +=rf"{self.fig_labels[fig_num]} 90\% credible region (CR), "
                     fig_num += 1
-                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot for 90\% CI only.}}"
+                    body_commands +=rf"{self.fig_labels[fig_num]} 90\% simultaneous confidence intervals (SCI), " 
                     fig_num += 1
-                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot for 90\% CR only.}}"
+                    body_commands +=rf"{self.fig_labels[fig_num]} 90\% CR and SCI."
                     fig_num += 1
+                    body_commands +=rf"}}"
+                    
                 elif a == 0.20:
                     body_commands += rf"""
                     
   \newpage
   \textbf{{}}
-  \MakeAfigure{{\PlotFIGoEightyoCIoCR}}
-  \MakeAfigure{{\PlotFIGoEightyoCI}}
   \MakeAfigure{{\PlotFIGoEightyoCR}}
+  \MakeAfigure{{\PlotFIGoEightyoCI}}
+  \MakeAfigure{{\PlotFIGoEightyoCIoCR}}
 """
-                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot for 80\% CI and CR.}}"
+                    body_commands +=rf"  \textnormal{{ Figure {page_num}. Plot in the ROC space of "
+                    page_num += 1
+                    body_commands +=rf"{self.fig_labels[fig_num]} 80\% credible region (CR), "
                     fig_num += 1
-                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot for 80\% CI only.}}"
+                    body_commands +=rf"{self.fig_labels[fig_num]} 80\% simultaneous confidence intervals (SCI), " 
                     fig_num += 1
-                    body_commands +=rf"  \textnormal{{Figure {fig_labels[fig_num]}: the ROC plot for 80\% CR only.}}"
+                    body_commands +=rf"{self.fig_labels[fig_num]} 80\% CR and SCI."
                     fig_num += 1
+                    body_commands +=rf"}}"
+                    
+            body_commands += rf"""
+  \textbf{{}}
+  \MakeAfigure{{\PlotFIGoCR}}
+  \MakeAfigure{{\PlotFIGoCI}}
+  \MakeAfigure{{\PlotFIGoCIoCR}}
+"""
+            body_commands +=rf"  \textnormal{{ Figure {page_num}. Plot in the ROC space of "
+            page_num += 1
+            body_commands +=rf"{self.fig_labels[fig_num]} credible region (CR), " 
+            fig_num += 1
+            body_commands +=rf"{self.fig_labels[fig_num]} simultaneous confidence intervals (SCI), " 
+            fig_num += 1
+            body_commands +=rf"{self.fig_labels[fig_num]} CR and SCI."
+            fig_num += 1
+            body_commands +=rf"}}"
 
         # Combine captions into one paragraph per page
         body_commands += "\n".join(captions)
