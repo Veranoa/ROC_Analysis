@@ -1,0 +1,359 @@
+{% extends "base.html" %} {% block title %}Column Categorizer{% endblock %} {%
+block content %}
+<div class="container">
+  <h2>Column Categorizer</h2>
+  <p>
+    Upload a CSV file to load columns, then drag and drop one or multiple
+    selected columns into the desired categories. Columns will maintain their
+    original order.
+  </p>
+
+  <!-- File Upload -->
+  <div class="mb-3">
+    <label for="fileUpload" class="form-label">Upload CSV File:</label>
+    <input
+      type="file"
+      id="fileUpload"
+      class="form-control"
+      accept=".csv"
+      onchange="handleFileUpload(event)"
+    />
+  </div>
+
+  <button class="btn btn-secondary mt-3" onclick="autoCategorizeCases()">
+    Auto Categorize Cases
+  </button>
+
+  <div class="row">
+    <!-- Column List -->
+    <div class="col-md-3">
+      <h3>Columns</h3>
+      <div
+        id="column-zone"
+        class="drop-zone"
+        ondrop="drop(event, 'columns')"
+        ondragover="allowDrop(event)"
+      >
+        <p>Drag back here to remove from category</p>
+      </div>
+      <ul id="column-list" class="list-group"></ul>
+    </div>
+    <!-- Cases -->
+    <div class="col-md-3">
+      <h3>Cases</h3>
+      <div
+        id="cases"
+        class="drop-zone"
+        ondrop="drop(event, 'cases')"
+        ondragover="allowDrop(event)"
+      >
+        <!--cases-->
+        <p>Drag columns here</p>
+      </div>
+      <ul id="cases-list" class="list-group"></ul>
+    </div>
+    <!-- Auto-Recognized Readers/Reads -->
+    <div class="col-md-3">
+      <h3>Auto-Recognized</h3>
+      <div
+        id="autoRecognized"
+        class="drop-zone"
+        ondrop="drop(event, 'autoRecognized')"
+        ondragover="allowDrop(event)"
+      >
+        <p>Drag columns here to verify</p>
+      </div>
+      <ul id="autoRecognized-list" class="list-group"></ul>
+    </div>
+    <!-- Readers -->
+    <div class="col-md-3">
+      <h3>Readers</h3>
+      <div
+        id="readers"
+        class="drop-zone"
+        ondrop="drop(event, 'readers')"
+        ondragover="allowDrop(event)"
+      >
+        <p>Drag columns here</p>
+      </div>
+      <ul id="readers-list" class="list-group"></ul>
+    </div>
+    <!-- Reads -->
+    <div class="col-md-3">
+      <h3>Reads</h3>
+      <div
+        id="reads"
+        class="drop-zone"
+        ondrop="drop(event, 'reads')"
+        ondragover="allowDrop(event)"
+      >
+        <!--reads-->
+        <p>Drag columns here</p>
+      </div>
+      <ul id="reads-list" class="list-group"></ul>
+    </div>
+  </div>
+  <button class="btn btn-primary mt-3" onclick="submitCategories()">
+    Submit
+  </button>
+</div>
+
+<style>
+  .drop-zone {
+    border: 2px dashed #ccc;
+    padding: 10px;
+    text-align: center;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    min-height: 50px;
+  }
+
+  .drop-zone:hover {
+    background-color: #e6e6e6;
+  }
+
+  .drop-zone p {
+    margin: 0;
+    color: #999;
+  }
+  .list-group-item {
+    position: relative;
+  }
+
+  .list-group-item.selected {
+    background-color: #d9edf7;
+    color: #31708f;
+  }
+
+  .list-group-item:hover::after {
+    content: attr(title); 
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #333;
+    color: #fff;
+    padding: 5px;
+    border-radius: 3px;
+    font-size: 0.8em;
+    white-space: nowrap;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  }
+</style>
+
+<script>
+  const csrfToken = "{{ csrf_token() }}"; // Flask CSRF Token
+  let categories = {
+    columns: [],
+    cases: [],
+    readers: [],
+    reads: [],
+    autoRecognized: [],
+  };
+
+  const selectedItems = new Set();
+
+  const originalOrder = [];
+
+  function allowDrop(event) {
+    event.preventDefault();
+  }
+
+  function toggleSelection(event, id) {
+    if (event.ctrlKey || event.metaKey) {
+      if (selectedItems.has(id)) {
+        selectedItems.delete(id);
+        document.getElementById(id).classList.remove("selected");
+      } else {
+        selectedItems.add(id);
+        document.getElementById(id).classList.add("selected");
+      }
+    } else {
+      clearSelection();
+      selectedItems.add(id);
+      document.getElementById(id).classList.add("selected");
+    }
+  }
+
+  function clearSelection() {
+    selectedItems.forEach((id) => {
+      document.getElementById(id).classList.remove("selected");
+    });
+    selectedItems.clear();
+  }
+
+  function drag(event) {
+    event.dataTransfer.setData(
+      "text",
+      JSON.stringify(Array.from(selectedItems))
+    );
+  }
+
+  function drop(event, category) {
+    event.preventDefault();
+    const ids = JSON.parse(event.dataTransfer.getData("text"));
+
+    ids.forEach((id) => {
+      const element = document.getElementById(id);
+
+      for (const key in categories) {
+        categories[key] = categories[key].filter(
+          (item) => item.name !== element.textContent
+        );
+      }
+
+      if (category !== "columns") {
+        categories[category].push({
+          name: element.textContent,
+          index: parseInt(element.dataset.index, 10),
+        });
+      } else {
+        categories.columns.push({
+          name: element.textContent,
+          index: parseInt(element.dataset.index, 10),
+        });
+      }
+
+      const targetList =
+        category === "columns" ? "column-list" : `${category}-list`;
+      document.getElementById(targetList).appendChild(element);
+      element.classList.remove("selected");
+    });
+
+    clearSelection();
+    renderCategories();
+  }
+
+  function renderCategories() {
+    for (const key in categories) {
+      const listId = key === "columns" ? "column-list" : `${key}-list`;
+      const list = document.getElementById(listId);
+      if (list) {
+        list.innerHTML = ""; // 清空列表内容
+
+        categories[key]
+          .sort((a, b) => a.index - b.index)
+          .forEach((item) => {
+            const listItem = document.createElement("li");
+            listItem.textContent = item.name;
+            listItem.className = "list-group-item";
+            listItem.draggable = true;
+            listItem.id = `column-${item.index}`;
+            listItem.dataset.index = item.index; // 添加序号数据
+            listItem.title = `Original Index: ${item.index}`; // 悬浮提示显示序号
+            listItem.onclick = (e) => toggleSelection(e, listItem.id);
+            listItem.ondragstart = (e) => drag(e);
+            list.appendChild(listItem);
+          });
+      } else {
+        console.error(`List element not found: ${listId}`);
+      }
+    }
+  }
+
+  function handleFileUpload(event) {
+    const file = event.target.files[0];
+    if (!file) {
+      alert("Please select a file.");
+      return;
+    }
+
+    if (file.type !== "text/csv") {
+      alert("Only CSV files are allowed.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const text = e.target.result;
+      const columns = parseCSVHeaders(text);
+      loadColumns(columns.map((name, index) => ({ name, index }))); // Include index
+    };
+    reader.readAsText(file);
+  }
+
+  function parseCSVHeaders(csvText) {
+    const rows = csvText.split("\n");
+    if (rows.length > 0) {
+      return rows[0].split(",").map((header) => header.trim());
+    }
+    return [];
+  }
+
+  function loadColumns(columns) {
+    categories.columns = columns.map(({ name, index }) => {
+      originalOrder.push({ name, index });
+      return { name, index };
+    });
+    renderCategories();
+  }
+
+  function autoCategorizeCases() {
+    const columns = categories.columns.map((c) => c.name);
+
+    fetch("/auto_categorize_cases", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": csrfToken,
+      },
+      body: JSON.stringify({ columns }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Response data:", data);
+        const autoRecognizedColumns = data.autoRecognized || [];
+
+        // Process each auto-recognized column
+        autoRecognizedColumns.forEach((name) => {
+          // Find the index of the column in the current 'columns' category
+          const columnIndex = categories.columns.findIndex(
+            (col) => col.name === name
+          );
+          if (columnIndex > -1) {
+            // If found, remove it from 'columns' and add to 'autoRecognized'
+            const column = categories.columns.splice(columnIndex, 1)[0];
+            categories.autoRecognized.push(column);
+          }
+        });
+
+        // After processing, re-render categories to reflect changes
+        renderCategories();
+        alert(
+          `Auto-categorized as auto-recognized: ${autoRecognizedColumns.join(
+            ", "
+          )}`
+        );
+      })
+      .catch((error) => {
+        // Log and alert any errors encountered during the fetch operation
+        console.error("Error:", error);
+        alert("Failed to auto-categorize.");
+      });
+  }
+
+  function submitCategories() {
+    const result = {};
+    for (const key in categories) {
+      result[key] = categories[key].map((item) => item.name);
+    }
+
+    fetch("{{ url_for('submit_categories') }}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": csrfToken,
+      },
+      body: JSON.stringify(result),
+    })
+      .then((response) => response.json())
+      .then((data) => alert("Categories submitted successfully!"))
+      .catch((error) => console.error("Error:", error));
+  }
+</script>
+{% endblock %}

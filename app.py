@@ -11,6 +11,7 @@
 # The application also allows users to download styling files and rerun analyses with updated styling.
 
 from flask import Flask, render_template, request, redirect, url_for, send_file, jsonify, flash
+from flask_wtf.csrf import CSRFProtect
 import os
 import json
 import shutil
@@ -20,6 +21,9 @@ import subprocess
 from threading import Thread
 import logging
 from werkzeug.datastructures import FileStorage
+
+from collections import Counter
+from rapidfuzz import fuzz
 
 from config import Config
 from tex.ROCAveGenerator import LaTeXROCAveGenerator
@@ -31,6 +35,7 @@ from tex.ROCAllinOne import LaTeXROCReport
 from tex.TexConfidenceGenerator import LaTeXConfidenceGenerator
 from tex.sci_cr import CI, CG2
 
+columns = []
 
 # Ensure necessary directories exist
 os.makedirs(Config.LOG_FOLDER, exist_ok=True)
@@ -56,11 +61,13 @@ logging.basicConfig(filename=os.path.join(Config.LOG_FOLDER, 'server.log'), leve
 
 app = Flask(__name__)
 app.secret_key = 'e1221313479442f320168216451c78a2'
+csrf = CSRFProtect(app)
 
 @app.route('/')
 def home():
     """Render the home page."""
     return render_template('home.html')
+
 
 @app.route('/plotting')
 def plotting():
@@ -99,6 +106,112 @@ def styling():
     """Render the styling page, displaying completed jobs."""
     jobs = load_jobs(status_filter='COMPLETED')
     return render_template('styling.html', jobs=jobs)
+
+@app.route('/classify')
+def classify():
+    """Render the analysis page."""
+    return render_template('classify.html')
+
+@app.route('/auto_categorize_cases', methods=['POST'])
+def auto_categorize_cases():
+    data = request.json
+    columns = data.get("columns", [])
+    logging.info(f"Received columns: {columns}")
+
+    if not columns:
+        logging.error("No columns provided in request")
+        return jsonify({"error": "No columns provided"}), 400
+
+    similarity_threshold = 85
+    repeat_threshold = 5
+
+    # Keep columns Index
+    numbered_columns = [{"name": col, "index": i} for i, col in enumerate(columns)]
+
+    # Count occurrences of each column
+    column_counts = Counter(columns)
+    logging.info(f"Column counts: {column_counts}")
+
+    # Identify columns that meet the minimum repeat threshold
+    repeated_columns = [col for col, count in column_counts.items() if count >= repeat_threshold]
+    logging.info(f"Repeated columns: {repeated_columns}")
+
+    # Group columns by fuzzy matching
+    fuzzy_groups = []
+    while repeated_columns:
+        base_column = repeated_columns.pop(0)
+        group = [base_column]
+        remaining_columns = []
+
+        for col in repeated_columns:
+            if fuzz.partial_ratio(base_column, col) >= similarity_threshold:
+                group.append(col)
+            else:
+                remaining_columns.append(col)
+
+        fuzzy_groups.append(group)
+        repeated_columns = remaining_columns
+
+    logging.info(f"Fuzzy groups: {fuzzy_groups}")
+    auto_recognized_columns = [col for group in fuzzy_groups for col in group]
+
+    return jsonify({
+        "autoRecognized": auto_recognized_columns,
+        "columnsWithIndex": numbered_columns  
+    })
+
+# @app.route('/auto_categorize_cases', methods=['POST'])
+# def auto_categorize_cases():
+#     data = request.json
+#     columns = data.get("columns", [])
+#     logging.debug(f"Received columns: {columns}")
+
+#     if not columns:
+#         logging.error("No columns provided in request")
+#         return jsonify({"error": "No columns provided"}), 400
+
+#     similarity_threshold = 95
+#     repeat_threshold = 5
+
+#     fuzzy_match_counts = {col: 0 for col in columns}
+#     for i, base_col in enumerate(columns):
+#         for comp_col in columns:
+#             if fuzz.partial_ratio(base_col, comp_col) >= similarity_threshold:
+#                 fuzzy_match_counts[base_col] += 1
+
+#     print(f"Fuzzy match counts: {fuzzy_match_counts}")
+
+#     auto_recognized_columns = []
+#     current_group = []
+#     last_count = None
+
+#     for col, count in fuzzy_match_counts.items():
+#         if count >= repeat_threshold:
+#             if last_count is None or last_count >= repeat_threshold:
+#                 current_group.append(col)
+#             else:
+#                 if len(current_group) >= 5:
+#                     auto_recognized_columns.append(current_group)
+#                 current_group = [col]
+#         else:
+#             if len(current_group) >= 5:
+#                 auto_recognized_columns.append(current_group)
+#             current_group = []
+#         last_count = count
+
+#     if len(current_group) >= 5:
+#         auto_recognized_columns.append(current_group)
+
+#     logging.info(f"Consecutive high counts: {auto_recognized_columns}")
+
+#     return jsonify({"consecutiveHighCounts": auto_recognized_columns})
+
+@app.route('/submit_categories', methods=['POST'])
+def submit_categories():
+    data = request.get_json()
+    print(f"Received categories: {data}")
+    return jsonify({"message": "Categories received successfully!"}), 200
+
 
 @app.route('/download_styling/<job_id>')
 def download_styling(job_id):

@@ -503,7 +503,7 @@ class LaTeXConfidenceGenerator(LaTeXGenerator):
             page_num += 1
             body_commands +=rf"{self.fig_labels[fig_num]} confidence region (CR), " 
             fig_num += 1
-            body_commands +=rf"{self.fig_labels[fig_num]} simultaneous fig_num =0 intervals (SCI), " 
+            body_commands +=rf"{self.fig_labels[fig_num]} simultaneous confidence intervals (SCI), " 
             fig_num += 1
             body_commands +=rf"{self.fig_labels[fig_num]} CR and SCI."
             fig_num =0
@@ -722,10 +722,10 @@ if __name__ == "__main__":
             f.write(latex_document)
 
         # Generate standalone image document
-        image_document = generator.generate_latex_image()  # 注意这里调用的是 generator.generate_latex_image()
+        image = generator.generate_latex_image()
         image_file_path = os.path.join(output_dir, 'ROC_confidence_image.tex')
         with open(image_file_path, 'w') as f:
-            f.write(image_document)
+            f.write(image)
 
     except ValueError as e:
         print(e)
