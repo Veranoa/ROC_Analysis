@@ -56,6 +56,19 @@ block content %}
       </div>
       <ul id="column-list" class="list-group"></ul>
     </div>
+    <!-- Auto-Recognized Readers/Reads -->
+    <div class="col-md-3">
+      <h3>Auto-Recognized Groups</h3>
+      <div
+        id="autoRecognized"
+        class="drop-zone"
+        ondrop="drop(event, 'autoRecognized')"
+        ondragover="allowDrop(event)"
+      >
+        <p>Drag columns here to verify</p>
+      </div>
+      <ul id="autoRecognized-list" class="list-group"></ul>
+    </div>
     <!-- Cases -->
     <div class="col-md-3">
       <h3>Cases</h3>
@@ -69,19 +82,6 @@ block content %}
         <p>Drag columns here</p>
       </div>
       <ul id="cases-list" class="list-group"></ul>
-    </div>
-    <!-- Auto-Recognized Readers/Reads -->
-    <div class="col-md-3">
-      <h3>Auto-Recognized</h3>
-      <div
-        id="autoRecognized"
-        class="drop-zone"
-        ondrop="drop(event, 'autoRecognized')"
-        ondragover="allowDrop(event)"
-      >
-        <p>Drag columns here to verify</p>
-      </div>
-      <ul id="autoRecognized-list" class="list-group"></ul>
     </div>
     <!-- Readers -->
     <div class="col-md-3">

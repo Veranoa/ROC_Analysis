@@ -113,7 +113,6 @@ def classify():
     return render_template('classify.html')
 
 @app.route('/auto_categorize_cases', methods=['POST'])
-### ADD a func to correct the typos in column names and the group names
 def auto_categorize_cases():
     data = request.json
     columns = data.get("columns", [])
