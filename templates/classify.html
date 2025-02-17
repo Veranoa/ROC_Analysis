@@ -24,6 +24,24 @@ block content %}
     Auto Categorize Cases
   </button>
 
+  <!-- Group Details Section -->
+  <div id="group-details-section" class="hidden">
+    <div class="group-details">
+      <h3>Group Details: <span id="group-name"></span></h3>
+      <ul id="group-details-list" class="list-group grid-columns"></ul>
+    </div>
+    <div
+      class="group-drag-zone drop-zone"
+      ondrop="drop(event, 'group-details')"
+      ondragover="allowDrop(event)"
+    >
+      <p>Drag columns here</p>
+    </div>
+    <button class="btn btn-sm btn-secondary" onclick="hideGroupDetails()">
+      Close Details
+    </button>
+  </div>
+
   <div class="row">
     <!-- Column List -->
     <div class="col-md-3">
@@ -116,6 +134,23 @@ block content %}
     margin: 0;
     color: #999;
   }
+
+  .hidden {
+    display: none;
+  }
+
+  .group-details {
+    margin-bottom: 10px;
+  }
+
+  .grid-columns {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+  }
+
   .list-group-item {
     position: relative;
   }
@@ -126,7 +161,7 @@ block content %}
   }
 
   .list-group-item:hover::after {
-    content: attr(title); 
+    content: attr(title);
     position: absolute;
     top: 100%;
     left: 0;
@@ -155,73 +190,209 @@ block content %}
 
   const originalOrder = [];
 
+  let currentGroup = null;
+
   function allowDrop(event) {
     event.preventDefault();
   }
 
   function toggleSelection(event, id) {
+    const element = document.getElementById(id);
+    if (!element) return;
+
     if (event.ctrlKey || event.metaKey) {
       if (selectedItems.has(id)) {
         selectedItems.delete(id);
-        document.getElementById(id).classList.remove("selected");
+        element.classList.remove("selected");
       } else {
         selectedItems.add(id);
-        document.getElementById(id).classList.add("selected");
+        element.classList.add("selected");
       }
     } else {
       clearSelection();
       selectedItems.add(id);
-      document.getElementById(id).classList.add("selected");
+      element.classList.add("selected");
     }
   }
 
   function clearSelection() {
     selectedItems.forEach((id) => {
-      document.getElementById(id).classList.remove("selected");
+      const element = document.getElementById(id);
+      if (element) {
+        element.classList.remove("selected");
+      }
     });
     selectedItems.clear();
   }
 
   function drag(event) {
-    event.dataTransfer.setData(
-      "text",
-      JSON.stringify(Array.from(selectedItems))
-    );
+    const selectedIds = Array.from(selectedItems);
+    const draggedItems = selectedIds
+      .map((id) => {
+        const element = document.getElementById(id);
+
+        // Group
+        if (element && element.dataset.groupName) {
+          console.log(`Dragging group: ${element.dataset.groupName}`);
+          return { groupName: element.dataset.groupName };
+        }
+        // Columns
+        else if (element && element.dataset.index) {
+          console.log(
+            `Dragging column: ${element.textContent.trim()} (Index: ${
+              element.dataset.index
+            })`
+          );
+          return {
+            name: element.textContent.trim(),
+            index: parseInt(element.dataset.index, 10),
+          };
+        }
+        // Group Details
+        else if (currentGroup && element && currentGroup.columns) {
+          const column = currentGroup.columns.find(
+            (col) => col.name === element.textContent.trim()
+          );
+          if (column) {
+            console.log(
+              `Dragging column from Group Details: ${column.name} (Index: ${column.index})`
+            );
+            return {
+              name: column.name,
+              index: column.index,
+            };
+          }
+        }
+        return null;
+      })
+      .filter((item) => item !== null);
+
+    if (draggedItems.length > 0) {
+      console.log("Dragged items:", draggedItems);
+      event.dataTransfer.setData("text", JSON.stringify(draggedItems));
+    }
   }
 
   function drop(event, category) {
     event.preventDefault();
-    const ids = JSON.parse(event.dataTransfer.getData("text"));
+    const draggedItems = JSON.parse(event.dataTransfer.getData("text"));
+    console.log(`Dropped into category: ${category}`);
+    console.log("Dropped items:", draggedItems);
 
-    ids.forEach((id) => {
-      const element = document.getElementById(id);
+    // Ensure draggedItems is an array
+    if (!Array.isArray(draggedItems)) {
+      draggedItems = [draggedItems];
+    }
 
-      for (const key in categories) {
-        categories[key] = categories[key].filter(
-          (item) => item.name !== element.textContent
+    draggedItems.forEach((item) => {
+      if (item.groupName) {
+        // Handle group movement
+        console.log(`Handling group drop: ${item.groupName}`);
+        const groupIndex = categories.autoRecognized.findIndex(
+          (group) => group.groupName === item.groupName
         );
-      }
 
-      if (category !== "columns") {
-        categories[category].push({
-          name: element.textContent,
-          index: parseInt(element.dataset.index, 10),
-        });
+        if (groupIndex > -1) {
+          const group = categories.autoRecognized.splice(groupIndex, 1)[0];
+          categories[category].push(group);
+        }
+
+        for (const key of ["readers", "reads", "autoRecognized"]) {
+          if (key !== category) {
+            const groupIndex = categories[key].findIndex(
+              (group) => group.groupName === item.groupName
+            );
+            if (groupIndex > -1) {
+              const group = categories[key].splice(groupIndex, 1)[0];
+              categories[category].push(group);
+              break;
+            }
+          }
+        }
       } else {
-        categories.columns.push({
-          name: element.textContent,
-          index: parseInt(element.dataset.index, 10),
-        });
-      }
+        // Handle column movement
+        console.log(
+          `Handling column drop: ${item.name} (Index: ${item.index})`
+        );
 
-      const targetList =
-        category === "columns" ? "column-list" : `${category}-list`;
-      document.getElementById(targetList).appendChild(element);
-      element.classList.remove("selected");
+        // From columns or cases
+        const columnIndex = categories.columns.findIndex(
+          (col) => col.name === item.name && col.index === item.index
+        );
+
+        if (columnIndex > -1) {
+          const column = categories.columns.splice(columnIndex, 1)[0];
+
+          if (["autoRecognized", "readers", "reads"].includes(category)) {
+            createNewGroup(column, category);
+          } else {
+            categories[category].push({
+              name: column.name,
+              index: column.index,
+            });
+          }
+        } else {
+          const caseIndex = categories.cases.findIndex(
+            (col) => col.name === item.name && col.index === item.index
+          );
+
+          if (caseIndex > -1) {
+            const column = categories.cases.splice(caseIndex, 1)[0];
+
+            if (["autoRecognized", "readers", "reads"].includes(category)) {
+              createNewGroup(column, category);
+            } else {
+              categories[category].push({
+                name: column.name,
+                index: column.index,
+              });
+            }
+          } else if (currentGroup && category === "columns") {
+            // Handle dragging from Group Details to Columns
+            const columnIndex = currentGroup.columns.findIndex(
+              (col) => col.name === item.name && col.index === item.index
+            );
+
+            if (columnIndex > -1) {
+              const column = currentGroup.columns.splice(columnIndex, 1)[0];
+              categories.columns.push(column);
+              console.log(
+                `Moved column from Group Details to Columns: ${column.name}`
+              );
+            }
+          } else if (currentGroup && category === "group-details") {
+            // Handle dragging from Columns or Cases into Group Details
+            const columnIndex = categories.columns.findIndex(
+              (col) => col.name === item.name && col.index === item.index
+            );
+
+            if (columnIndex > -1) {
+              const column = categories.columns.splice(columnIndex, 1)[0];
+              currentGroup.columns.push(column);
+              console.log(
+                `Added column from Columns to Group Details: ${column.name}`
+              );
+            } else {
+              const caseIndex = categories.cases.findIndex(
+                (col) => col.name === item.name && col.index === item.index
+              );
+
+              if (caseIndex > -1) {
+                const column = categories.cases.splice(caseIndex, 1)[0];
+                currentGroup.columns.push(column);
+                console.log(
+                  `Added column from Cases to Group Details: ${column.name}`
+                );
+              }
+            }
+          }
+        }
+      }
     });
 
     clearSelection();
     renderCategories();
+    if (currentGroup) showGroupDetails(currentGroup); // Update Group Details view
   }
 
   function renderCategories() {
@@ -229,24 +400,45 @@ block content %}
       const listId = key === "columns" ? "column-list" : `${key}-list`;
       const list = document.getElementById(listId);
       if (list) {
-        list.innerHTML = ""; // 清空列表内容
+        list.innerHTML = "";
 
-        categories[key]
-          .sort((a, b) => a.index - b.index)
-          .forEach((item) => {
+        // Sort categories based on the first element's index
+        let sortedItems;
+        if (["readers", "reads", "autoRecognized"].includes(key)) {
+          sortedItems = categories[key].sort((a, b) => {
+            const indexA =
+              a.columns && a.columns.length > 0
+                ? a.columns[0].index
+                : Number.MAX_VALUE;
+            const indexB =
+              b.columns && b.columns.length > 0
+                ? b.columns[0].index
+                : Number.MAX_VALUE;
+            return indexA - indexB;
+          });
+        } else {
+          sortedItems = categories[key].sort((a, b) =>
+            a.index !== undefined ? a.index - b.index : 0
+          );
+        }
+
+        sortedItems.forEach((item) => {
+          if (item.groupName) {
+            const groupItem = renderAutoRecognizedGroup(item);
+            list.appendChild(groupItem);
+          } else {
             const listItem = document.createElement("li");
             listItem.textContent = item.name;
             listItem.className = "list-group-item";
             listItem.draggable = true;
             listItem.id = `column-${item.index}`;
-            listItem.dataset.index = item.index; // 添加序号数据
-            listItem.title = `Original Index: ${item.index}`; // 悬浮提示显示序号
+            listItem.dataset.index = item.index;
+            listItem.title = `Original Index: ${item.index}`;
             listItem.onclick = (e) => toggleSelection(e, listItem.id);
             listItem.ondragstart = (e) => drag(e);
             list.appendChild(listItem);
-          });
-      } else {
-        console.error(`List element not found: ${listId}`);
+          }
+        });
       }
     }
   }
@@ -306,35 +498,119 @@ block content %}
         return response.json();
       })
       .then((data) => {
-        console.log("Response data:", data);
-        const autoRecognizedColumns = data.autoRecognized || [];
+        const autoRecognizedGroups = data.autoRecognizedGroups || [];
+        const usedIndices = new Set();
 
-        // Process each auto-recognized column
-        autoRecognizedColumns.forEach((name) => {
-          // Find the index of the column in the current 'columns' category
-          const columnIndex = categories.columns.findIndex(
-            (col) => col.name === name
-          );
-          if (columnIndex > -1) {
-            // If found, remove it from 'columns' and add to 'autoRecognized'
-            const column = categories.columns.splice(columnIndex, 1)[0];
-            categories.autoRecognized.push(column);
-          }
+        autoRecognizedGroups.forEach((group) => {
+          categories.autoRecognized.push({
+            groupName: group.groupName,
+            columns: group.columns,
+          });
+
+          group.columns.forEach((column) => {
+            usedIndices.add(column.index);
+          });
         });
 
-        // After processing, re-render categories to reflect changes
+        categories.columns = categories.columns.filter(
+          (col) => !usedIndices.has(col.index)
+        );
+
         renderCategories();
+
         alert(
-          `Auto-categorized as auto-recognized: ${autoRecognizedColumns.join(
-            ", "
-          )}`
+          `Auto-categorized as auto-recognized: ${autoRecognizedGroups
+            .map((group) => group.groupName)
+            .join(", ")}`
         );
       })
       .catch((error) => {
-        // Log and alert any errors encountered during the fetch operation
         console.error("Error:", error);
         alert("Failed to auto-categorize.");
       });
+  }
+
+  function loadAutoRecognizedGroups(groups) {
+    groups.forEach((group) => {
+      categories.autoRecognized.push({
+        groupName: group.groupName,
+        columns: group.columns,
+      });
+    });
+    renderCategories();
+  }
+
+  function renderAutoRecognizedGroup(group) {
+    const listItem = document.createElement("li");
+    listItem.className = "list-group-item";
+    listItem.draggable = true;
+    listItem.dataset.groupName = group.groupName;
+    listItem.title = `Group starts with Index: ${group.columns[0].index}`;
+    listItem.id = `group-${group.groupName}`;
+
+    listItem.ondragstart = (e) => drag(e);
+
+    const groupText = document.createElement("span");
+    groupText.textContent = `${group.groupName} (Index: ${group.columns[0].index})`;
+    listItem.appendChild(groupText);
+
+    const detailsButton = document.createElement("button");
+    detailsButton.textContent = "View Details";
+    detailsButton.className = "btn btn-sm btn-info float-end";
+    detailsButton.onclick = () => {
+      showGroupDetails(group);
+    };
+    listItem.appendChild(detailsButton);
+
+    listItem.onclick = (e) => {
+      e.stopPropagation();
+      toggleSelection(e, listItem.id);
+    };
+
+    return listItem;
+  }
+
+  function showGroupDetails(group) {
+    currentGroup = group;
+
+    document.getElementById("group-name").textContent = group.groupName;
+    const list = document.getElementById("group-details-list");
+    list.innerHTML = "";
+
+    group.columns.forEach((column) => {
+      const listItem = document.createElement("li");
+      listItem.textContent = column.name;
+      listItem.className = "list-group-item";
+      listItem.id = `group-column-${column.index}`;
+      listItem.title = `Original Index: ${column.index}`;
+      listItem.draggable = true;
+
+      listItem.onclick = (e) => toggleSelection(e, listItem.id);
+
+      listItem.ondragstart = (e) => {
+        e.dataTransfer.setData(
+          "text",
+          JSON.stringify({ name: column.name, index: column.index })
+        );
+      };
+      list.appendChild(listItem);
+    });
+
+    document.getElementById("group-details-section").classList.remove("hidden");
+  }
+
+  function hideGroupDetails() {
+    document.getElementById("group-details-section").classList.add("hidden");
+    currentGroup = null;
+  }
+
+  function createNewGroup(column, category) {
+    const group = {
+      groupName: column.name,
+      columns: [column],
+    };
+    categories[category].push(group);
+    renderCategories();
   }
 
   function submitCategories() {

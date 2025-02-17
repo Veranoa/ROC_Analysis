@@ -113,6 +113,7 @@ def classify():
     return render_template('classify.html')
 
 @app.route('/auto_categorize_cases', methods=['POST'])
+### ADD a func to correct the typos in column names and the group names
 def auto_categorize_cases():
     data = request.json
     columns = data.get("columns", [])
@@ -122,89 +123,47 @@ def auto_categorize_cases():
         logging.error("No columns provided in request")
         return jsonify({"error": "No columns provided"}), 400
 
-    similarity_threshold = 85
+    similarity_threshold = 95
     repeat_threshold = 5
 
-    # Keep columns Index
-    numbered_columns = [{"name": col, "index": i} for i, col in enumerate(columns)]
-
-    # Count occurrences of each column
     column_counts = Counter(columns)
-    logging.info(f"Column counts: {column_counts}")
 
-    # Identify columns that meet the minimum repeat threshold
-    repeated_columns = [col for col, count in column_counts.items() if count >= repeat_threshold]
-    logging.info(f"Repeated columns: {repeated_columns}")
+    valid_columns = [
+        {"name": col, "index": i}
+        for i, col in enumerate(columns)
+        if column_counts[col] >= repeat_threshold
+    ]
 
-    # Group columns by fuzzy matching
-    fuzzy_groups = []
-    while repeated_columns:
-        base_column = repeated_columns.pop(0)
-        group = [base_column]
-        remaining_columns = []
+    groups = []
+    used_indices = set()
 
-        for col in repeated_columns:
-            if fuzz.partial_ratio(base_column, col) >= similarity_threshold:
-                group.append(col)
-            else:
-                remaining_columns.append(col)
+    for i, base_column in enumerate(columns):
+        if i in used_indices:
+            continue
 
-        fuzzy_groups.append(group)
-        repeated_columns = remaining_columns
+        group = [{"name": base_column, "index": i}]
+        for j in range(i + 1, len(columns)):
+            if (
+                j not in used_indices
+                and fuzz.partial_ratio(base_column, columns[j]) >= similarity_threshold
+            ):
+                group.append({"name": columns[j], "index": j})
+                used_indices.add(j)
 
-    logging.info(f"Fuzzy groups: {fuzzy_groups}")
-    auto_recognized_columns = [col for group in fuzzy_groups for col in group]
+        used_indices.add(i)
+
+        if len(group) >= repeat_threshold:
+            groups.append(group)
+
+    logging.info(f"Generated groups: {groups}")
+
+    auto_recognized_groups = [
+        {"groupName": group[0]["name"], "columns": group} for group in groups
+    ]
 
     return jsonify({
-        "autoRecognized": auto_recognized_columns,
-        "columnsWithIndex": numbered_columns  
+        "autoRecognizedGroups": auto_recognized_groups,
     })
-
-# @app.route('/auto_categorize_cases', methods=['POST'])
-# def auto_categorize_cases():
-#     data = request.json
-#     columns = data.get("columns", [])
-#     logging.debug(f"Received columns: {columns}")
-
-#     if not columns:
-#         logging.error("No columns provided in request")
-#         return jsonify({"error": "No columns provided"}), 400
-
-#     similarity_threshold = 95
-#     repeat_threshold = 5
-
-#     fuzzy_match_counts = {col: 0 for col in columns}
-#     for i, base_col in enumerate(columns):
-#         for comp_col in columns:
-#             if fuzz.partial_ratio(base_col, comp_col) >= similarity_threshold:
-#                 fuzzy_match_counts[base_col] += 1
-
-#     print(f"Fuzzy match counts: {fuzzy_match_counts}")
-
-#     auto_recognized_columns = []
-#     current_group = []
-#     last_count = None
-
-#     for col, count in fuzzy_match_counts.items():
-#         if count >= repeat_threshold:
-#             if last_count is None or last_count >= repeat_threshold:
-#                 current_group.append(col)
-#             else:
-#                 if len(current_group) >= 5:
-#                     auto_recognized_columns.append(current_group)
-#                 current_group = [col]
-#         else:
-#             if len(current_group) >= 5:
-#                 auto_recognized_columns.append(current_group)
-#             current_group = []
-#         last_count = count
-
-#     if len(current_group) >= 5:
-#         auto_recognized_columns.append(current_group)
-
-#     logging.info(f"Consecutive high counts: {auto_recognized_columns}")
-
-#     return jsonify({"consecutiveHighCounts": auto_recognized_columns})
 
 @app.route('/submit_categories', methods=['POST'])
 def submit_categories():
