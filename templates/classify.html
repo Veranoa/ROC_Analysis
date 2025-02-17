@@ -428,7 +428,6 @@ block content %}
             list.appendChild(groupItem);
           } else {
             const listItem = document.createElement("li");
-            listItem.textContent = item.name;
             listItem.className = "list-group-item";
             listItem.draggable = true;
             listItem.id = `column-${item.index}`;
@@ -436,6 +435,16 @@ block content %}
             listItem.title = `Original Index: ${item.index}`;
             listItem.onclick = (e) => toggleSelection(e, listItem.id);
             listItem.ondragstart = (e) => drag(e);
+
+            // Add editable name
+            const nameSpan = document.createElement("span");
+            nameSpan.textContent = item.name;
+            nameSpan.ondblclick = (e) => {
+              e.stopPropagation();
+              makeEditable(nameSpan, item, key);
+            };
+            listItem.appendChild(nameSpan);
+
             list.appendChild(listItem);
           }
         });
@@ -550,8 +559,13 @@ block content %}
 
     listItem.ondragstart = (e) => drag(e);
 
+    // Add editable group name
     const groupText = document.createElement("span");
     groupText.textContent = `${group.groupName} (Index: ${group.columns[0].index})`;
+    groupText.ondblclick = (e) => {
+      e.stopPropagation();
+      makeEditable(groupText, group, "autoRecognized");
+    };
     listItem.appendChild(groupText);
 
     const detailsButton = document.createElement("button");
@@ -579,11 +593,19 @@ block content %}
 
     group.columns.forEach((column) => {
       const listItem = document.createElement("li");
-      listItem.textContent = column.name;
       listItem.className = "list-group-item";
       listItem.id = `group-column-${column.index}`;
       listItem.title = `Original Index: ${column.index}`;
       listItem.draggable = true;
+
+      // Add editable column name
+      const nameSpan = document.createElement("span");
+      nameSpan.textContent = column.name;
+      nameSpan.ondblclick = (e) => {
+        e.stopPropagation();
+        makeEditable(nameSpan, column, "group-details");
+      };
+      listItem.appendChild(nameSpan);
 
       listItem.onclick = (e) => toggleSelection(e, listItem.id);
 
@@ -611,6 +633,51 @@ block content %}
     };
     categories[category].push(group);
     renderCategories();
+  }
+
+  function makeEditable(element, item, category) {
+    const originalText = element.textContent;
+    const input = document.createElement("input");
+    input.type = "text";
+    input.value = originalText;
+    input.className = "form-control";
+
+    element.textContent = "";
+    element.appendChild(input);
+    input.focus();
+
+    input.addEventListener("blur", () => {
+      saveEditable(input, element, item, category);
+    });
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        saveEditable(input, element, item, category);
+      }
+    });
+  }
+
+  function saveEditable(input, element, item, category) {
+    const newName = input.value.trim();
+    if (newName) {
+      element.textContent = newName;
+      item.name = newName; // Update the name in the data
+
+      // If the item is part of a group in Group Details, update the group's columns
+      if (category === "group-details" && currentGroup) {
+        const columnIndex = currentGroup.columns.findIndex(
+          (col) => col.index === item.index
+        );
+        if (columnIndex > -1) {
+          currentGroup.columns[columnIndex].name = newName;
+        }
+      }
+
+      renderCategories(); // Re-render to reflect changes
+      if (currentGroup) showGroupDetails(currentGroup); // Refresh Group Details view
+    } else {
+      element.textContent = item.name; // Revert to original name if empty
+    }
   }
 
   function submitCategories() {
