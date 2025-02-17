@@ -200,6 +200,14 @@ block content %}
     const element = document.getElementById(id);
     if (!element) return;
 
+    // Disable multi-selection in Group Details
+    if (id.startsWith("group-column-")) {
+      clearSelection();
+      selectedItems.add(id);
+      element.classList.add("selected");
+      return;
+    }
+
     if (event.ctrlKey || event.metaKey) {
       if (selectedItems.has(id)) {
         selectedItems.delete(id);
@@ -275,7 +283,7 @@ block content %}
 
   function drop(event, category) {
     event.preventDefault();
-    const draggedItems = JSON.parse(event.dataTransfer.getData("text"));
+    let draggedItems = JSON.parse(event.dataTransfer.getData("text"));
     console.log(`Dropped into category: ${category}`);
     console.log("Dropped items:", draggedItems);
 
@@ -284,9 +292,18 @@ block content %}
       draggedItems = [draggedItems];
     }
 
+    // Check if dragging a group to Columns or Cases
+    if (
+      draggedItems.some((item) => item.groupName) &&
+      ["columns", "cases"].includes(category)
+    ) {
+      console.log("Cannot move groups to Columns or Cases directly.");
+      return;
+    }
+
     draggedItems.forEach((item) => {
       if (item.groupName) {
-        // Handle group movement
+        // Handle group movement (unchanged)
         console.log(`Handling group drop: ${item.groupName}`);
         const groupIndex = categories.autoRecognized.findIndex(
           (group) => group.groupName === item.groupName
@@ -315,7 +332,7 @@ block content %}
           `Handling column drop: ${item.name} (Index: ${item.index})`
         );
 
-        // From columns or cases
+        // From Columns or Cases
         const columnIndex = categories.columns.findIndex(
           (col) => col.name === item.name && col.index === item.index
         );
@@ -325,6 +342,12 @@ block content %}
 
           if (["autoRecognized", "readers", "reads"].includes(category)) {
             createNewGroup(column, category);
+          } else if (category === "group-details" && currentGroup) {
+            // Drag from Columns to Group Details
+            currentGroup.columns.push(column);
+            console.log(
+              `Added column from Columns to Group Details: ${column.name}`
+            );
           } else {
             categories[category].push({
               name: column.name,
@@ -341,6 +364,12 @@ block content %}
 
             if (["autoRecognized", "readers", "reads"].includes(category)) {
               createNewGroup(column, category);
+            } else if (category === "group-details" && currentGroup) {
+              // Drag from Cases to Group Details
+              currentGroup.columns.push(column);
+              console.log(
+                `Added column from Cases to Group Details: ${column.name}`
+              );
             } else {
               categories[category].push({
                 name: column.name,
@@ -348,7 +377,7 @@ block content %}
               });
             }
           } else if (currentGroup && category === "columns") {
-            // Handle dragging from Group Details to Columns
+            // Drag from Group Details to Columns
             const columnIndex = currentGroup.columns.findIndex(
               (col) => col.name === item.name && col.index === item.index
             );
@@ -360,30 +389,18 @@ block content %}
                 `Moved column from Group Details to Columns: ${column.name}`
               );
             }
-          } else if (currentGroup && category === "group-details") {
-            // Handle dragging from Columns or Cases into Group Details
-            const columnIndex = categories.columns.findIndex(
+          } else if (currentGroup && category === "cases") {
+            // Drag from Group Details to Cases
+            const columnIndex = currentGroup.columns.findIndex(
               (col) => col.name === item.name && col.index === item.index
             );
 
             if (columnIndex > -1) {
-              const column = categories.columns.splice(columnIndex, 1)[0];
-              currentGroup.columns.push(column);
+              const column = currentGroup.columns.splice(columnIndex, 1)[0];
+              categories.cases.push(column);
               console.log(
-                `Added column from Columns to Group Details: ${column.name}`
+                `Moved column from Group Details to Cases: ${column.name}`
               );
-            } else {
-              const caseIndex = categories.cases.findIndex(
-                (col) => col.name === item.name && col.index === item.index
-              );
-
-              if (caseIndex > -1) {
-                const column = categories.cases.splice(caseIndex, 1)[0];
-                currentGroup.columns.push(column);
-                console.log(
-                  `Added column from Cases to Group Details: ${column.name}`
-                );
-              }
             }
           }
         }
@@ -392,7 +409,11 @@ block content %}
 
     clearSelection();
     renderCategories();
-    if (currentGroup) showGroupDetails(currentGroup); // Update Group Details view
+
+    // Always refresh Group Details if currentGroup exists
+    if (currentGroup) {
+      showGroupDetails(currentGroup);
+    }
   }
 
   function renderCategories() {
@@ -554,14 +575,20 @@ block content %}
     listItem.className = "list-group-item";
     listItem.draggable = true;
     listItem.dataset.groupName = group.groupName;
-    listItem.title = `Group starts with Index: ${group.columns[0].index}`;
+
+    // Check if group.columns exists and has at least one column
+    const firstColumnIndex =
+      group.columns && group.columns.length > 0
+        ? group.columns[0].index
+        : "N/A"; // Fallback value if columns are missing
+    listItem.title = `Group starts with Index: ${firstColumnIndex}`;
     listItem.id = `group-${group.groupName}`;
 
     listItem.ondragstart = (e) => drag(e);
 
     // Add editable group name
     const groupText = document.createElement("span");
-    groupText.textContent = `${group.groupName} (Index: ${group.columns[0].index})`;
+    groupText.textContent = `${group.groupName} (Index: ${firstColumnIndex})`;
     groupText.ondblclick = (e) => {
       e.stopPropagation();
       makeEditable(groupText, group, "autoRecognized");
@@ -587,11 +614,14 @@ block content %}
   function showGroupDetails(group) {
     currentGroup = group;
 
+    // Sort columns by index
+    currentGroup.columns.sort((a, b) => a.index - b.index);
+
     document.getElementById("group-name").textContent = group.groupName;
     const list = document.getElementById("group-details-list");
     list.innerHTML = "";
 
-    group.columns.forEach((column) => {
+    currentGroup.columns.forEach((column) => {
       const listItem = document.createElement("li");
       listItem.className = "list-group-item";
       listItem.id = `group-column-${column.index}`;
